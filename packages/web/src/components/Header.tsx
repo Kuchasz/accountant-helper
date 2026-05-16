@@ -1,5 +1,5 @@
-import { Bell, Export, MagnifyingGlass, Plus } from '@phosphor-icons/react';
 import { Button } from '@base-ui/react/button';
+import { Bell, Export, MagnifyingGlass, Plus } from '@phosphor-icons/react';
 
 export function Header() {
   return (

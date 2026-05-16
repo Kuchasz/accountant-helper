@@ -1,4 +1,7 @@
+import { Button } from '@base-ui/react/button';
+import { ScrollArea } from '@base-ui/react/scroll-area';
 import {
+  CaretDown,
   ChartLine,
   Clipboard,
   ClipboardText,
@@ -12,11 +15,8 @@ import {
   ShoppingCart,
   Sparkle,
   Users,
-  CaretDown,
 } from '@phosphor-icons/react';
 import { Link as RouterLink, useMatchRoute } from '@tanstack/react-router';
-import { Button } from '@base-ui/react/button';
-import { ScrollArea } from '@base-ui/react/scroll-area';
 
 const menuItems = [
   { icon: GridFour, label: 'Dashboard', path: '/' },
@@ -141,10 +141,12 @@ export function Sidebar() {
 
       {/* Bottom Section */}
       <div className="border-t border-gray-200 p-3 space-y-1">
-        <Button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors border-0 bg-transparent cursor-pointer">
-          <Gear size={20} />
-          <span>Settings</span>
-        </Button>
+        <RouterLink to="/settings" className="block">
+          <Button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors border-0 bg-transparent cursor-pointer">
+            <Gear size={20} />
+            <span>Settings</span>
+          </Button>
+        </RouterLink>
         <Button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors border-0 bg-transparent cursor-pointer">
           <Clipboard size={20} />
           <span>Feedback</span>

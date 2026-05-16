@@ -1,5 +1,5 @@
-import type { AppRouter } from '@optima-helper-2/api/src/router';
 import { createTRPCReact, httpBatchLink } from '@trpc/react-query';
+import type { AppRouter } from '../../../api/src/router';
 
 export const trpc = createTRPCReact<AppRouter>();
 

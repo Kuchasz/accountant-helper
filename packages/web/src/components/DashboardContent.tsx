@@ -1,3 +1,7 @@
+import { Button } from '@base-ui/react/button';
+import { Popover } from '@base-ui/react/popover';
+import { Select } from '@base-ui/react/select';
+import { Tooltip } from '@base-ui/react/tooltip';
 import {
   CaretDown,
   Funnel,
@@ -7,10 +11,6 @@ import {
   ShoppingBag,
   TrendUp,
 } from '@phosphor-icons/react';
-import { Button } from '@base-ui/react/button';
-import { Tooltip } from '@base-ui/react/tooltip';
-import { Popover } from '@base-ui/react/popover';
-import { Select } from '@base-ui/react/select';
 import { useState } from 'react';
 
 export function DashboardContent() {
@@ -29,7 +29,10 @@ export function DashboardContent() {
           <Popover.Root>
             <Popover.Trigger
               render={(props) => (
-                <Button {...props} className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2 bg-white cursor-pointer">
+                <Button
+                  {...props}
+                  className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2 bg-white cursor-pointer"
+                >
                   <Funnel size={16} />
                   <span>Filters</span>
                 </Button>
@@ -64,7 +67,10 @@ export function DashboardContent() {
               <Tooltip.Root>
                 <Tooltip.Trigger
                   render={(props) => (
-                    <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                    <Button
+                      {...props}
+                      className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer"
+                    >
                       <Gear size={16} />
                     </Button>
                   )}
@@ -107,7 +113,10 @@ export function DashboardContent() {
               <Tooltip.Root>
                 <Tooltip.Trigger
                   render={(props) => (
-                    <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                    <Button
+                      {...props}
+                      className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer"
+                    >
                       <Gear size={16} />
                     </Button>
                   )}
@@ -156,7 +165,10 @@ export function DashboardContent() {
               <Tooltip.Root>
                 <Tooltip.Trigger
                   render={(props) => (
-                    <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                    <Button
+                      {...props}
+                      className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer"
+                    >
                       <Gear size={16} />
                     </Button>
                   )}
@@ -182,7 +194,11 @@ export function DashboardContent() {
             </div>
           </div>
           <div className="relative w-24 h-24 mx-auto">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100" aria-label="Revenue chart">
+            <svg
+              className="w-full h-full -rotate-90"
+              viewBox="0 0 100 100"
+              aria-label="Revenue chart"
+            >
               <title>Product Revenue Chart</title>
               <circle cx="50" cy="50" r="40" stroke="#f3f4f6" strokeWidth="12" fill="none" />
               <circle
@@ -215,7 +231,10 @@ export function DashboardContent() {
               <Tooltip.Root>
                 <Tooltip.Trigger
                   render={(props) => (
-                    <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                    <Button
+                      {...props}
+                      className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer"
+                    >
                       <Gear size={16} />
                     </Button>
                   )}
@@ -243,7 +262,10 @@ export function DashboardContent() {
           <div className="relative h-48">
             <div className="absolute inset-0 flex items-end justify-between">
               {[30, 25, 35, 28, 40, 75, 45, 35, 30, 40, 35, 38].map((height, index) => (
-                <div key={`analytics-bar-${height}-${index}`} className="flex-1 mx-1 relative group">
+                <div
+                  key={`analytics-bar-${height}-${index}`}
+                  className="flex-1 mx-1 relative group"
+                >
                   <div
                     className="bg-orange-200 rounded-t relative overflow-hidden"
                     style={{ height: `${height}%` }}
@@ -284,7 +306,10 @@ export function DashboardContent() {
               <Tooltip.Root>
                 <Tooltip.Trigger
                   render={(props) => (
-                    <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                    <Button
+                      {...props}
+                      className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer"
+                    >
                       <Gear size={16} />
                     </Button>
                   )}
@@ -301,20 +326,32 @@ export function DashboardContent() {
             </Tooltip.Provider>
           </div>
           <div className="flex items-center justify-between mb-4">
-            <Select.Root value={selectedYear} onValueChange={(value) => value && setSelectedYear(value[0])}>
+            <Select.Root
+              value={selectedYear}
+              onValueChange={(value) => value && setSelectedYear(value[0])}
+            >
               <Select.Trigger className="text-sm text-gray-600 border-0 bg-transparent p-0 cursor-pointer flex items-center space-x-1">
                 <Select.Value placeholder="Select year">{selectedYear}</Select.Value>
                 <CaretDown size={16} className="text-gray-400" />
               </Select.Trigger>
               <Select.Positioner sideOffset={8}>
                 <Select.Popup className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[140px] z-50">
-                  <Select.Item value="This year" className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
+                  <Select.Item
+                    value="This year"
+                    className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer"
+                  >
                     <Select.ItemText>This year</Select.ItemText>
                   </Select.Item>
-                  <Select.Item value="Last year" className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
+                  <Select.Item
+                    value="Last year"
+                    className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer"
+                  >
                     <Select.ItemText>Last year</Select.ItemText>
                   </Select.Item>
-                  <Select.Item value="Last 6 months" className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
+                  <Select.Item
+                    value="Last 6 months"
+                    className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer"
+                  >
                     <Select.ItemText>Last 6 months</Select.ItemText>
                   </Select.Item>
                 </Select.Popup>
@@ -324,7 +361,10 @@ export function DashboardContent() {
               <Tooltip.Root>
                 <Tooltip.Trigger
                   render={(props) => (
-                    <Button {...props} className="p-1.5 hover:bg-gray-100 rounded border-0 bg-transparent cursor-pointer">
+                    <Button
+                      {...props}
+                      className="p-1.5 hover:bg-gray-100 rounded border-0 bg-transparent cursor-pointer"
+                    >
                       <Funnel size={16} className="text-gray-400" />
                     </Button>
                   )}
@@ -341,7 +381,11 @@ export function DashboardContent() {
             </Tooltip.Provider>
           </div>
           <div className="relative w-48 h-48 mx-auto mb-6">
-            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100" aria-label="Sales performance">
+            <svg
+              className="w-full h-full -rotate-90"
+              viewBox="0 0 100 100"
+              aria-label="Sales performance"
+            >
               <title>Sales Performance Chart</title>
               <circle cx="50" cy="50" r="35" stroke="#f3f4f6" strokeWidth="8" fill="none" />
               <circle
@@ -425,7 +469,10 @@ export function DashboardContent() {
                 <Tooltip.Root>
                   <Tooltip.Trigger
                     render={(props) => (
-                      <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                      <Button
+                        {...props}
+                        className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer"
+                      >
                         <Gear size={16} />
                       </Button>
                     )}

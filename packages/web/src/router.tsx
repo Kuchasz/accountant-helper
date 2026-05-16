@@ -1,17 +1,18 @@
-import { createRootRoute, createRoute, createRouter, Outlet } from '@tanstack/react-router';
-import { Sidebar } from './components/Sidebar';
-import { Header } from './components/Header';
+import { Outlet, createRootRoute, createRoute, createRouter } from '@tanstack/react-router';
 import { DashboardContent } from './components/DashboardContent';
-import { ProductsPage } from './pages/ProductsPage';
-import { OrdersPage } from './pages/OrdersPage';
-import { CustomersPage } from './pages/CustomersPage';
-import { ChatPage } from './pages/ChatPage';
-import { EmailPage } from './pages/EmailPage';
-import { AnalyticsPage } from './pages/AnalyticsPage';
-import { IntegrationPage } from './pages/IntegrationPage';
-import { PerformancePage } from './pages/PerformancePage';
+import { Header } from './components/Header';
+import { Sidebar } from './components/Sidebar';
 import { AccountPage } from './pages/AccountPage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
+import { ChatPage } from './pages/ChatPage';
+import { CustomersPage } from './pages/CustomersPage';
+import { EmailPage } from './pages/EmailPage';
+import { IntegrationPage } from './pages/IntegrationPage';
 import { MembersPage } from './pages/MembersPage';
+import { OrdersPage } from './pages/OrdersPage';
+import { PerformancePage } from './pages/PerformancePage';
+import { ProductsPage } from './pages/ProductsPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 // Root layout component
 function RootLayout() {
@@ -98,6 +99,12 @@ const membersRoute = createRoute({
   component: MembersPage,
 });
 
+const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/settings',
+  component: SettingsPage,
+});
+
 // Create route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -111,6 +118,7 @@ const routeTree = rootRoute.addChildren([
   performanceRoute,
   accountRoute,
   membersRoute,
+  settingsRoute,
 ]);
 
 // Create router

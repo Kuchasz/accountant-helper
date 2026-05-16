@@ -1,7 +1,6 @@
 import {
   Bell,
   CaretDown,
-  ChartBar,
   ChartLine,
   Clipboard,
   ClipboardText,
