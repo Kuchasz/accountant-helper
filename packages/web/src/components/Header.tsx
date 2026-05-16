@@ -73,13 +73,13 @@ export function Header() {
       <div className="flex items-center justify-between">
         <div className="flex items-center flex-1 max-w-3xl gap-4">
           {/* Company Selector */}
-          <div className="relative w-72">
+          <div className="relative inline-flex min-w-[180px] max-w-sm">
             <Select.Root
               value={selectedCompany?.id?.toString() || null}
               onValueChange={handleCompanyChange}
               disabled={!isConfigDbAvailable || loadingCompanies}
             >
-              <Select.Trigger className="w-full pl-10 pr-10 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-750 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-between">
+              <Select.Trigger className="w-full pl-10 pr-9 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-750 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center relative">
                 <Buildings
                   size={16}
                   className="absolute left-3 text-gray-500 dark:text-gray-400 pointer-events-none"
@@ -91,14 +91,11 @@ export function Header() {
                     weight="fill"
                   />
                 )}
-                <div className="flex-1 text-left">
+                <div className="flex-1 text-left truncate">
                   {selectedCompany ? (
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">{selectedCompany.name}</span>
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400">
-                        {selectedCompany.databaseName}
-                      </span>
-                    </div>
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {selectedCompany.name}
+                    </span>
                   ) : (
                     <span className="text-sm">
                       {!isConfigDbAvailable
@@ -109,25 +106,23 @@ export function Header() {
                     </span>
                   )}
                 </div>
-                <CaretDown size={16} className="text-gray-500 dark:text-gray-400" />
+                <CaretDown size={16} className="absolute right-3 text-gray-500 dark:text-gray-400 pointer-events-none" />
               </Select.Trigger>
               <Select.Portal>
                 <Select.Positioner className="z-50">
-                  <Select.Popup className="mt-1 w-72 max-h-60 overflow-y-auto overflow-x-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
+                  <Select.Popup className="mt-1 max-h-60 overflow-y-auto overflow-x-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
                     {companies.map((company: Company) => (
                       <Select.Item
                         key={company.id}
                         value={company.id.toString()}
                         className="px-4 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-750 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 data-[selected]:bg-orange-50 dark:data-[selected]:bg-orange-900/20"
                       >
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100 data-[selected]:text-orange-600 dark:data-[selected]:text-orange-400">
-                            {company.name}
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {company.name}
+                          <span className="text-xs text-gray-500 dark:text-gray-400 font-normal ml-2">
+                            • {company.databaseName}
                           </span>
-                          <span className="text-[10px] text-gray-500 dark:text-gray-400">
-                            {company.databaseName}
-                          </span>
-                        </div>
+                        </span>
                       </Select.Item>
                     ))}
                   </Select.Popup>
