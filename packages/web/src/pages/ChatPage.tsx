@@ -1,8 +1,11 @@
+import { useTranslation } from 'react-i18next';
+
 export function ChatPage() {
+  const { t } = useTranslation();
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">Chat</h1>
-      <p className="text-gray-600">Chat page content will go here.</p>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">{t('pages.chat')}</h1>
+      <p className="text-gray-600 dark:text-gray-400">{t('pages.chatContent')}</p>
     </div>
   );
 }

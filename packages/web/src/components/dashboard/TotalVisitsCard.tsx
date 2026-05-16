@@ -1,13 +1,20 @@
 import { Button } from '@base-ui/react/button';
 import { Tooltip } from '@base-ui/react/tooltip';
 import { Gear } from '@phosphor-icons/react';
+import { useTranslation } from 'react-i18next';
 
 export function TotalVisitsCard() {
+  const { t } = useTranslation();
+  const weekdays = [
+    t('dashboard.mon'),
+    t('dashboard.tue'),
+    t('dashboard.wed'),
+  ];
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-          Total visits by hourly
+          {t('dashboard.totalVisitsByHourly')}
         </h3>
         <Tooltip.Provider>
           <Tooltip.Root>
@@ -25,7 +32,7 @@ export function TotalVisitsCard() {
               <Tooltip.Positioner sideOffset={4}>
                 <Tooltip.Popup className="bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded">
                   <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-700" />
-                  Settings
+                  {t('common.settings')}
                 </Tooltip.Popup>
               </Tooltip.Positioner>
             </Tooltip.Portal>
@@ -41,7 +48,7 @@ export function TotalVisitsCard() {
         </div>
       </div>
       <div className="space-y-1.5">
-        {['MON', 'TUE', 'WED'].map((day, index) => (
+        {weekdays.map((day, index) => (
           <div key={day} className="flex items-center space-x-3">
             <span className="text-xs text-gray-500 dark:text-gray-400 w-8">{day}</span>
             <div className="flex-1">

@@ -4,20 +4,22 @@ import { Select } from '@base-ui/react/select';
 import { Tooltip } from '@base-ui/react/tooltip';
 import { CaretDown, Funnel, Gear, Plus } from '@phosphor-icons/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ConversionCard } from './dashboard/ConversionCard';
 import { TopProductsCard } from './dashboard/TopProductsCard';
 import { TotalVisitsCard } from './dashboard/TotalVisitsCard';
 
 export function DashboardContent() {
-  const [selectedYear, setSelectedYear] = useState('This year');
+  const { t } = useTranslation();
+  const [selectedYear, setSelectedYear] = useState(t('dashboard.thisYear'));
 
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.title')}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Track your sales and performance of your strategy
+            {t('dashboard.subtitle')}
           </p>
         </div>
         <div className="flex items-center space-x-3">
@@ -29,7 +31,7 @@ export function DashboardContent() {
                   className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center space-x-2 bg-white dark:bg-gray-900 cursor-pointer"
                 >
                   <Funnel size={16} />
-                  <span>Filters</span>
+                  <span>{t('dashboard.filters')}</span>
                 </Button>
               )}
             />
@@ -39,9 +41,9 @@ export function DashboardContent() {
                   <Popover.Arrow className="fill-white dark:fill-gray-800" />
                   <div className="space-y-2">
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                      Filter options
+                      {t('dashboard.filterOptions')}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Coming soon...</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('dashboard.comingSoon')}</p>
                   </div>
                 </Popover.Popup>
               </Popover.Positioner>
@@ -49,7 +51,7 @@ export function DashboardContent() {
           </Popover.Root>
           <Button className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors flex items-center space-x-2 border-0 cursor-pointer">
             <Plus size={16} weight="bold" />
-            <span>Add Widget</span>
+            <span>{t('dashboard.addWidget')}</span>
           </Button>
         </div>
       </div>
@@ -60,7 +62,7 @@ export function DashboardContent() {
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Product overview
+              {t('dashboard.productOverview')}
             </h3>
             <Tooltip.Provider>
               <Tooltip.Root>
@@ -78,7 +80,7 @@ export function DashboardContent() {
                   <Tooltip.Positioner sideOffset={4}>
                     <Tooltip.Popup className="bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded">
                       <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-700" />
-                      Settings
+                      {t('common.settings')}
                     </Tooltip.Popup>
                   </Tooltip.Positioner>
                 </Tooltip.Portal>
@@ -87,19 +89,19 @@ export function DashboardContent() {
           </div>
           <div className="mb-4">
             <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">$43,630</div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Total sales</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('dashboard.totalSales')}</p>
           </div>
           <div className="space-y-2">
             <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
-              Select by product
+              {t('dashboard.selectByProduct')}
             </p>
             <div className="flex gap-2">
               <span className="px-3 py-1.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-lg flex items-center space-x-1">
-                <span>Cosmetics</span>
+                <span>{t('dashboard.cosmetics')}</span>
                 <span className="ml-1 px-1.5 py-0.5 bg-orange-200 rounded">8</span>
               </span>
               <span className="px-3 py-1.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-lg flex items-center space-x-1">
-                <span>HQ sweeds</span>
+                <span>{t('dashboard.hqSweeds')}</span>
                 <span className="ml-1 px-1.5 py-0.5 bg-orange-200 rounded">8</span>
               </span>
             </div>
@@ -109,7 +111,7 @@ export function DashboardContent() {
         {/* Active Sales */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Active sales</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('dashboard.activeSales')}</h3>
             <Tooltip.Provider>
               <Tooltip.Root>
                 <Tooltip.Trigger
@@ -126,7 +128,7 @@ export function DashboardContent() {
                   <Tooltip.Positioner sideOffset={4}>
                     <Tooltip.Popup className="bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded">
                       <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-700" />
-                      Settings
+                      {t('common.settings')}
                     </Tooltip.Popup>
                   </Tooltip.Positioner>
                 </Tooltip.Portal>
@@ -136,7 +138,7 @@ export function DashboardContent() {
           <div className="mb-4">
             <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">$27,064</div>
             <div className="flex items-center space-x-2 mt-2">
-              <span className="text-sm text-gray-500 dark:text-gray-400">vs last month</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.vsLastMonth')}</span>
               <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded">
                 +12%
               </span>
@@ -153,7 +155,7 @@ export function DashboardContent() {
             ))}
           </div>
           <Button className="mt-4 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 flex items-center border-0 bg-transparent p-0 cursor-pointer">
-            See Details
+            {t('dashboard.seeDetails')}
             <CaretDown size={16} className="ml-1 -rotate-90" />
           </Button>
         </div>
@@ -162,7 +164,7 @@ export function DashboardContent() {
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Product Revenue
+              {t('dashboard.productRevenue')}
             </h3>
             <Tooltip.Provider>
               <Tooltip.Root>
@@ -180,7 +182,7 @@ export function DashboardContent() {
                   <Tooltip.Positioner sideOffset={4}>
                     <Tooltip.Popup className="bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded">
                       <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-700" />
-                      Settings
+                      {t('common.settings')}
                     </Tooltip.Popup>
                   </Tooltip.Positioner>
                 </Tooltip.Portal>
@@ -190,7 +192,7 @@ export function DashboardContent() {
           <div className="mb-4">
             <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">$16,568</div>
             <div className="flex items-center space-x-2 mt-2">
-              <span className="text-sm text-gray-500 dark:text-gray-400">vs last month</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.vsLastMonth')}</span>
               <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded">
                 -7%
               </span>
@@ -218,7 +220,7 @@ export function DashboardContent() {
             </svg>
           </div>
           <Button className="mt-4 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 flex items-center border-0 bg-transparent p-0 cursor-pointer">
-            See Details
+            {t('dashboard.seeDetails')}
             <CaretDown size={16} className="ml-1 -rotate-90" />
           </Button>
         </div>
@@ -229,7 +231,7 @@ export function DashboardContent() {
         {/* Analytics Chart */}
         <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Analytics</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('dashboard.analytics')}</h3>
             <Tooltip.Provider>
               <Tooltip.Root>
                 <Tooltip.Trigger
@@ -256,7 +258,7 @@ export function DashboardContent() {
           <div className="mb-6">
             <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">-$4.5430</div>
             <div className="flex items-center space-x-2 mt-1">
-              <span className="text-sm text-gray-500 dark:text-gray-400">sales</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.sales')}</span>
               <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded">
                 -8.04%
               </span>
@@ -290,21 +292,21 @@ export function DashboardContent() {
             </div>
           </div>
           <div className="flex justify-between mt-4 text-xs text-gray-500 dark:text-gray-400">
-            <span>JAN</span>
-            <span>FEB</span>
-            <span>MAR</span>
-            <span>APR</span>
-            <span>MAY</span>
-            <span>JUN</span>
-            <span>JUL</span>
-            <span>AUG</span>
+            <span>{t('dashboard.jan')}</span>
+            <span>{t('dashboard.feb')}</span>
+            <span>{t('dashboard.mar')}</span>
+            <span>{t('dashboard.apr')}</span>
+            <span>{t('dashboard.may')}</span>
+            <span>{t('dashboard.jun')}</span>
+            <span>{t('dashboard.jul')}</span>
+            <span>{t('dashboard.aug')}</span>
           </div>
         </div>
 
         {/* Sales Performance */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-700">Sales Performance</h3>
+            <h3 className="text-sm font-semibold text-gray-700">{t('dashboard.salesPerformance')}</h3>
             <Tooltip.Provider>
               <Tooltip.Root>
                 <Tooltip.Trigger
@@ -321,7 +323,7 @@ export function DashboardContent() {
                   <Tooltip.Positioner sideOffset={4}>
                     <Tooltip.Popup className="bg-gray-900 text-white text-xs px-2 py-1 rounded">
                       <Tooltip.Arrow className="fill-gray-900" />
-                      Settings
+                      {t('common.settings')}
                     </Tooltip.Popup>
                   </Tooltip.Positioner>
                 </Tooltip.Portal>
@@ -334,7 +336,7 @@ export function DashboardContent() {
               onValueChange={(value) => value && setSelectedYear(value[0])}
             >
               <Select.Trigger className="text-sm text-gray-600 border-0 bg-transparent p-0 cursor-pointer flex items-center space-x-1">
-                <Select.Value placeholder="Select year">{selectedYear}</Select.Value>
+                <Select.Value placeholder={t('dashboard.selectYear')}>{selectedYear}</Select.Value>
                 <CaretDown size={16} className="text-gray-400" />
               </Select.Trigger>
               <Select.Positioner sideOffset={8}>
@@ -343,19 +345,19 @@ export function DashboardContent() {
                     value="This year"
                     className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer"
                   >
-                    <Select.ItemText>This year</Select.ItemText>
+                    <Select.ItemText>{t('dashboard.thisYear')}</Select.ItemText>
                   </Select.Item>
                   <Select.Item
                     value="Last year"
                     className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer"
                   >
-                    <Select.ItemText>Last year</Select.ItemText>
+                    <Select.ItemText>{t('dashboard.lastYear')}</Select.ItemText>
                   </Select.Item>
                   <Select.Item
                     value="Last 6 months"
                     className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer"
                   >
-                    <Select.ItemText>Last 6 months</Select.ItemText>
+                    <Select.ItemText>{t('dashboard.last6Months')}</Select.ItemText>
                   </Select.Item>
                 </Select.Popup>
               </Select.Positioner>
@@ -376,7 +378,7 @@ export function DashboardContent() {
                   <Tooltip.Positioner sideOffset={4}>
                     <Tooltip.Popup className="bg-gray-900 text-white text-xs px-2 py-1 rounded">
                       <Tooltip.Arrow className="fill-gray-900" />
-                      Filter
+                      {t('dashboard.filter')}
                     </Tooltip.Popup>
                   </Tooltip.Positioner>
                 </Tooltip.Portal>
@@ -416,27 +418,27 @@ export function DashboardContent() {
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <div className="text-3xl font-bold text-gray-900">17.9%</div>
-              <div className="text-xs text-gray-500 mt-1">Since yesterday</div>
+              <div className="text-xs text-gray-500 mt-1">{t('dashboard.sinceYesterday')}</div>
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-0.5 bg-orange-500 rounded" />
-                <span className="text-gray-600">Total Sales per day</span>
+                <span className="text-gray-600">{t('dashboard.totalSalesPerDay')}</span>
               </div>
-              <span className="font-medium text-gray-900">For week</span>
+              <span className="font-medium text-gray-900">{t('dashboard.forWeek')}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-0.5 bg-orange-200 rounded" />
-                <span className="text-gray-600">Average Sales</span>
+                <span className="text-gray-600">{t('dashboard.averageSales')}</span>
               </div>
-              <span className="font-medium text-gray-900">For today</span>
+              <span className="font-medium text-gray-900">{t('dashboard.forToday')}</span>
             </div>
           </div>
           <Button className="mt-4 w-full text-sm font-medium text-gray-700 hover:text-gray-900 flex items-center justify-center border-0 bg-transparent cursor-pointer">
-            See Details
+            {t('dashboard.seeDetails')}
             <CaretDown size={16} className="ml-1 -rotate-90" />
           </Button>
         </div>

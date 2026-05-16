@@ -22,9 +22,16 @@ import {
   Users,
 } from '@phosphor-icons/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export function Dashboard() {
+  const { t } = useTranslation();
   const [selectedMenu, setSelectedMenu] = useState('Dashboard');
+  const weekdays = [
+    t('dashboard.mon'),
+    t('dashboard.tue'),
+    t('dashboard.wed'),
+  ];
 
   const menuItems = [
     { icon: GridFour, label: 'Dashboard' },
@@ -489,7 +496,7 @@ export function Dashboard() {
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  {['MON', 'TUE', 'WED'].map((day, i) => (
+                  {weekdays.map((day, i) => (
                     <div key={day} className="flex items-center space-x-3">
                       <span className="text-xs text-gray-500 w-8">{day}</span>
                       <div className="flex-1">

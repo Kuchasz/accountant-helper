@@ -5,6 +5,7 @@ import { Input } from '@base-ui/react/input';
 import { Switch } from '@base-ui/react/switch';
 import { CheckCircle, Database, PencilSimple, Plus, Trash, XCircle } from '@phosphor-icons/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { trpc } from '../lib/trpc';
 
 interface ConnectionFormData {
@@ -34,6 +35,7 @@ const initialFormData: ConnectionFormData = {
 };
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState<ConnectionFormData>(initialFormData);
@@ -71,7 +73,7 @@ export function SettingsPage() {
       setIsTesting(false);
     },
     onError: () => {
-      setTestResult({ success: false, message: 'Connection test failed' });
+      setTestResult({ success: false, message: t('sqlSettings.connectionTestFailed') });
       setIsTesting(false);
     },
   });
@@ -127,7 +129,7 @@ export function SettingsPage() {
   };
 
   const handleDelete = (id: number) => {
-    if (confirm('Are you sure you want to delete this connection?')) {
+    if (confirm(t('sqlSettings.deleteConfirm'))) {
       deleteMutation.mutate({ id });
     }
   };
@@ -137,10 +139,10 @@ export function SettingsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            SQL Server Settings
+            {t('sqlSettings.title')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Manage Comarch Optima database connections
+            {t('sqlSettings.subtitle')}
           </p>
         </div>
         <Button
@@ -148,28 +150,28 @@ export function SettingsPage() {
           className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer"
         >
           <Plus size={20} />
-          Add Connection
+          {t('sqlSettings.addConnection')}
         </Button>
       </div>
 
       {isLoading ? (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          Loading connections...
+          {t('sqlSettings.loading')}
         </div>
       ) : connections.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           <Database size={48} className="mx-auto text-gray-400 dark:text-gray-500 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-            No connections configured
+            {t('sqlSettings.noConnections')}
           </h3>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Add your first SQL Server connection to get started
+            {t('sqlSettings.noConnectionsDesc')}
           </p>
           <Button
             onClick={() => handleOpenDialog()}
             className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer"
           >
-            Add Connection
+            {t('sqlSettings.addConnection')}
           </Button>
         </div>
       ) : (
@@ -178,22 +180,22 @@ export function SettingsPage() {
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Name
+                  {t('sqlSettings.name')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Type
+                  {t('sqlSettings.type')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Server
+                  {t('sqlSettings.server')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Database
+                  {t('sqlSettings.database')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Status
+                  {t('sqlSettings.status')}
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
+                  {t('sqlSettings.actions')}
                 </th>
               </tr>
             </thead>
@@ -228,7 +230,7 @@ export function SettingsPage() {
                           : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      {connection.isActive ? 'Active' : 'Inactive'}
+                      {connection.isActive ? t('sqlSettings.active') : t('sqlSettings.inactive')}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -236,14 +238,14 @@ export function SettingsPage() {
                       <Button
                         onClick={() => handleOpenDialog(connection)}
                         className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border-0 cursor-pointer bg-transparent"
-                        aria-label="Edit"
+                        aria-label={t('sqlSettings.edit')}
                       >
                         <PencilSimple size={18} />
                       </Button>
                       <Button
                         onClick={() => handleDelete(connection.id)}
                         className="p-2 text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded border-0 cursor-pointer bg-transparent"
-                        aria-label="Delete"
+                        aria-label={t('sqlSettings.delete')}
                       >
                         <Trash size={18} />
                       </Button>
@@ -268,13 +270,13 @@ export function SettingsPage() {
           <Dialog.Popup className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <Dialog.Title className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                {editingId ? 'Edit Connection' : 'Add New Connection'}
+                {editingId ? t('sqlSettings.editConnection') : t('sqlSettings.addNewConnection')}
               </Dialog.Title>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <Field.Root>
                   <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Connection Name
+                    {t('sqlSettings.connectionName')}
                   </Field.Label>
                   <Field.Control
                     render={(props) => (
@@ -285,7 +287,7 @@ export function SettingsPage() {
                         value={formData.name}
                         onValueChange={(value) => setFormData({ ...formData, name: value })}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
-                        placeholder="e.g., Production Config DB"
+                        placeholder={t('sqlSettings.connectionNamePlaceholder')}
                       />
                     )}
                   />
@@ -293,7 +295,7 @@ export function SettingsPage() {
 
                 <Field.Root>
                   <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Type
+                    {t('sqlSettings.type')}
                   </Field.Label>
                   <Field.Control
                     render={(props) => (
@@ -305,8 +307,8 @@ export function SettingsPage() {
                         }
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
                       >
-                        <option value="config">Configuration Database</option>
-                        <option value="company">Company Database</option>
+                        <option value="config">{t('sqlSettings.configDatabase')}</option>
+                        <option value="company">{t('sqlSettings.companyDatabase')}</option>
                       </select>
                     )}
                   />
@@ -315,7 +317,7 @@ export function SettingsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <Field.Root>
                     <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Server
+                      {t('sqlSettings.server')}
                     </Field.Label>
                     <Field.Control
                       render={(props) => (
@@ -326,14 +328,14 @@ export function SettingsPage() {
                           value={formData.server}
                           onValueChange={(value) => setFormData({ ...formData, server: value })}
                           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
-                          placeholder="localhost or IP address"
+                          placeholder={t('sqlSettings.serverPlaceholder')}
                         />
                       )}
                     />
                   </Field.Root>
                   <Field.Root>
                     <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Port
+                      {t('sqlSettings.port')}
                     </Field.Label>
                     <Field.Control
                       render={(props) => (
@@ -354,7 +356,7 @@ export function SettingsPage() {
 
                 <Field.Root>
                   <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Database
+                    {t('sqlSettings.database')}
                   </Field.Label>
                   <Field.Control
                     render={(props) => (
@@ -365,7 +367,7 @@ export function SettingsPage() {
                         value={formData.database}
                         onValueChange={(value) => setFormData({ ...formData, database: value })}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
-                        placeholder="Database name"
+                        placeholder={t('sqlSettings.databasePlaceholder')}
                       />
                     )}
                   />
@@ -374,7 +376,7 @@ export function SettingsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <Field.Root>
                     <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Username
+                      {t('sqlSettings.username')}
                     </Field.Label>
                     <Field.Control
                       render={(props) => (
@@ -391,7 +393,7 @@ export function SettingsPage() {
                   </Field.Root>
                   <Field.Root>
                     <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Password
+                      {t('sqlSettings.password')}
                     </Field.Label>
                     <Field.Control
                       render={(props) => (
@@ -411,7 +413,7 @@ export function SettingsPage() {
                 <div className="space-y-3 pt-2">
                   <Field.Root className="flex items-center justify-between">
                     <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Encrypt Connection
+                      {t('sqlSettings.encryptConnection')}
                     </Field.Label>
                     <Switch.Root
                       checked={formData.encrypt}
@@ -424,7 +426,7 @@ export function SettingsPage() {
 
                   <Field.Root className="flex items-center justify-between">
                     <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Trust Server Certificate
+                      {t('sqlSettings.trustServerCertificate')}
                     </Field.Label>
                     <Switch.Root
                       checked={formData.trustServerCertificate}
@@ -439,7 +441,7 @@ export function SettingsPage() {
 
                   <Field.Root className="flex items-center justify-between">
                     <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Active
+                      {t('sqlSettings.active')}
                     </Field.Label>
                     <Switch.Root
                       checked={formData.isActive}
@@ -473,11 +475,11 @@ export function SettingsPage() {
                     disabled={isTesting}
                     className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isTesting ? 'Testing...' : 'Test Connection'}
+                    {isTesting ? t('sqlSettings.testing') : t('sqlSettings.testConnection')}
                   </Button>
                   <div className="flex-1" />
                   <Dialog.Close className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
-                    Cancel
+                    {t('sqlSettings.cancel')}
                   </Dialog.Close>
                   <Button
                     type="submit"
@@ -485,10 +487,10 @@ export function SettingsPage() {
                     className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {createMutation.isPending || updateMutation.isPending
-                      ? 'Saving...'
+                      ? t('sqlSettings.saving')
                       : editingId
-                        ? 'Update'
-                        : 'Create'}
+                        ? t('sqlSettings.update')
+                        : t('sqlSettings.create')}
                   </Button>
                 </div>
               </form>
