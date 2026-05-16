@@ -8,8 +8,14 @@ import {
   TrendUp,
 } from '@phosphor-icons/react';
 import { Button } from '@base-ui/react/button';
+import { Tooltip } from '@base-ui/react/tooltip';
+import { Popover } from '@base-ui/react/popover';
+import { Select } from '@base-ui/react/select';
+import { useState } from 'react';
 
 export function DashboardContent() {
+  const [selectedYear, setSelectedYear] = useState('This year');
+
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
@@ -20,10 +26,27 @@ export function DashboardContent() {
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <Button className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2 bg-white cursor-pointer">
-            <Funnel size={16} />
-            <span>Filters</span>
-          </Button>
+          <Popover.Root>
+            <Popover.Trigger
+              render={(props) => (
+                <Button {...props} className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center space-x-2 bg-white cursor-pointer">
+                  <Funnel size={16} />
+                  <span>Filters</span>
+                </Button>
+              )}
+            />
+            <Popover.Portal>
+              <Popover.Positioner sideOffset={8}>
+                <Popover.Popup className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 min-w-[200px] z-50">
+                  <Popover.Arrow className="fill-white" />
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-900">Filter options</p>
+                    <p className="text-xs text-gray-500">Coming soon...</p>
+                  </div>
+                </Popover.Popup>
+              </Popover.Positioner>
+            </Popover.Portal>
+          </Popover.Root>
           <Button className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2 border-0 cursor-pointer">
             <Plus size={16} weight="bold" />
             <span>Add Widget</span>
@@ -37,9 +60,25 @@ export function DashboardContent() {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-gray-700">Product overview</h3>
-            <Button className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
-              <Gear size={16} />
-            </Button>
+            <Tooltip.Provider>
+              <Tooltip.Root>
+                <Tooltip.Trigger
+                  render={(props) => (
+                    <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                      <Gear size={16} />
+                    </Button>
+                  )}
+                />
+                <Tooltip.Portal>
+                  <Tooltip.Positioner sideOffset={4}>
+                    <Tooltip.Popup className="bg-gray-900 text-white text-xs px-2 py-1 rounded">
+                      <Tooltip.Arrow className="fill-gray-900" />
+                      Settings
+                    </Tooltip.Popup>
+                  </Tooltip.Positioner>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
           </div>
           <div className="mb-4">
             <div className="text-3xl font-bold text-gray-900">$43,630</div>
@@ -64,9 +103,25 @@ export function DashboardContent() {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-gray-700">Active sales</h3>
-            <Button className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
-              <Gear size={16} />
-            </Button>
+            <Tooltip.Provider>
+              <Tooltip.Root>
+                <Tooltip.Trigger
+                  render={(props) => (
+                    <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                      <Gear size={16} />
+                    </Button>
+                  )}
+                />
+                <Tooltip.Portal>
+                  <Tooltip.Positioner sideOffset={4}>
+                    <Tooltip.Popup className="bg-gray-900 text-white text-xs px-2 py-1 rounded">
+                      <Tooltip.Arrow className="fill-gray-900" />
+                      Settings
+                    </Tooltip.Popup>
+                  </Tooltip.Positioner>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
           </div>
           <div className="mb-4">
             <div className="text-3xl font-bold text-gray-900">$27,064</div>
@@ -79,7 +134,7 @@ export function DashboardContent() {
           </div>
           <div className="flex items-end justify-between h-20">
             {[40, 60, 35, 70, 45, 85, 50].map((height, index) => (
-              <div key={`bar-${index}`} className="flex-1 mx-0.5">
+              <div key={`sales-bar-${height}-${index}`} className="flex-1 mx-0.5">
                 <div
                   className="bg-gradient-to-t from-orange-500 to-orange-400 rounded-t"
                   style={{ height: `${height}%` }}
@@ -97,9 +152,25 @@ export function DashboardContent() {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-gray-700">Product Revenue</h3>
-            <Button className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
-              <Gear size={16} />
-            </Button>
+            <Tooltip.Provider>
+              <Tooltip.Root>
+                <Tooltip.Trigger
+                  render={(props) => (
+                    <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                      <Gear size={16} />
+                    </Button>
+                  )}
+                />
+                <Tooltip.Portal>
+                  <Tooltip.Positioner sideOffset={4}>
+                    <Tooltip.Popup className="bg-gray-900 text-white text-xs px-2 py-1 rounded">
+                      <Tooltip.Arrow className="fill-gray-900" />
+                      Settings
+                    </Tooltip.Popup>
+                  </Tooltip.Positioner>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
           </div>
           <div className="mb-4">
             <div className="text-3xl font-bold text-gray-900">$16,568</div>
@@ -140,9 +211,25 @@ export function DashboardContent() {
         <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-sm font-semibold text-gray-700">Analytics</h3>
-            <Button className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
-              <Gear size={16} />
-            </Button>
+            <Tooltip.Provider>
+              <Tooltip.Root>
+                <Tooltip.Trigger
+                  render={(props) => (
+                    <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                      <Gear size={16} />
+                    </Button>
+                  )}
+                />
+                <Tooltip.Portal>
+                  <Tooltip.Positioner sideOffset={4}>
+                    <Tooltip.Popup className="bg-gray-900 text-white text-xs px-2 py-1 rounded">
+                      <Tooltip.Arrow className="fill-gray-900" />
+                      Settings
+                    </Tooltip.Popup>
+                  </Tooltip.Positioner>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
           </div>
           <div className="mb-6">
             <div className="text-3xl font-bold text-gray-900">-$4.5430</div>
@@ -156,7 +243,7 @@ export function DashboardContent() {
           <div className="relative h-48">
             <div className="absolute inset-0 flex items-end justify-between">
               {[30, 25, 35, 28, 40, 75, 45, 35, 30, 40, 35, 38].map((height, index) => (
-                <div key={`chart-${index}`} className="flex-1 mx-1 relative group">
+                <div key={`analytics-bar-${height}-${index}`} className="flex-1 mx-1 relative group">
                   <div
                     className="bg-orange-200 rounded-t relative overflow-hidden"
                     style={{ height: `${height}%` }}
@@ -193,18 +280,65 @@ export function DashboardContent() {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-gray-700">Sales Performance</h3>
-            <Button className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
-              <Gear size={16} />
-            </Button>
+            <Tooltip.Provider>
+              <Tooltip.Root>
+                <Tooltip.Trigger
+                  render={(props) => (
+                    <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                      <Gear size={16} />
+                    </Button>
+                  )}
+                />
+                <Tooltip.Portal>
+                  <Tooltip.Positioner sideOffset={4}>
+                    <Tooltip.Popup className="bg-gray-900 text-white text-xs px-2 py-1 rounded">
+                      <Tooltip.Arrow className="fill-gray-900" />
+                      Settings
+                    </Tooltip.Popup>
+                  </Tooltip.Positioner>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
           </div>
           <div className="flex items-center justify-between mb-4">
-            <Button className="text-sm text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
-              This year
-            </Button>
-            <CaretDown size={16} className="text-gray-400" />
-            <Button className="p-1.5 hover:bg-gray-100 rounded border-0 bg-transparent cursor-pointer">
-              <Funnel size={16} className="text-gray-400" />
-            </Button>
+            <Select.Root value={selectedYear} onValueChange={(value) => value && setSelectedYear(value[0])}>
+              <Select.Trigger className="text-sm text-gray-600 border-0 bg-transparent p-0 cursor-pointer flex items-center space-x-1">
+                <Select.Value placeholder="Select year">{selectedYear}</Select.Value>
+                <CaretDown size={16} className="text-gray-400" />
+              </Select.Trigger>
+              <Select.Positioner sideOffset={8}>
+                <Select.Popup className="bg-white border border-gray-200 rounded-lg shadow-lg p-1 min-w-[140px] z-50">
+                  <Select.Item value="This year" className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
+                    <Select.ItemText>This year</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item value="Last year" className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
+                    <Select.ItemText>Last year</Select.ItemText>
+                  </Select.Item>
+                  <Select.Item value="Last 6 months" className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer">
+                    <Select.ItemText>Last 6 months</Select.ItemText>
+                  </Select.Item>
+                </Select.Popup>
+              </Select.Positioner>
+            </Select.Root>
+            <Tooltip.Provider>
+              <Tooltip.Root>
+                <Tooltip.Trigger
+                  render={(props) => (
+                    <Button {...props} className="p-1.5 hover:bg-gray-100 rounded border-0 bg-transparent cursor-pointer">
+                      <Funnel size={16} className="text-gray-400" />
+                    </Button>
+                  )}
+                />
+                <Tooltip.Portal>
+                  <Tooltip.Positioner sideOffset={4}>
+                    <Tooltip.Popup className="bg-gray-900 text-white text-xs px-2 py-1 rounded">
+                      <Tooltip.Arrow className="fill-gray-900" />
+                      Filter
+                    </Tooltip.Popup>
+                  </Tooltip.Positioner>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            </Tooltip.Provider>
           </div>
           <div className="relative w-48 h-48 mx-auto mb-6">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100" aria-label="Sales performance">
@@ -287,9 +421,25 @@ export function DashboardContent() {
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-semibold text-gray-700">Total visits by hourly</h3>
-              <Button className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
-                <Gear size={16} />
-              </Button>
+              <Tooltip.Provider>
+                <Tooltip.Root>
+                  <Tooltip.Trigger
+                    render={(props) => (
+                      <Button {...props} className="text-gray-400 hover:text-gray-600 border-0 bg-transparent p-0 cursor-pointer">
+                        <Gear size={16} />
+                      </Button>
+                    )}
+                  />
+                  <Tooltip.Portal>
+                    <Tooltip.Positioner sideOffset={4}>
+                      <Tooltip.Popup className="bg-gray-900 text-white text-xs px-2 py-1 rounded">
+                        <Tooltip.Arrow className="fill-gray-900" />
+                        Settings
+                      </Tooltip.Popup>
+                    </Tooltip.Positioner>
+                  </Tooltip.Portal>
+                </Tooltip.Root>
+              </Tooltip.Provider>
             </div>
             <div className="mb-4">
               <div className="text-3xl font-bold text-gray-900">288,142</div>
