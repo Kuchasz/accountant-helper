@@ -1,5 +1,6 @@
 import { Button } from '@base-ui/react/button';
 import { Dialog } from '@base-ui/react/dialog';
+import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
 import { Switch } from '@base-ui/react/switch';
 import { CheckCircle, Database, PencilSimple, Plus, Trash, XCircle } from '@phosphor-icons/react';
@@ -261,98 +262,147 @@ export function SettingsPage() {
               </Dialog.Title>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                <Field.Root>
+                  <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
                     Connection Name
-                  </label>
-                  <Input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onValueChange={(value) => setFormData({ ...formData, name: value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                    placeholder="e.g., Production Config DB"
+                  </Field.Label>
+                  <Field.Control
+                    render={(props) => (
+                      <Input
+                        {...props}
+                        type="text"
+                        required
+                        value={formData.name}
+                        onValueChange={(value) => setFormData({ ...formData, name: value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                        placeholder="e.g., Production Config DB"
+                      />
+                    )}
                   />
-                </div>
+                </Field.Root>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) =>
-                      setFormData({ ...formData, type: e.target.value as 'config' | 'company' })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  >
-                    <option value="config">Configuration Database</option>
-                    <option value="company">Company Database</option>
-                  </select>
-                </div>
+                <Field.Root>
+                  <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                    Type
+                  </Field.Label>
+                  <Field.Control
+                    render={(props) => (
+                      <select
+                        {...props}
+                        value={formData.type}
+                        onChange={(e) =>
+                          setFormData({ ...formData, type: e.target.value as 'config' | 'company' })
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                      >
+                        <option value="config">Configuration Database</option>
+                        <option value="company">Company Database</option>
+                      </select>
+                    )}
+                  />
+                </Field.Root>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Server</label>
-                    <Input
-                      type="text"
-                      required
-                      value={formData.server}
-                      onValueChange={(value) => setFormData({ ...formData, server: value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                      placeholder="localhost or IP address"
+                  <Field.Root>
+                    <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                      Server
+                    </Field.Label>
+                    <Field.Control
+                      render={(props) => (
+                        <Input
+                          {...props}
+                          type="text"
+                          required
+                          value={formData.server}
+                          onValueChange={(value) => setFormData({ ...formData, server: value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                          placeholder="localhost or IP address"
+                        />
+                      )}
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Port</label>
-                    <Input
-                      type="number"
-                      required
-                      value={formData.port.toString()}
-                      onValueChange={(value) =>
-                        setFormData({ ...formData, port: Number.parseInt(value) || 1433 })
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                  </Field.Root>
+                  <Field.Root>
+                    <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                      Port
+                    </Field.Label>
+                    <Field.Control
+                      render={(props) => (
+                        <Input
+                          {...props}
+                          type="number"
+                          required
+                          value={formData.port.toString()}
+                          onValueChange={(value) =>
+                            setFormData({ ...formData, port: Number.parseInt(value) || 1433 })
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                        />
+                      )}
                     />
-                  </div>
+                  </Field.Root>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Database</label>
-                  <Input
-                    type="text"
-                    required
-                    value={formData.database}
-                    onValueChange={(value) => setFormData({ ...formData, database: value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                    placeholder="Database name"
+                <Field.Root>
+                  <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                    Database
+                  </Field.Label>
+                  <Field.Control
+                    render={(props) => (
+                      <Input
+                        {...props}
+                        type="text"
+                        required
+                        value={formData.database}
+                        onValueChange={(value) => setFormData({ ...formData, database: value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                        placeholder="Database name"
+                      />
+                    )}
                   />
-                </div>
+                </Field.Root>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                    <Input
-                      type="text"
-                      required
-                      value={formData.username}
-                      onValueChange={(value) => setFormData({ ...formData, username: value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                  <Field.Root>
+                    <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                      Username
+                    </Field.Label>
+                    <Field.Control
+                      render={(props) => (
+                        <Input
+                          {...props}
+                          type="text"
+                          required
+                          value={formData.username}
+                          onValueChange={(value) => setFormData({ ...formData, username: value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                        />
+                      )}
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <Input
-                      type="password"
-                      required
-                      value={formData.password}
-                      onValueChange={(value) => setFormData({ ...formData, password: value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                  </Field.Root>
+                  <Field.Root>
+                    <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                      Password
+                    </Field.Label>
+                    <Field.Control
+                      render={(props) => (
+                        <Input
+                          {...props}
+                          type="password"
+                          required
+                          value={formData.password}
+                          onValueChange={(value) => setFormData({ ...formData, password: value })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                        />
+                      )}
                     />
-                  </div>
+                  </Field.Root>
                 </div>
 
                 <div className="space-y-3 pt-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-700">Encrypt Connection</label>
+                  <Field.Root className="flex items-center justify-between">
+                    <Field.Label className="text-sm font-medium text-gray-700">
+                      Encrypt Connection
+                    </Field.Label>
                     <Switch.Root
                       checked={formData.encrypt}
                       onCheckedChange={(checked) => setFormData({ ...formData, encrypt: checked })}
@@ -360,12 +410,12 @@ export function SettingsPage() {
                     >
                       <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
                     </Switch.Root>
-                  </div>
+                  </Field.Root>
 
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-700">
+                  <Field.Root className="flex items-center justify-between">
+                    <Field.Label className="text-sm font-medium text-gray-700">
                       Trust Server Certificate
-                    </label>
+                    </Field.Label>
                     <Switch.Root
                       checked={formData.trustServerCertificate}
                       onCheckedChange={(checked) =>
@@ -375,10 +425,10 @@ export function SettingsPage() {
                     >
                       <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
                     </Switch.Root>
-                  </div>
+                  </Field.Root>
 
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-700">Active</label>
+                  <Field.Root className="flex items-center justify-between">
+                    <Field.Label className="text-sm font-medium text-gray-700">Active</Field.Label>
                     <Switch.Root
                       checked={formData.isActive}
                       onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
@@ -386,7 +436,7 @@ export function SettingsPage() {
                     >
                       <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
                     </Switch.Root>
-                  </div>
+                  </Field.Root>
                 </div>
 
                 {testResult && (
