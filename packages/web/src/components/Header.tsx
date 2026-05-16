@@ -15,8 +15,8 @@ import {
 } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { trpc } from '../lib/trpc';
 
 interface Company {
@@ -106,7 +106,10 @@ export function Header() {
                     </span>
                   )}
                 </div>
-                <CaretDown size={16} className="absolute right-3 text-gray-500 dark:text-gray-400 pointer-events-none" />
+                <CaretDown
+                  size={16}
+                  className="absolute right-3 text-gray-500 dark:text-gray-400 pointer-events-none"
+                />
               </Select.Trigger>
               <Select.Portal>
                 <Select.Positioner className="z-50">

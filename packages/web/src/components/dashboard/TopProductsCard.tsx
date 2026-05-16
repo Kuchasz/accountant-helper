@@ -7,7 +7,9 @@ export function TopProductsCard() {
   return (
     <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('dashboard.topProducts')}</h3>
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+          {t('dashboard.topProducts')}
+        </h3>
         <Button className="text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 flex items-center border-0 bg-transparent p-0 cursor-pointer">
           {t('dashboard.seeDetails')}
           <CaretDown size={16} className="ml-1 -rotate-90" />

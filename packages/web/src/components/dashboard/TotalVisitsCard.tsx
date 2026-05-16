@@ -5,11 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 export function TotalVisitsCard() {
   const { t } = useTranslation();
-  const weekdays = [
-    t('dashboard.mon'),
-    t('dashboard.tue'),
-    t('dashboard.wed'),
-  ];
+  const weekdays = [t('dashboard.mon'), t('dashboard.tue'), t('dashboard.wed')];
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-4">

@@ -15,6 +15,7 @@ import {
   ShoppingCart,
   Sparkle,
   Users,
+  Wrench,
 } from '@phosphor-icons/react';
 import { Link as RouterLink, useMatchRoute } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +38,8 @@ export function Sidebar() {
     { icon: Link, label: t('sidebar.integration'), path: '/integration' },
     { icon: Rocket, label: t('sidebar.performance'), path: '/performance' },
   ];
+
+  const toolsItems = [{ icon: Wrench, label: t('sidebar.tools'), path: '/tools' }];
 
   const accountItems = [
     { icon: Gear, label: t('sidebar.account'), path: '/account' },
@@ -105,6 +108,23 @@ export function Sidebar() {
             </p>
             <div className="space-y-1">
               {otherItems.map((item) => (
+                <RouterLink key={item.path} to={item.path} className="block">
+                  <Button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-0 bg-transparent cursor-pointer">
+                    <item.icon size={20} />
+                    <span>{item.label}</span>
+                  </Button>
+                </RouterLink>
+              ))}
+            </div>
+          </div>
+
+          {/* Tools Section */}
+          <div className="px-3 mt-6">
+            <p className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+              {t('sidebar.tools')}
+            </p>
+            <div className="space-y-1">
+              {toolsItems.map((item) => (
                 <RouterLink key={item.path} to={item.path} className="block">
                   <Button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-0 bg-transparent cursor-pointer">
                     <item.icon size={20} />

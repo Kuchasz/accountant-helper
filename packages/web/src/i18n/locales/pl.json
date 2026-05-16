@@ -11,6 +11,7 @@
     "freePlan": "Darmowy Plan",
     "mainMenu": "Menu Główne",
     "other": "Inne",
+    "tools": "Narzędzia",
     "account": "Konto",
     "dashboard": "Panel",
     "products": "Produkty",
@@ -148,5 +149,30 @@
     "create": "Utwórz",
     "deleteConfirm": "Czy na pewno chcesz usunąć to połączenie?",
     "connectionTestFailed": "Test połączenia nie powiódł się"
+  },
+  "tools": {
+    "title": "Narzędzia",
+    "description": "Narzędzia pomocnicze do pracy z Comarch Optima",
+    "xmlFixer": "Naprawa XML dla importu do Optimy",
+    "xmlFixerDescription": "Napraw pliki XML aby przygotować je do importu do Comarch Optima poprzez wyczyszczenie określonych tagów",
+    "upload": "Prześlij Plik",
+    "uploadDescription": "Prześlij plik XML lub archiwum ZIP zawierające pojedynczy plik XML. Narzędzie wyczyści tagi BAZA_ZRD_ID i BAZA_DOC_ID aby przygotować plik do importu do Optimy.",
+    "dropZone": "Upuść plik XML lub ZIP tutaj, lub kliknij aby przeglądać",
+    "acceptedFormats": "Akceptowane formaty: .xml, .zip",
+    "processing": "Przetwarzanie pliku...",
+    "download": "Pobierz Poprawiony Plik",
+    "downloadAnother": "Przetwórz Kolejny Plik",
+    "success": "Plik przetworzony pomyślnie!",
+    "successMessage": "Plik XML został naprawiony i jest gotowy do pobrania. Tagi BAZA_ZRD_ID i BAZA_DOC_ID zostały wyczyszczone.",
+    "filePrefix": "poprawiony_",
+    "error": {
+      "title": "Błąd Przetwarzania Pliku",
+      "noXmlInZip": "Nie znaleziono pliku XML w archiwum ZIP. Upewnij się, że ZIP zawiera co najmniej jeden plik XML.",
+      "multipleXmlInZip": "Znaleziono wiele plików XML w archiwum ZIP. Upewnij się, że ZIP zawiera tylko jeden plik XML.",
+      "invalidFile": "Nieprawidłowy format pliku. Prześlij prawidłowy plik XML lub ZIP.",
+      "invalidXml": "Plik nie zawiera prawidłowego XML. Sprawdź plik i spróbuj ponownie.",
+      "readError": "Błąd odczytu pliku. Spróbuj ponownie.",
+      "zipError": "Błąd podczas wyodrębniania pliku ZIP. Archiwum może być uszkodzone."
+    }
   }
 }

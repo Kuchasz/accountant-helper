@@ -17,10 +17,10 @@ export function DashboardContent() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('dashboard.title')}</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {t('dashboard.subtitle')}
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {t('dashboard.title')}
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('dashboard.subtitle')}</p>
         </div>
         <div className="flex items-center space-x-3">
           <Popover.Root>
@@ -43,7 +43,9 @@ export function DashboardContent() {
                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {t('dashboard.filterOptions')}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('dashboard.comingSoon')}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {t('dashboard.comingSoon')}
+                    </p>
                   </div>
                 </Popover.Popup>
               </Popover.Positioner>
@@ -89,7 +91,9 @@ export function DashboardContent() {
           </div>
           <div className="mb-4">
             <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">$43,630</div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('dashboard.totalSales')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {t('dashboard.totalSales')}
+            </p>
           </div>
           <div className="space-y-2">
             <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
@@ -111,7 +115,9 @@ export function DashboardContent() {
         {/* Active Sales */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('dashboard.activeSales')}</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              {t('dashboard.activeSales')}
+            </h3>
             <Tooltip.Provider>
               <Tooltip.Root>
                 <Tooltip.Trigger
@@ -138,7 +144,9 @@ export function DashboardContent() {
           <div className="mb-4">
             <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">$27,064</div>
             <div className="flex items-center space-x-2 mt-2">
-              <span className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.vsLastMonth')}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {t('dashboard.vsLastMonth')}
+              </span>
               <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded">
                 +12%
               </span>
@@ -192,7 +200,9 @@ export function DashboardContent() {
           <div className="mb-4">
             <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">$16,568</div>
             <div className="flex items-center space-x-2 mt-2">
-              <span className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.vsLastMonth')}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {t('dashboard.vsLastMonth')}
+              </span>
               <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded">
                 -7%
               </span>
@@ -231,7 +241,9 @@ export function DashboardContent() {
         {/* Analytics Chart */}
         <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('dashboard.analytics')}</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              {t('dashboard.analytics')}
+            </h3>
             <Tooltip.Provider>
               <Tooltip.Root>
                 <Tooltip.Trigger
@@ -258,7 +270,9 @@ export function DashboardContent() {
           <div className="mb-6">
             <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">-$4.5430</div>
             <div className="flex items-center space-x-2 mt-1">
-              <span className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.sales')}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {t('dashboard.sales')}
+              </span>
               <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded">
                 -8.04%
               </span>
@@ -306,7 +320,9 @@ export function DashboardContent() {
         {/* Sales Performance */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-700">{t('dashboard.salesPerformance')}</h3>
+            <h3 className="text-sm font-semibold text-gray-700">
+              {t('dashboard.salesPerformance')}
+            </h3>
             <Tooltip.Provider>
               <Tooltip.Root>
                 <Tooltip.Trigger

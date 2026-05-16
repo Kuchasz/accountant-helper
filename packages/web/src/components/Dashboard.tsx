@@ -27,11 +27,7 @@ import { useTranslation } from 'react-i18next';
 export function Dashboard() {
   const { t } = useTranslation();
   const [selectedMenu, setSelectedMenu] = useState('Dashboard');
-  const weekdays = [
-    t('dashboard.mon'),
-    t('dashboard.tue'),
-    t('dashboard.wed'),
-  ];
+  const weekdays = [t('dashboard.mon'), t('dashboard.tue'), t('dashboard.wed')];
 
   const menuItems = [
     { icon: GridFour, label: 'Dashboard' },

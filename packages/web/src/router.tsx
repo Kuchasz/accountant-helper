@@ -13,6 +13,8 @@ import { OrdersPage } from './pages/OrdersPage';
 import { PerformancePage } from './pages/PerformancePage';
 import { ProductsPage } from './pages/ProductsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { ToolsPage } from './pages/ToolsPage';
+import { XmlFixerPage } from './pages/XmlFixerPage';
 
 // Root layout component
 function RootLayout() {
@@ -105,6 +107,18 @@ const settingsRoute = createRoute({
   component: SettingsPage,
 });
 
+const toolsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/tools',
+  component: ToolsPage,
+});
+
+const xmlFixerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/tools/xml-fixer',
+  component: XmlFixerPage,
+});
+
 // Create route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -119,6 +133,8 @@ const routeTree = rootRoute.addChildren([
   accountRoute,
   membersRoute,
   settingsRoute,
+  toolsRoute,
+  xmlFixerRoute,
 ]);
 
 // Create router

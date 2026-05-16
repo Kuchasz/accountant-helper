@@ -11,6 +11,7 @@
     "freePlan": "Free Plan",
     "mainMenu": "Main Menu",
     "other": "Other",
+    "tools": "Tools",
     "account": "Account",
     "dashboard": "Dashboard",
     "products": "Products",
@@ -148,5 +149,30 @@
     "create": "Create",
     "deleteConfirm": "Are you sure you want to delete this connection?",
     "connectionTestFailed": "Connection test failed"
+  },
+  "tools": {
+    "title": "Tools",
+    "description": "Utility tools for working with Comarch Optima",
+    "xmlFixer": "XML Fixer for Optima Import",
+    "xmlFixerDescription": "Fix XML files to prepare them for import into Comarch Optima by clearing specific tags",
+    "upload": "Upload File",
+    "uploadDescription": "Upload an XML file or ZIP archive containing a single XML file. The tool will clear BAZA_ZRD_ID and BAZA_DOC_ID tags to prepare the file for Optima import.",
+    "dropZone": "Drop XML or ZIP file here, or click to browse",
+    "acceptedFormats": "Accepted formats: .xml, .zip",
+    "processing": "Processing file...",
+    "download": "Download Fixed File",
+    "downloadAnother": "Process Another File",
+    "success": "File processed successfully!",
+    "successMessage": "The XML file has been fixed and is ready for download. BAZA_ZRD_ID and BAZA_DOC_ID tags have been cleared.",
+    "filePrefix": "fixed_",
+    "error": {
+      "title": "Error Processing File",
+      "noXmlInZip": "No XML file found in the ZIP archive. Please ensure the ZIP contains at least one XML file.",
+      "multipleXmlInZip": "Multiple XML files found in the ZIP archive. Please ensure the ZIP contains only one XML file.",
+      "invalidFile": "Invalid file format. Please upload a valid XML or ZIP file.",
+      "invalidXml": "The file does not contain valid XML. Please check the file and try again.",
+      "readError": "Error reading the file. Please try again.",
+      "zipError": "Error extracting ZIP file. The archive may be corrupted."
+    }
   }
 }
