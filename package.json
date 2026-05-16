@@ -1,0 +1,26 @@
+{
+  "name": "optima-helper-2",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel --stream dev",
+    "build": "pnpm --recursive build",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "test": "pnpm --recursive test",
+    "type-check": "pnpm --recursive type-check",
+    "clean": "pnpm --recursive clean"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
+    "typescript": "^5.5.3"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0"
+  }
+}
