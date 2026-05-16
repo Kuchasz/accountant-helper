@@ -17,29 +17,31 @@ import {
   Users,
 } from '@phosphor-icons/react';
 import { Link as RouterLink, useMatchRoute } from '@tanstack/react-router';
-
-const menuItems = [
-  { icon: GridFour, label: 'Dashboard', path: '/' },
-  { icon: Package, label: 'Products', path: '/products' },
-  { icon: ShoppingCart, label: 'Order', path: '/orders' },
-  { icon: Users, label: 'Customers', path: '/customers' },
-  { icon: ClipboardText, label: 'Chat', path: '/chat', badge: 22 },
-];
-
-const otherItems = [
-  { icon: EnvelopeSimple, label: 'Email', path: '/email' },
-  { icon: ChartLine, label: 'Analytics', path: '/analytics' },
-  { icon: Link, label: 'Integration', path: '/integration' },
-  { icon: Rocket, label: 'Performance', path: '/performance' },
-];
-
-const accountItems = [
-  { icon: Gear, label: 'Account', path: '/account' },
-  { icon: Users, label: 'Members', path: '/members' },
-];
+import { useTranslation } from 'react-i18next';
 
 export function Sidebar() {
+  const { t } = useTranslation();
   const matchRoute = useMatchRoute();
+
+  const menuItems = [
+    { icon: GridFour, label: t('sidebar.dashboard'), path: '/' },
+    { icon: Package, label: t('sidebar.products'), path: '/products' },
+    { icon: ShoppingCart, label: t('sidebar.order'), path: '/orders' },
+    { icon: Users, label: t('sidebar.customers'), path: '/customers' },
+    { icon: ClipboardText, label: t('sidebar.chat'), path: '/chat', badge: 22 },
+  ];
+
+  const otherItems = [
+    { icon: EnvelopeSimple, label: t('sidebar.email'), path: '/email' },
+    { icon: ChartLine, label: t('sidebar.analytics'), path: '/analytics' },
+    { icon: Link, label: t('sidebar.integration'), path: '/integration' },
+    { icon: Rocket, label: t('sidebar.performance'), path: '/performance' },
+  ];
+
+  const accountItems = [
+    { icon: Gear, label: t('sidebar.account'), path: '/account' },
+    { icon: Users, label: t('sidebar.members'), path: '/members' },
+  ];
 
   return (
     <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col">
@@ -51,9 +53,9 @@ export function Sidebar() {
           </div>
           <div>
             <h1 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-              Veselity Inc.
+              {t('sidebar.companyName')}
             </h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Free Plan</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{t('sidebar.freePlan')}</p>
           </div>
         </div>
         <Button className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg border-0 bg-transparent cursor-pointer">
@@ -66,7 +68,7 @@ export function Sidebar() {
         <ScrollArea.Viewport className="h-full py-4 overflow-y-auto">
           <div className="px-3">
             <p className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-              Main Menu
+              {t('sidebar.mainMenu')}
             </p>
             <div className="space-y-1">
               {menuItems.map((item) => {
@@ -99,7 +101,7 @@ export function Sidebar() {
           {/* Other Section */}
           <div className="px-3 mt-6">
             <p className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-              Other
+              {t('sidebar.other')}
             </p>
             <div className="space-y-1">
               {otherItems.map((item) => (
@@ -116,7 +118,7 @@ export function Sidebar() {
           {/* Account Section */}
           <div className="px-3 mt-6">
             <p className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-              Account
+              {t('sidebar.account')}
             </p>
             <div className="space-y-1">
               {accountItems.map((item) => (
@@ -126,7 +128,7 @@ export function Sidebar() {
                       <item.icon size={20} />
                       <span>{item.label}</span>
                     </div>
-                    {item.label === 'Account' && (
+                    {item.label === t('sidebar.account') && (
                       <Gear size={16} className="text-gray-400 dark:text-gray-500" />
                     )}
                   </Button>
@@ -148,12 +150,12 @@ export function Sidebar() {
         <RouterLink to="/settings" className="block">
           <Button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-0 bg-transparent cursor-pointer">
             <Gear size={20} />
-            <span>Settings</span>
+            <span>{t('sidebar.settings')}</span>
           </Button>
         </RouterLink>
         <Button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-0 bg-transparent cursor-pointer">
           <Clipboard size={20} />
-          <span>Feedback</span>
+          <span>{t('sidebar.feedback')}</span>
         </Button>
         <div className="flex items-center space-x-3 px-3 py-2.5">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-pink-500" />

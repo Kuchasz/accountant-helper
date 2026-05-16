@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './App';
 import { trpc, trpcClient } from './lib/trpc';
+import './i18n'; // Initialize i18n
 import './index.css';
 
 const queryClient = new QueryClient({

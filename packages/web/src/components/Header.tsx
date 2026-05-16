@@ -6,6 +6,7 @@ import {
   Buildings,
   CaretDown,
   Export,
+  Globe,
   MagnifyingGlass,
   Moon,
   Plus,
@@ -13,7 +14,9 @@ import {
   Warning,
 } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { trpc } from '../lib/trpc';
 
 interface Company {
@@ -23,7 +26,9 @@ interface Company {
 }
 
 export function Header() {
+  const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage } = useLanguage();
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [isConfigDbAvailable, setIsConfigDbAvailable] = useState(false);
 
@@ -60,7 +65,9 @@ export function Header() {
       });
     }
   };
-
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'pl' : 'en');
+  };
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-8 py-4">
       <div className="flex items-center justify-between">
@@ -95,10 +102,10 @@ export function Header() {
                   ) : (
                     <span className="text-sm">
                       {!isConfigDbAvailable
-                        ? 'Config DB not available'
+                        ? t('header.configDbNotAvailable')
                         : loadingCompanies
-                          ? 'Loading companies...'
-                          : 'Select Company'}
+                          ? t('header.loadingCompanies')
+                          : t('header.selectCompany')}
                     </span>
                   )}
                 </div>
@@ -137,7 +144,7 @@ export function Header() {
             />
             <Input
               type="text"
-              placeholder="Search"
+              placeholder={t('header.searchPlaceholder')}
               className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
             />
             <kbd className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-0.5 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded">
@@ -151,6 +158,16 @@ export function Header() {
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 border-2 border-white dark:border-gray-900" />
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-teal-500 border-2 border-white dark:border-gray-900" />
           </div>
+          <Button
+            onClick={toggleLanguage}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg border-0 bg-transparent cursor-pointer relative"
+            title={language === 'en' ? 'Switch to Polish' : 'Przełącz na angielski'}
+          >
+            <Globe size={20} className="text-gray-600 dark:text-gray-400" />
+            <span className="absolute bottom-0 right-0 text-[8px] font-bold text-gray-600 dark:text-gray-400 uppercase">
+              {language}
+            </span>
+          </Button>
           <Button
             onClick={toggleTheme}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg border-0 bg-transparent cursor-pointer"
@@ -170,7 +187,7 @@ export function Header() {
           </Button>
           <Button className="px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors flex items-center space-x-2 border-0 cursor-pointer">
             <Export size={16} weight="bold" />
-            <span>Export</span>
+            <span>{t('header.export')}</span>
           </Button>
         </div>
       </div>

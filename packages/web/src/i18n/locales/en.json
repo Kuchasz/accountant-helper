@@ -1,0 +1,33 @@
+{
+  "header": {
+    "configDbNotAvailable": "Config DB not available",
+    "loadingCompanies": "Loading companies...",
+    "selectCompany": "Select Company",
+    "searchPlaceholder": "Search",
+    "export": "Export"
+  },
+  "sidebar": {
+    "companyName": "Veselity Inc.",
+    "freePlan": "Free Plan",
+    "mainMenu": "Main Menu",
+    "other": "Other",
+    "account": "Account",
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "order": "Order",
+    "customers": "Customers",
+    "chat": "Chat",
+    "email": "Email",
+    "analytics": "Analytics",
+    "integration": "Integration",
+    "performance": "Performance",
+    "members": "Members",
+    "settings": "Settings",
+    "feedback": "Feedback"
+  },
+  "common": {
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "add": "Add"
+  }
+}

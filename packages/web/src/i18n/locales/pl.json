@@ -1,0 +1,33 @@
+{
+  "header": {
+    "configDbNotAvailable": "Baza konfiguracyjna niedostępna",
+    "loadingCompanies": "Ładowanie firm...",
+    "selectCompany": "Wybierz Firmę",
+    "searchPlaceholder": "Szukaj",
+    "export": "Eksportuj"
+  },
+  "sidebar": {
+    "companyName": "Veselity Inc.",
+    "freePlan": "Darmowy Plan",
+    "mainMenu": "Menu Główne",
+    "other": "Inne",
+    "account": "Konto",
+    "dashboard": "Panel",
+    "products": "Produkty",
+    "order": "Zamówienia",
+    "customers": "Klienci",
+    "chat": "Czat",
+    "email": "Email",
+    "analytics": "Analityka",
+    "integration": "Integracje",
+    "performance": "Wydajność",
+    "members": "Członkowie",
+    "settings": "Ustawienia",
+    "feedback": "Opinie"
+  },
+  "common": {
+    "theme": "Motyw",
+    "notifications": "Powiadomienia",
+    "add": "Dodaj"
+  }
+}
