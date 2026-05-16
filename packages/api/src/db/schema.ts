@@ -1,44 +1,77 @@
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import 'reflect-metadata';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-export const users = sqliteTable('users', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name').notNull(),
-  email: text('email').notNull().unique(),
-  createdAt: integer('created_at', { mode: 'timestamp' })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});
+@Entity('users')
+export class User {
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-// Settings table for storing application configuration
-export const settings = sqliteTable('settings', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  key: text('key').notNull().unique(),
-  value: text('value').notNull(),
-  description: text('description'),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});
+  @Column('text')
+  name!: string;
 
-// SQL Server connections configuration (for Comarch Optima databases)
-export const sqlServerConnections = sqliteTable('sql_server_connections', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name').notNull().unique(), // e.g., "config", "company1", "company2"
-  type: text('type').notNull(), // "config" or "company"
-  server: text('server').notNull(),
-  database: text('database').notNull(),
-  username: text('username').notNull(),
-  password: text('password').notNull(), // Should be encrypted in production
-  port: integer('port').notNull().default(1433),
-  encrypt: integer('encrypt', { mode: 'boolean' }).notNull().default(true),
-  trustServerCertificate: integer('trust_server_certificate', { mode: 'boolean' })
-    .notNull()
-    .default(false),
-  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
-  createdAt: integer('created_at', { mode: 'timestamp' })
-    .notNull()
-    .$defaultFn(() => new Date()),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
-    .notNull()
-    .$defaultFn(() => new Date()),
-});
+  @Column('text', { unique: true })
+  email!: string;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt!: Date;
+}
+
+@Entity('settings')
+export class Setting {
+  @PrimaryGeneratedColumn()
+  id!: number;
+
+  @Column('text', { unique: true })
+  key!: string;
+
+  @Column('text')
+  value!: string;
+
+  @Column('text', { nullable: true })
+  description?: string;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt!: Date;
+}
+
+@Entity('sql_server_connections')
+export class SqlServerConnection {
+  @PrimaryGeneratedColumn()
+  id!: number;
+
+  @Column('text', { unique: true })
+  name!: string;
+
+  @Column('text')
+  type!: string; // "config" or "company"
+
+  @Column('text')
+  server!: string;
+
+  @Column('text')
+  database!: string;
+
+  @Column('text')
+  username!: string;
+
+  @Column('text')
+  password!: string; // Should be encrypted in production
+
+  @Column('int', { default: 1433 })
+  port!: number;
+
+  @Column('boolean', { default: true })
+  encrypt!: boolean;
+
+  @Column('boolean', { name: 'trust_server_certificate', default: false })
+  trustServerCertificate!: boolean;
+
+  @Column('boolean', { name: 'is_active', default: true })
+  isActive!: boolean;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt!: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt!: Date;
+}

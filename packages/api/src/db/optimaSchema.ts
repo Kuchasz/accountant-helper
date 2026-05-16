@@ -1,21 +1,32 @@
+import 'reflect-metadata';
+import { Entity, PrimaryColumn, Column } from 'typeorm';
+
 /**
- * Placeholder for Comarch Optima database schema definitions
- *
- * This file will contain Drizzle schema definitions for Optima tables
- * as you map them. For now, we'll use raw SQL queries through Drizzle.
- *
- * Example usage when defining schemas:
- *
- * import { mssqlTable, varchar, int, datetime } from 'drizzle-orm/mssql-core';
- *
- * export const optimaCompanies = mssqlTable('CDN.Firmy', {
- *   fir_id: int('Fir_ID').primaryKey(),
- *   fir_nama: varchar('Fir_Nazwa', { length: 255 }),
- *   // ... other fields
- * });
+ * Comarch Optima database schema definitions
+ * TypeORM entities for Optima tables.
  */
 
-// Export types for Optima database queries
-export type OptimaConfigDatabase = Record<string, unknown>;
+/**
+ * CDN.BAZY - Database configurations table from config database
+ * Contains information about available company databases
+ */
+@Entity({ name: 'CDN.BAZY', synchronize: false })
+export class CdnBazy {
+  @PrimaryColumn('int', { name: 'Baz_ID' })
+  id!: number;
 
-export type OptimaCompanyDatabase = Record<string, unknown>;
+  @Column('varchar', { name: 'Baz_Nazwa', length: 255 })
+  name!: string;
+
+  @Column('varchar', { name: 'Baz_NazwaBazy', length: 255 })
+  databaseName!: string;
+
+  @Column('int', { name: 'Baz_Aktywna', default: 1 })
+  isActive!: number;
+
+  @Column('varchar', { name: 'Baz_Opis', length: 500, nullable: true })
+  description?: string;
+
+  @Column('varchar', { name: 'Baz_Serwer', length: 255, nullable: true })
+  server?: string;
+}

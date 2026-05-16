@@ -1,6 +1,6 @@
-import { drizzle } from 'drizzle-orm/node-mssql';
-import type { NodeMsSqlDatabase } from 'drizzle-orm/node-mssql';
-import sql from 'mssql';
+import 'reflect-metadata';
+import { DataSource } from 'typeorm';
+import { CdnBazy } from './optimaSchema';
 
 export interface SqlServerConfig {
   server: string;
@@ -15,61 +15,49 @@ export interface SqlServerConfig {
 }
 
 // Connection pool cache to reuse connections
-const connectionPools = new Map<string, sql.ConnectionPool>();
+const dataSources = new Map<string, DataSource>();
 
 /**
- * Get or create a SQL Server connection pool
+ * Get or create a SQL Server connection
  */
-export async function getConnectionPool(
+export async function getSqlServerDataSource(
   config: SqlServerConfig,
   poolKey: string,
-): Promise<sql.ConnectionPool> {
-  // Check if we already have a connection pool for this key
-  const existingPool = connectionPools.get(poolKey);
-  if (existingPool?.connected) {
-    return existingPool;
+): Promise<DataSource> {
+  // Check if we already have a connection for this key
+  const existingDs = dataSources.get(poolKey);
+  if (existingDs?.isInitialized) {
+    return existingDs;
   }
 
-  // Create new connection pool
-  const pool = new sql.ConnectionPool({
-    server: config.server,
-    database: config.database,
-    user: config.user,
-    password: config.password,
+  // Create new data source
+  const dataSource = new DataSource({
+    type: 'mssql',
+    host: config.server,
     port: config.port ?? 1433,
+    username: config.user,
+    password: config.password,
+    database: config.database,
+    synchronize: false, // Never auto-sync Optima databases
+    logging: false,
+    entities: [CdnBazy],
     options: {
       encrypt: config.options?.encrypt ?? true,
       trustServerCertificate: config.options?.trustServerCertificate ?? false,
       enableArithAbort: true,
     },
-    pool: {
-      max: 10,
-      min: 0,
-      idleTimeoutMillis: 30000,
-    },
   });
 
-  await pool.connect();
-  connectionPools.set(poolKey, pool);
+  await dataSource.initialize();
+  dataSources.set(poolKey, dataSource);
 
-  return pool;
-}
-
-/**
- * Get Drizzle instance for a SQL Server connection
- */
-export async function getSqlServerDb(
-  config: SqlServerConfig,
-  poolKey: string,
-): Promise<NodeMsSqlDatabase> {
-  const pool = await getConnectionPool(config, poolKey);
-  return drizzle({ client: pool });
+  return dataSource;
 }
 
 /**
  * Get Optima config database connection from environment variables
  */
-export async function getOptimaConfigDb(): Promise<NodeMsSqlDatabase | null> {
+export async function getOptimaConfigDataSource(): Promise<DataSource | null> {
   const server = process.env.OPTIMA_CONFIG_SERVER;
   const database = process.env.OPTIMA_CONFIG_DATABASE;
   const user = process.env.OPTIMA_CONFIG_USER;
@@ -92,13 +80,13 @@ export async function getOptimaConfigDb(): Promise<NodeMsSqlDatabase | null> {
     },
   };
 
-  return getSqlServerDb(config, 'optima-config');
+  return getSqlServerDataSource(config, 'optima-config');
 }
 
 /**
  * Get a company database connection using stored configuration
  */
-export async function getCompanyDb(connectionConfig: {
+export async function getCompanyDataSource(connectionConfig: {
   server: string;
   database: string;
   username: string;
@@ -106,7 +94,7 @@ export async function getCompanyDb(connectionConfig: {
   port: number;
   encrypt: boolean;
   trustServerCertificate: boolean;
-}): Promise<NodeMsSqlDatabase> {
+}): Promise<DataSource> {
   const config: SqlServerConfig = {
     server: connectionConfig.server,
     database: connectionConfig.database,
@@ -120,25 +108,28 @@ export async function getCompanyDb(connectionConfig: {
   };
 
   const poolKey = `company-${connectionConfig.database}`;
-  return getSqlServerDb(config, poolKey);
+  return getSqlServerDataSource(config, poolKey);
 }
 
 /**
- * Close a specific connection pool
+ * Close a specific connection
  */
-export async function closeConnectionPool(poolKey: string): Promise<void> {
-  const pool = connectionPools.get(poolKey);
-  if (pool) {
-    await pool.close();
-    connectionPools.delete(poolKey);
+export async function closeDataSource(poolKey: string): Promise<void> {
+  const ds = dataSources.get(poolKey);
+  if (ds?.isInitialized) {
+    await ds.destroy();
+    dataSources.delete(poolKey);
   }
 }
 
 /**
- * Close all connection pools
+ * Close all connections
  */
-export async function closeAllConnections(): Promise<void> {
-  const closePromises = Array.from(connectionPools.values()).map((pool) => pool.close());
+export async function closeAllDataSources(): Promise<void> {
+  const closePromises = Array.from(dataSources.values())
+    .filter(ds => ds.isInitialized)
+    .map(ds => ds.destroy());
   await Promise.all(closePromises);
-  connectionPools.clear();
+  dataSources.clear();
 }
+

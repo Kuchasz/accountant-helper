@@ -1,9 +1,9 @@
 import { initTRPC } from '@trpc/server';
-import { eq } from 'drizzle-orm';
 import { z } from 'zod';
-import { db } from './db';
-import { settings, sqlServerConnections, users } from './db/schema';
-import { getOptimaConfigDb, getSqlServerDb } from './db/sqlserver';
+import { getDatabase } from './db';
+import { User, Setting, SqlServerConnection } from './db/schema';
+import { CdnBazy } from './db/optimaSchema';
+import { getOptimaConfigDataSource, getSqlServerDataSource } from './db/sqlserver';
 import type { SqlServerConfig } from './db/sqlserver';
 
 const t = initTRPC.create({
@@ -40,8 +40,9 @@ export const appRouter = t.router({
   }),
 
   getUsers: t.procedure.query(async () => {
-    const allUsers = await db.select().from(users);
-    return allUsers;
+    const db = await getDatabase();
+    const userRepository = db.getRepository(User);
+    return userRepository.find();
   }),
 
   createUser: t.procedure
@@ -52,37 +53,34 @@ export const appRouter = t.router({
       }),
     )
     .mutation(async ({ input }) => {
-      const [user] = await db.insert(users).values(input).returning();
-      return user;
+      const db = await getDatabase();
+      const userRepository = db.getRepository(User);
+      const user = userRepository.create(input);
+      return userRepository.save(user);
     }),
 
   // SQL Server Connections Management
   getSqlServerConnections: t.procedure.query(async () => {
-    return db.select().from(sqlServerConnections);
+    const db = await getDatabase();
+    const repository = db.getRepository(SqlServerConnection);
+    return repository.find();
   }),
 
   getSqlServerConnection: t.procedure
     .input(z.object({ id: z.number().int() }))
     .query(async ({ input }) => {
-      const [connection] = await db
-        .select()
-        .from(sqlServerConnections)
-        .where(eq(sqlServerConnections.id, input.id));
-      return connection;
+      const db = await getDatabase();
+      const repository = db.getRepository(SqlServerConnection);
+      return repository.findOne({ where: { id: input.id } });
     }),
 
   createSqlServerConnection: t.procedure
     .input(sqlServerConnectionSchema)
     .mutation(async ({ input }) => {
-      const [connection] = await db
-        .insert(sqlServerConnections)
-        .values({
-          ...input,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .returning();
-      return connection;
+      const db = await getDatabase();
+      const repository = db.getRepository(SqlServerConnection);
+      const connection = repository.create(input);
+      return repository.save(connection);
     }),
 
   updateSqlServerConnection: t.procedure
@@ -93,21 +91,18 @@ export const appRouter = t.router({
       }),
     )
     .mutation(async ({ input }) => {
-      const [connection] = await db
-        .update(sqlServerConnections)
-        .set({
-          ...input.data,
-          updatedAt: new Date(),
-        })
-        .where(eq(sqlServerConnections.id, input.id))
-        .returning();
-      return connection;
+      const db = await getDatabase();
+      const repository = db.getRepository(SqlServerConnection);
+      await repository.update(input.id, input.data);
+      return repository.findOne({ where: { id: input.id } });
     }),
 
   deleteSqlServerConnection: t.procedure
     .input(z.object({ id: z.number().int() }))
     .mutation(async ({ input }) => {
-      await db.delete(sqlServerConnections).where(eq(sqlServerConnections.id, input.id));
+      const db = await getDatabase();
+      const repository = db.getRepository(SqlServerConnection);
+      await repository.delete(input.id);
       return { success: true };
     }),
 
@@ -137,9 +132,9 @@ export const appRouter = t.router({
           },
         };
 
-        const testDb = await getSqlServerDb(config, `test-${Date.now()}`);
+        const testDs = await getSqlServerDataSource(config, `test-${Date.now()}`);
         // Try a simple query to verify connection
-        await testDb.execute('SELECT 1');
+        await testDs.query('SELECT 1');
 
         return { success: true, message: 'Connection successful' };
       } catch (error) {
@@ -152,15 +147,15 @@ export const appRouter = t.router({
 
   testOptimaConfigConnection: t.procedure.query(async () => {
     try {
-      const configDb = await getOptimaConfigDb();
-      if (!configDb) {
+      const configDs = await getOptimaConfigDataSource();
+      if (!configDs) {
         return {
           success: false,
           message: 'Optima config database credentials not configured',
         };
       }
       // Try a simple query to verify connection
-      await configDb.execute('SELECT 1');
+      await configDs.query('SELECT 1');
       return { success: true, message: 'Optima config database connection successful' };
     } catch (error) {
       return {
@@ -172,12 +167,15 @@ export const appRouter = t.router({
 
   // Settings Management
   getSettings: t.procedure.query(async () => {
-    return db.select().from(settings);
+    const db = await getDatabase();
+    const repository = db.getRepository(Setting);
+    return repository.find();
   }),
 
   getSetting: t.procedure.input(z.object({ key: z.string() })).query(async ({ input }) => {
-    const [setting] = await db.select().from(settings).where(eq(settings.key, input.key));
-    return setting;
+    const db = await getDatabase();
+    const repository = db.getRepository(Setting);
+    return repository.findOne({ where: { key: input.key } });
   }),
 
   setSetting: t.procedure
@@ -189,35 +187,115 @@ export const appRouter = t.router({
       }),
     )
     .mutation(async ({ input }) => {
-      const existing = await db.select().from(settings).where(eq(settings.key, input.key));
+      const db = await getDatabase();
+      const repository = db.getRepository(Setting);
+      
+      const existing = await repository.findOne({ where: { key: input.key } });
 
-      if (existing.length > 0) {
-        const [setting] = await db
-          .update(settings)
-          .set({
-            value: input.value,
-            description: input.description,
-            updatedAt: new Date(),
-          })
-          .where(eq(settings.key, input.key))
-          .returning();
-        return setting;
-      }
-      const [setting] = await db
-        .insert(settings)
-        .values({
-          key: input.key,
+      if (existing) {
+        await repository.update(existing.id, {
           value: input.value,
           description: input.description,
-          updatedAt: new Date(),
-        })
-        .returning();
-      return setting;
+        });
+        return repository.findOne({ where: { id: existing.id } });
+      }
+      
+      const setting = repository.create(input);
+      return repository.save(setting);
     }),
 
   deleteSetting: t.procedure.input(z.object({ key: z.string() })).mutation(async ({ input }) => {
-    await db.delete(settings).where(eq(settings.key, input.key));
+    const db = await getDatabase();
+    const repository = db.getRepository(Setting);
+    await repository.delete({ key: input.key });
     return { success: true };
+  }),
+
+  // Company Database Selection
+  getAvailableCompanies: t.procedure.query(async () => {
+    try {
+      const configDs = await getOptimaConfigDataSource();
+      if (!configDs) {
+        throw new Error('Optima config database not configured');
+      }
+
+      // Query CDN.BAZY table for available databases using TypeORM
+      const repository = configDs.getRepository(CdnBazy);
+      const companies = await repository.find({
+        where: { isActive: 1 },
+        order: { name: 'ASC' },
+      });
+
+      return companies.map((company) => ({
+        id: company.id,
+        name: company.name,
+        databaseName: company.databaseName,
+        isActive: company.isActive === 1,
+      }));
+    } catch (error) {
+      console.error('Error fetching companies:', error);
+      throw new Error('Failed to fetch available companies');
+    }
+  }),
+
+  getSelectedCompany: t.procedure.query(async () => {
+    const db = await getDatabase();
+    const repository = db.getRepository(Setting);
+    const setting = await repository.findOne({ where: { key: 'selected_company_id' } });
+    
+    if (!setting) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(setting.value);
+    } catch {
+      return null;
+    }
+  }),
+
+  setSelectedCompany: t.procedure
+    .input(
+      z.object({
+        id: z.number(),
+        name: z.string(),
+        databaseName: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const db = await getDatabase();
+      const repository = db.getRepository(Setting);
+      
+      const existing = await repository.findOne({ where: { key: 'selected_company_id' } });
+      const value = JSON.stringify(input);
+
+      if (existing) {
+        await repository.update(existing.id, {
+          value,
+          description: 'Currently selected company database',
+        });
+        return repository.findOne({ where: { id: existing.id } });
+      }
+
+      const setting = repository.create({
+        key: 'selected_company_id',
+        value,
+        description: 'Currently selected company database',
+      });
+      return repository.save(setting);
+    }),
+
+  checkConfigDbAvailable: t.procedure.query(async () => {
+    try {
+      const configDs = await getOptimaConfigDataSource();
+      if (!configDs) {
+        return { available: false };
+      }
+      await configDs.query('SELECT 1');
+      return { available: true };
+    } catch (error) {
+      return { available: false };
+    }
   }),
 });
 

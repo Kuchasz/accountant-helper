@@ -1,16 +1,105 @@
 import { Button } from '@base-ui/react/button';
 import { Input } from '@base-ui/react/input';
-import { Bell, Export, MagnifyingGlass, Moon, Plus, Sun } from '@phosphor-icons/react';
+import { Bell, Buildings, Export, MagnifyingGlass, Moon, Plus, Sun, Warning } from '@phosphor-icons/react';
+import { useEffect, useState } from 'react';
+import { trpc } from '../lib/trpc';
 import { useTheme } from '../contexts/ThemeContext';
+
+interface Company {
+  id: number;
+  name: string;
+  databaseName: string;
+}
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const [isConfigDbAvailable, setIsConfigDbAvailable] = useState(false);
+
+  const { data: configDbStatus } = trpc.checkConfigDbAvailable.useQuery();
+  const { data: companies = [], isLoading: loadingCompanies } = trpc.getAvailableCompanies.useQuery(
+    undefined,
+    { enabled: isConfigDbAvailable, retry: false }
+  );
+  const { data: savedCompany } = trpc.getSelectedCompany.useQuery();
+  const setCompanyMutation = trpc.setSelectedCompany.useMutation();
+
+  useEffect(() => {
+    if (configDbStatus) {
+      setIsConfigDbAvailable(configDbStatus.available);
+    }
+  }, [configDbStatus]);
+
+  useEffect(() => {
+    if (savedCompany) {
+      setSelectedCompany(savedCompany);
+    }
+  }, [savedCompany]);
+
+  const handleCompanyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const companyId = Number(e.target.value);
+    const company = companies.find((c: Company) => c.id === companyId);
+    if (company) {
+      setSelectedCompany(company);
+      setCompanyMutation.mutate({
+        id: company.id,
+        name: company.name,
+        databaseName: company.databaseName,
+      });
+    }
+  };
   
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-8 py-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center flex-1 max-w-xl">
-          <div className="relative w-full">
+        <div className="flex items-center flex-1 max-w-3xl gap-4">
+          {/* Company Selector */}
+          <div className="relative w-72">
+            <Buildings 
+              size={16} 
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none z-10" 
+            />
+            {!isConfigDbAvailable && (
+              <Warning
+                size={16}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-orange-500 pointer-events-none z-10"
+                weight="fill"
+              />
+            )}
+            <select
+              value={selectedCompany?.id || ''}
+              onChange={handleCompanyChange}
+              disabled={!isConfigDbAvailable || loadingCompanies}
+              className="w-full pl-10 pr-10 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-750 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed appearance-none cursor-pointer"
+            >
+              <option value="" disabled>
+                {!isConfigDbAvailable 
+                  ? 'Config DB not available' 
+                  : loadingCompanies 
+                  ? 'Loading companies...' 
+                  : 'Select Company'}
+              </option>
+              {companies.map((company: Company) => (
+                <option key={company.id} value={company.id}>
+                  {company.name} ({company.databaseName})
+                </option>
+              ))}
+            </select>
+            {/* Custom dropdown arrow */}
+            <svg
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              style={{ right: !isConfigDbAvailable ? '2rem' : '0.75rem' }}
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+          
+          {/* Search */}
+          <div className="relative flex-1">
             <MagnifyingGlass
               size={20}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
