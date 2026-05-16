@@ -60,8 +60,8 @@ export function Sidebar() {
       </div>
 
       {/* Main Menu */}
-      <ScrollArea.Root className="flex-1">
-        <ScrollArea.Viewport className="h-full py-4">
+      <ScrollArea.Root className="flex-1 overflow-hidden">
+        <ScrollArea.Viewport className="h-full py-4 overflow-y-auto">
           <div className="px-3">
             <p className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
               Main Menu
