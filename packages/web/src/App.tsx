@@ -26,45 +26,30 @@ export function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-xl p-8 mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            Optima Helper 2
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Vite + React + tRPC + Tailwind + TypeScript
-          </p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">Optima Helper 2</h1>
+          <p className="text-gray-600 mb-6">Vite + React + tRPC + Tailwind + TypeScript</p>
 
           {/* Hello World from tRPC */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold text-blue-900 mb-2">
-              tRPC Hello World
-            </h2>
+            <h2 className="text-xl font-semibold text-blue-900 mb-2">tRPC Hello World</h2>
             {helloQuery.isLoading ? (
               <p className="text-gray-600">Loading...</p>
             ) : helloQuery.error ? (
               <p className="text-red-600">Error: {helloQuery.error.message}</p>
             ) : (
               <div>
-                <p className="text-lg text-blue-700 font-medium">
-                  {helloQuery.data?.greeting}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                  {helloQuery.data?.timestamp}
-                </p>
+                <p className="text-lg text-blue-700 font-medium">{helloQuery.data?.greeting}</p>
+                <p className="text-sm text-gray-500 mt-1">{helloQuery.data?.timestamp}</p>
               </div>
             )}
           </div>
 
           {/* Create User Form */}
           <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold text-green-900 mb-4">
-              Create User
-            </h2>
+            <h2 className="text-xl font-semibold text-green-900 mb-4">Create User</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                   Name
                 </label>
                 <input
@@ -78,10 +63,7 @@ export function App() {
                 />
               </div>
               <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                   Email
                 </label>
                 <input
@@ -106,17 +88,13 @@ export function App() {
 
           {/* Users List */}
           <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-purple-900 mb-4">
-              Users from Database
-            </h2>
+            <h2 className="text-xl font-semibold text-purple-900 mb-4">Users from Database</h2>
             {usersQuery.isLoading ? (
               <p className="text-gray-600">Loading users...</p>
             ) : usersQuery.error ? (
               <p className="text-red-600">Error: {usersQuery.error.message}</p>
             ) : usersQuery.data?.length === 0 ? (
-              <p className="text-gray-600 italic">
-                No users yet. Create one above!
-              </p>
+              <p className="text-gray-600 italic">No users yet. Create one above!</p>
             ) : (
               <ul className="space-y-3">
                 {usersQuery.data?.map((user) => (
@@ -127,8 +105,7 @@ export function App() {
                     <p className="font-medium text-gray-800">{user.name}</p>
                     <p className="text-sm text-gray-600">{user.email}</p>
                     <p className="text-xs text-gray-400 mt-1">
-                      ID: {user.id} • Created:{' '}
-                      {new Date(user.createdAt).toLocaleString()}
+                      ID: {user.id} • Created: {new Date(user.createdAt).toLocaleString()}
                     </p>
                   </li>
                 ))}
@@ -138,10 +115,7 @@ export function App() {
         </div>
 
         <footer className="text-center text-gray-600 text-sm">
-          <p>
-            Built with Vite, React, tRPC, Express, Drizzle, SQLite, and
-            Tailwind CSS
-          </p>
+          <p>Built with Vite, React, tRPC, Express, Drizzle, SQLite, and Tailwind CSS</p>
         </footer>
       </div>
     </div>

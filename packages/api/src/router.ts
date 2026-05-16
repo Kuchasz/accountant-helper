@@ -6,14 +6,12 @@ import { users } from './db/schema';
 const t = initTRPC.create();
 
 export const appRouter = t.router({
-  hello: t.procedure
-    .input(z.object({ name: z.string().optional() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.name ?? 'World'}!`,
-        timestamp: new Date().toISOString(),
-      };
-    }),
+  hello: t.procedure.input(z.object({ name: z.string().optional() })).query(({ input }) => {
+    return {
+      greeting: `Hello ${input.name ?? 'World'}!`,
+      timestamp: new Date().toISOString(),
+    };
+  }),
 
   getUsers: t.procedure.query(async () => {
     const allUsers = await db.select().from(users);
