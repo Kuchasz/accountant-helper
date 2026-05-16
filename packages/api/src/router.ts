@@ -6,7 +6,17 @@ import { settings, sqlServerConnections, users } from './db/schema';
 import { getOptimaConfigDb, getSqlServerDb } from './db/sqlserver';
 import type { SqlServerConfig } from './db/sqlserver';
 
-const t = initTRPC.create();
+const t = initTRPC.create({
+  errorFormatter: ({ shape, error }) => {
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        zodError: error.cause instanceof z.ZodError ? error.cause.flatten() : null,
+      },
+    };
+  },
+});
 
 const sqlServerConnectionSchema = z.object({
   name: z.string().min(1),
