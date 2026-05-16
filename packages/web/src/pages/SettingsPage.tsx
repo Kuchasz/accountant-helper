@@ -136,12 +136,12 @@ export function SettingsPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">SQL Server Settings</h1>
-          <p className="text-gray-600 mt-1">Manage Comarch Optima database connections</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">SQL Server Settings</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage Comarch Optima database connections</p>
         </div>
         <Button
           onClick={() => handleOpenDialog()}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors border-0 cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer"
         >
           <Plus size={20} />
           Add Connection
@@ -149,51 +149,51 @@ export function SettingsPage() {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-12 text-gray-500">Loading connections...</div>
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">Loading connections...</div>
       ) : connections.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-          <Database size={48} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No connections configured</h3>
-          <p className="text-gray-600 mb-4">Add your first SQL Server connection to get started</p>
+        <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <Database size={48} className="mx-auto text-gray-400 dark:text-gray-500 mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No connections configured</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">Add your first SQL Server connection to get started</p>
           <Button
             onClick={() => handleOpenDialog()}
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors border-0 cursor-pointer"
+            className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer"
           >
             Add Connection
           </Button>
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Server
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Database
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {connections.map((connection: (typeof connections)[0]) => (
-                <tr key={connection.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <tr key={connection.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                     {connection.name}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         connection.type === 'config'
@@ -204,13 +204,13 @@ export function SettingsPage() {
                       {connection.type}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {connection.server}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {connection.database}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
                         connection.isActive
@@ -225,14 +225,14 @@ export function SettingsPage() {
                     <div className="flex items-center justify-end gap-2">
                       <Button
                         onClick={() => handleOpenDialog(connection)}
-                        className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded border-0 cursor-pointer bg-transparent"
+                        className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border-0 cursor-pointer bg-transparent"
                         aria-label="Edit"
                       >
                         <PencilSimple size={18} />
                       </Button>
                       <Button
                         onClick={() => handleDelete(connection.id)}
-                        className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded border-0 cursor-pointer bg-transparent"
+                        className="p-2 text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded border-0 cursor-pointer bg-transparent"
                         aria-label="Delete"
                       >
                         <Trash size={18} />
@@ -255,15 +255,15 @@ export function SettingsPage() {
       >
         <Dialog.Portal>
           <Dialog.Backdrop className="fixed inset-0 bg-black/50 z-40" />
-          <Dialog.Popup className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl z-50 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <Dialog.Popup className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-xl z-50 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6">
-              <Dialog.Title className="text-xl font-semibold text-gray-900 mb-4">
+              <Dialog.Title className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 {editingId ? 'Edit Connection' : 'Add New Connection'}
               </Dialog.Title>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <Field.Root>
-                  <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                  <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Connection Name
                   </Field.Label>
                   <Field.Control
@@ -274,7 +274,7 @@ export function SettingsPage() {
                         required
                         value={formData.name}
                         onValueChange={(value) => setFormData({ ...formData, name: value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
                         placeholder="e.g., Production Config DB"
                       />
                     )}
@@ -282,7 +282,7 @@ export function SettingsPage() {
                 </Field.Root>
 
                 <Field.Root>
-                  <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                  <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Type
                   </Field.Label>
                   <Field.Control
@@ -293,7 +293,7 @@ export function SettingsPage() {
                         onChange={(e) =>
                           setFormData({ ...formData, type: e.target.value as 'config' | 'company' })
                         }
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
                       >
                         <option value="config">Configuration Database</option>
                         <option value="company">Company Database</option>
@@ -304,7 +304,7 @@ export function SettingsPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <Field.Root>
-                    <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                    <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Server
                     </Field.Label>
                     <Field.Control
@@ -315,14 +315,14 @@ export function SettingsPage() {
                           required
                           value={formData.server}
                           onValueChange={(value) => setFormData({ ...formData, server: value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
                           placeholder="localhost or IP address"
                         />
                       )}
                     />
                   </Field.Root>
                   <Field.Root>
-                    <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                    <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Port
                     </Field.Label>
                     <Field.Control
@@ -335,7 +335,7 @@ export function SettingsPage() {
                           onValueChange={(value) =>
                             setFormData({ ...formData, port: Number.parseInt(value) || 1433 })
                           }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
                         />
                       )}
                     />
@@ -343,7 +343,7 @@ export function SettingsPage() {
                 </div>
 
                 <Field.Root>
-                  <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                  <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Database
                   </Field.Label>
                   <Field.Control
@@ -354,7 +354,7 @@ export function SettingsPage() {
                         required
                         value={formData.database}
                         onValueChange={(value) => setFormData({ ...formData, database: value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
                         placeholder="Database name"
                       />
                     )}
@@ -363,7 +363,7 @@ export function SettingsPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <Field.Root>
-                    <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                    <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Username
                     </Field.Label>
                     <Field.Control
@@ -374,13 +374,13 @@ export function SettingsPage() {
                           required
                           value={formData.username}
                           onValueChange={(value) => setFormData({ ...formData, username: value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
                         />
                       )}
                     />
                   </Field.Root>
                   <Field.Root>
-                    <Field.Label className="block text-sm font-medium text-gray-700 mb-1">
+                    <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Password
                     </Field.Label>
                     <Field.Control
@@ -391,7 +391,7 @@ export function SettingsPage() {
                           required
                           value={formData.password}
                           onValueChange={(value) => setFormData({ ...formData, password: value })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
                         />
                       )}
                     />
@@ -400,20 +400,20 @@ export function SettingsPage() {
 
                 <div className="space-y-3 pt-2">
                   <Field.Root className="flex items-center justify-between">
-                    <Field.Label className="text-sm font-medium text-gray-700">
+                    <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Encrypt Connection
                     </Field.Label>
                     <Switch.Root
                       checked={formData.encrypt}
                       onCheckedChange={(checked) => setFormData({ ...formData, encrypt: checked })}
-                      className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 data-[checked]:bg-gray-900 data-[unchecked]:bg-gray-300"
+                      className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
                     >
-                      <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
+                      <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
                     </Switch.Root>
                   </Field.Root>
 
                   <Field.Root className="flex items-center justify-between">
-                    <Field.Label className="text-sm font-medium text-gray-700">
+                    <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Trust Server Certificate
                     </Field.Label>
                     <Switch.Root
@@ -421,20 +421,20 @@ export function SettingsPage() {
                       onCheckedChange={(checked) =>
                         setFormData({ ...formData, trustServerCertificate: checked })
                       }
-                      className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 data-[checked]:bg-gray-900 data-[unchecked]:bg-gray-300"
+                      className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
                     >
-                      <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
+                      <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
                     </Switch.Root>
                   </Field.Root>
 
                   <Field.Root className="flex items-center justify-between">
-                    <Field.Label className="text-sm font-medium text-gray-700">Active</Field.Label>
+                    <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</Field.Label>
                     <Switch.Root
                       checked={formData.isActive}
                       onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                      className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 data-[checked]:bg-gray-900 data-[unchecked]:bg-gray-300"
+                      className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
                     >
-                      <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
+                      <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
                     </Switch.Root>
                   </Field.Root>
                 </div>
@@ -454,23 +454,23 @@ export function SettingsPage() {
                   </div>
                 )}
 
-                <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+                <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                   <Button
                     type="button"
                     onClick={handleTest}
                     disabled={isTesting}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isTesting ? 'Testing...' : 'Test Connection'}
                   </Button>
                   <div className="flex-1" />
-                  <Dialog.Close className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+                  <Dialog.Close className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
                     Cancel
                   </Dialog.Close>
                   <Button
                     type="submit"
                     disabled={createMutation.isPending || updateMutation.isPending}
-                    className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {createMutation.isPending || updateMutation.isPending
                       ? 'Saving...'
