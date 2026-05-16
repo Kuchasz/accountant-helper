@@ -1,8 +1,10 @@
 import { Button } from '@base-ui/react/button';
 import { Input } from '@base-ui/react/input';
+import { Select } from '@base-ui/react/select';
 import {
   Bell,
   Buildings,
+  CaretDown,
   Export,
   MagnifyingGlass,
   Moon,
@@ -45,8 +47,9 @@ export function Header() {
     }
   }, [savedCompany]);
 
-  const handleCompanyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const companyId = Number(e.target.value);
+  const handleCompanyChange = (value: string | number | null) => {
+    if (value === null) return;
+    const companyId = typeof value === 'string' ? Number(value) : value;
     const company = companies.find((c: Company) => c.id === companyId);
     if (company) {
       setSelectedCompany(company);
@@ -64,52 +67,66 @@ export function Header() {
         <div className="flex items-center flex-1 max-w-3xl gap-4">
           {/* Company Selector */}
           <div className="relative w-72">
-            <Buildings
-              size={16}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none z-10"
-            />
-            {!isConfigDbAvailable && (
-              <Warning
-                size={16}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-orange-500 pointer-events-none z-10"
-                weight="fill"
-              />
-            )}
-            <select
-              value={selectedCompany?.id || ''}
-              onChange={handleCompanyChange}
+            <Select.Root
+              value={selectedCompany?.id?.toString() || null}
+              onValueChange={handleCompanyChange}
               disabled={!isConfigDbAvailable || loadingCompanies}
-              className="w-full pl-10 pr-10 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-750 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed appearance-none cursor-pointer"
             >
-              <option value="" disabled>
-                {!isConfigDbAvailable
-                  ? 'Config DB not available'
-                  : loadingCompanies
-                    ? 'Loading companies...'
-                    : 'Select Company'}
-              </option>
-              {companies.map((company: Company) => (
-                <option key={company.id} value={company.id}>
-                  {company.name} ({company.databaseName})
-                </option>
-              ))}
-            </select>
-            {/* Custom dropdown arrow */}
-            <svg
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400 pointer-events-none"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              style={{ right: !isConfigDbAvailable ? '2rem' : '0.75rem' }}
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+              <Select.Trigger className="w-full pl-10 pr-10 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-750 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-between">
+                <Buildings
+                  size={16}
+                  className="absolute left-3 text-gray-500 dark:text-gray-400 pointer-events-none"
+                />
+                {!isConfigDbAvailable && (
+                  <Warning
+                    size={16}
+                    className="absolute right-9 text-orange-500 pointer-events-none"
+                    weight="fill"
+                  />
+                )}
+                <div className="flex-1 text-left">
+                  {selectedCompany ? (
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">{selectedCompany.name}</span>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                        {selectedCompany.databaseName}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-sm">
+                      {!isConfigDbAvailable
+                        ? 'Config DB not available'
+                        : loadingCompanies
+                          ? 'Loading companies...'
+                          : 'Select Company'}
+                    </span>
+                  )}
+                </div>
+                <CaretDown size={16} className="text-gray-500 dark:text-gray-400" />
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Positioner className="z-50">
+                  <Select.Popup className="mt-1 w-72 max-h-60 overflow-y-auto overflow-x-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
+                    {companies.map((company: Company) => (
+                      <Select.Item
+                        key={company.id}
+                        value={company.id.toString()}
+                        className="px-4 py-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-750 data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-gray-700 data-[selected]:bg-orange-50 dark:data-[selected]:bg-orange-900/20"
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100 data-[selected]:text-orange-600 dark:data-[selected]:text-orange-400">
+                            {company.name}
+                          </span>
+                          <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                            {company.databaseName}
+                          </span>
+                        </div>
+                      </Select.Item>
+                    ))}
+                  </Select.Popup>
+                </Select.Positioner>
+              </Select.Portal>
+            </Select.Root>
           </div>
 
           {/* Search */}
