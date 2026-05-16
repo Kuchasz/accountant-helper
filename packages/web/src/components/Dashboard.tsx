@@ -1,3 +1,4 @@
+import { Input } from '@base-ui/react/input';
 import {
   Bell,
   CaretDown,
@@ -21,7 +22,6 @@ import {
   Users,
 } from '@phosphor-icons/react';
 import { useState } from 'react';
-import { Input } from '@base-ui/react/input';
 
 export function Dashboard() {
   const [selectedMenu, setSelectedMenu] = useState('Dashboard');

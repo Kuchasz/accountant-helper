@@ -2,8 +2,8 @@ import 'reflect-metadata';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import cors from 'cors';
 import express from 'express';
-import { appRouter } from './router';
 import { initializeDatabase } from './db';
+import { appRouter } from './router';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -37,7 +37,7 @@ app.use(
 async function bootstrap() {
   try {
     await initializeDatabase();
-    
+
     app.listen(port, () => {
       console.log(`🚀 Server running at http://localhost:${port}`);
       console.log(`📡 tRPC endpoint: http://localhost:${port}/trpc`);

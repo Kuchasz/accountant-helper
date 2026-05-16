@@ -1,8 +1,8 @@
 import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
 import { getDatabase } from './db';
-import { User, Setting, SqlServerConnection } from './db/schema';
 import { CdnBazy } from './db/optimaSchema';
+import { Setting, SqlServerConnection, User } from './db/schema';
 import { getOptimaConfigDataSource, getSqlServerDataSource } from './db/sqlserver';
 import type { SqlServerConfig } from './db/sqlserver';
 
@@ -189,7 +189,7 @@ export const appRouter = t.router({
     .mutation(async ({ input }) => {
       const db = await getDatabase();
       const repository = db.getRepository(Setting);
-      
+
       const existing = await repository.findOne({ where: { key: input.key } });
 
       if (existing) {
@@ -199,7 +199,7 @@ export const appRouter = t.router({
         });
         return repository.findOne({ where: { id: existing.id } });
       }
-      
+
       const setting = repository.create(input);
       return repository.save(setting);
     }),
@@ -219,10 +219,10 @@ export const appRouter = t.router({
         throw new Error('Optima config database not configured');
       }
 
-      // Query CDN.BAZY table for available databases using TypeORM
+      // Query CDN.Bazy table for available databases using TypeORM
       const repository = configDs.getRepository(CdnBazy);
       const companies = await repository.find({
-        where: { isActive: 1 },
+        where: { nieaktywna: 0 }, // 0 = active, 1 = inactive
         order: { name: 'ASC' },
       });
 
@@ -230,7 +230,8 @@ export const appRouter = t.router({
         id: company.id,
         name: company.name,
         databaseName: company.databaseName,
-        isActive: company.isActive === 1,
+        serverName: company.serverName,
+        isActive: company.isActive,
       }));
     } catch (error) {
       console.error('Error fetching companies:', error);
@@ -242,7 +243,7 @@ export const appRouter = t.router({
     const db = await getDatabase();
     const repository = db.getRepository(Setting);
     const setting = await repository.findOne({ where: { key: 'selected_company_id' } });
-    
+
     if (!setting) {
       return null;
     }
@@ -265,7 +266,7 @@ export const appRouter = t.router({
     .mutation(async ({ input }) => {
       const db = await getDatabase();
       const repository = db.getRepository(Setting);
-      
+
       const existing = await repository.findOne({ where: { key: 'selected_company_id' } });
       const value = JSON.stringify(input);
 

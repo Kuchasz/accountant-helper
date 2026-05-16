@@ -1,9 +1,18 @@
 import { Button } from '@base-ui/react/button';
 import { Input } from '@base-ui/react/input';
-import { Bell, Buildings, Export, MagnifyingGlass, Moon, Plus, Sun, Warning } from '@phosphor-icons/react';
+import {
+  Bell,
+  Buildings,
+  Export,
+  MagnifyingGlass,
+  Moon,
+  Plus,
+  Sun,
+  Warning,
+} from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
-import { trpc } from '../lib/trpc';
 import { useTheme } from '../contexts/ThemeContext';
+import { trpc } from '../lib/trpc';
 
 interface Company {
   id: number;
@@ -19,7 +28,7 @@ export function Header() {
   const { data: configDbStatus } = trpc.checkConfigDbAvailable.useQuery();
   const { data: companies = [], isLoading: loadingCompanies } = trpc.getAvailableCompanies.useQuery(
     undefined,
-    { enabled: isConfigDbAvailable, retry: false }
+    { enabled: isConfigDbAvailable, retry: false },
   );
   const { data: savedCompany } = trpc.getSelectedCompany.useQuery();
   const setCompanyMutation = trpc.setSelectedCompany.useMutation();
@@ -48,16 +57,16 @@ export function Header() {
       });
     }
   };
-  
+
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-8 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center flex-1 max-w-3xl gap-4">
           {/* Company Selector */}
           <div className="relative w-72">
-            <Buildings 
-              size={16} 
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none z-10" 
+            <Buildings
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 pointer-events-none z-10"
             />
             {!isConfigDbAvailable && (
               <Warning
@@ -73,11 +82,11 @@ export function Header() {
               className="w-full pl-10 pr-10 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-750 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed appearance-none cursor-pointer"
             >
               <option value="" disabled>
-                {!isConfigDbAvailable 
-                  ? 'Config DB not available' 
-                  : loadingCompanies 
-                  ? 'Loading companies...' 
-                  : 'Select Company'}
+                {!isConfigDbAvailable
+                  ? 'Config DB not available'
+                  : loadingCompanies
+                    ? 'Loading companies...'
+                    : 'Select Company'}
               </option>
               {companies.map((company: Company) => (
                 <option key={company.id} value={company.id}>
@@ -94,10 +103,15 @@ export function Header() {
               style={{ right: !isConfigDbAvailable ? '2rem' : '0.75rem' }}
               aria-hidden="true"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </div>
-          
+
           {/* Search */}
           <div className="relative flex-1">
             <MagnifyingGlass
@@ -120,7 +134,7 @@ export function Header() {
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 border-2 border-white dark:border-gray-900" />
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-teal-500 border-2 border-white dark:border-gray-900" />
           </div>
-          <Button 
+          <Button
             onClick={toggleTheme}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg border-0 bg-transparent cursor-pointer"
           >

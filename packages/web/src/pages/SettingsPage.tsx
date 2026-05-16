@@ -136,8 +136,12 @@ export function SettingsPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">SQL Server Settings</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">Manage Comarch Optima database connections</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            SQL Server Settings
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            Manage Comarch Optima database connections
+          </p>
         </div>
         <Button
           onClick={() => handleOpenDialog()}
@@ -149,12 +153,18 @@ export function SettingsPage() {
       </div>
 
       {isLoading ? (
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400">Loading connections...</div>
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          Loading connections...
+        </div>
       ) : connections.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           <Database size={48} className="mx-auto text-gray-400 dark:text-gray-500 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No connections configured</h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Add your first SQL Server connection to get started</p>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+            No connections configured
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            Add your first SQL Server connection to get started
+          </p>
           <Button
             onClick={() => handleOpenDialog()}
             className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer"
@@ -428,7 +438,9 @@ export function SettingsPage() {
                   </Field.Root>
 
                   <Field.Root className="flex items-center justify-between">
-                    <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Active</Field.Label>
+                    <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Active
+                    </Field.Label>
                     <Switch.Root
                       checked={formData.isActive}
                       onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}

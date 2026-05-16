@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import { getOptimaConfigDb } from './src/db/sqlserver';
 import type { CdnBazy } from './src/db/optimaSchema';
+import { getOptimaConfigDb } from './src/db/sqlserver';
 
 async function investigateConfigDb() {
   try {
@@ -18,9 +18,9 @@ async function investigateConfigDb() {
 
     // Get list of tables
     const tables = await configDb.execute(
-      `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME`
+      `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME`,
     );
-    
+
     console.log('\n=== Available Tables ===');
     const tableList = Array.isArray(tables) ? tables : [];
     console.log(tableList.map((t: any) => t.TABLE_NAME).join('\n'));
@@ -33,12 +33,12 @@ async function investigateConfigDb() {
         WHERE Baz_Aktywna = 1
         ORDER BY Baz_Nazwa
       `);
-      
+
       const bazy = Array.isArray(result) ? result : [];
-      
+
       console.log('\n=== CDN.BAZY Sample Data (Active Databases) ===');
       console.log(`Found ${bazy.length} active databases:\n`);
-      
+
       bazy.forEach((db: any) => {
         console.log(`ID: ${db.Baz_ID}`);
         console.log(`Name: ${db.Baz_Nazwa}`);
@@ -51,7 +51,6 @@ async function investigateConfigDb() {
     } catch (e) {
       console.log('\nCDN.BAZY table not found or error:', (e as Error).message);
     }
-
   } catch (error) {
     console.error('Error:', error);
   } finally {

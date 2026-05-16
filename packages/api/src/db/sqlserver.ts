@@ -1,6 +1,8 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
+import { getDatabase } from './data-source';
 import { CdnBazy } from './optimaSchema';
+import { SqlServerConnection } from './schema';
 
 export interface SqlServerConfig {
   server: string;
@@ -55,32 +57,43 @@ export async function getSqlServerDataSource(
 }
 
 /**
- * Get Optima config database connection from environment variables
+ * Get Optima config database connection from stored configuration
  */
 export async function getOptimaConfigDataSource(): Promise<DataSource | null> {
-  const server = process.env.OPTIMA_CONFIG_SERVER;
-  const database = process.env.OPTIMA_CONFIG_DATABASE;
-  const user = process.env.OPTIMA_CONFIG_USER;
-  const password = process.env.OPTIMA_CONFIG_PASSWORD;
+  try {
+    const db = await getDatabase();
+    const repository = db.getRepository(SqlServerConnection);
 
-  if (!server || !database || !user || !password) {
-    console.warn('Optima config database credentials not configured in environment');
+    // Find the active config connection
+    const configConnection = await repository.findOne({
+      where: {
+        type: 'config',
+        isActive: true,
+      },
+    });
+
+    if (!configConnection) {
+      console.warn('No active Optima config database connection found in database');
+      return null;
+    }
+
+    const config: SqlServerConfig = {
+      server: configConnection.server,
+      database: configConnection.database,
+      user: configConnection.username,
+      password: configConnection.password,
+      port: configConnection.port,
+      options: {
+        encrypt: configConnection.encrypt,
+        trustServerCertificate: configConnection.trustServerCertificate,
+      },
+    };
+
+    return getSqlServerDataSource(config, 'optima-config');
+  } catch (error) {
+    console.error('Error loading Optima config database configuration:', error);
     return null;
   }
-
-  const config: SqlServerConfig = {
-    server,
-    database,
-    user,
-    password,
-    port: process.env.OPTIMA_CONFIG_PORT ? Number.parseInt(process.env.OPTIMA_CONFIG_PORT) : 1433,
-    options: {
-      encrypt: process.env.OPTIMA_CONFIG_ENCRYPT === 'true',
-      trustServerCertificate: process.env.OPTIMA_CONFIG_TRUST_SERVER_CERTIFICATE === 'true',
-    },
-  };
-
-  return getSqlServerDataSource(config, 'optima-config');
 }
 
 /**
@@ -127,9 +140,8 @@ export async function closeDataSource(poolKey: string): Promise<void> {
  */
 export async function closeAllDataSources(): Promise<void> {
   const closePromises = Array.from(dataSources.values())
-    .filter(ds => ds.isInitialized)
-    .map(ds => ds.destroy());
+    .filter((ds) => ds.isInitialized)
+    .map((ds) => ds.destroy());
   await Promise.all(closePromises);
   dataSources.clear();
 }
-

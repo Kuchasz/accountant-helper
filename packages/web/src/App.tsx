@@ -1,6 +1,6 @@
 import { RouterProvider } from '@tanstack/react-router';
-import { router } from './router';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { router } from './router';
 
 export function App() {
   return (

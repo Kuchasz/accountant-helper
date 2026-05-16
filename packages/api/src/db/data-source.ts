@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { User, Setting, SqlServerConnection } from './schema';
+import { Setting, SqlServerConnection, User } from './schema';
 
 // SQLite data source for local application database
 export const AppDataSource = new DataSource({

@@ -2,16 +2,11 @@ import { Button } from '@base-ui/react/button';
 import { Popover } from '@base-ui/react/popover';
 import { Select } from '@base-ui/react/select';
 import { Tooltip } from '@base-ui/react/tooltip';
-import {
-  CaretDown,
-  Funnel,
-  Gear,
-  Plus,
-} from '@phosphor-icons/react';
+import { CaretDown, Funnel, Gear, Plus } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { ConversionCard } from './dashboard/ConversionCard';
-import { TotalVisitsCard } from './dashboard/TotalVisitsCard';
 import { TopProductsCard } from './dashboard/TopProductsCard';
+import { TotalVisitsCard } from './dashboard/TotalVisitsCard';
 
 export function DashboardContent() {
   const [selectedYear, setSelectedYear] = useState('This year');
@@ -43,7 +38,9 @@ export function DashboardContent() {
                 <Popover.Popup className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 min-w-[200px] z-50">
                   <Popover.Arrow className="fill-white dark:fill-gray-800" />
                   <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Filter options</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      Filter options
+                    </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">Coming soon...</p>
                   </div>
                 </Popover.Popup>
@@ -62,7 +59,9 @@ export function DashboardContent() {
         {/* Product Overview */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Product overview</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Product overview
+            </h3>
             <Tooltip.Provider>
               <Tooltip.Root>
                 <Tooltip.Trigger
@@ -91,7 +90,9 @@ export function DashboardContent() {
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Total sales</p>
           </div>
           <div className="space-y-2">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Select by product</p>
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+              Select by product
+            </p>
             <div className="flex gap-2">
               <span className="px-3 py-1.5 bg-orange-100 text-orange-700 text-xs font-medium rounded-lg flex items-center space-x-1">
                 <span>Cosmetics</span>
@@ -160,7 +161,9 @@ export function DashboardContent() {
         {/* Product Revenue */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Product Revenue</h3>
+            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Product Revenue
+            </h3>
             <Tooltip.Provider>
               <Tooltip.Root>
                 <Tooltip.Trigger

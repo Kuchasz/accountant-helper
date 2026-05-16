@@ -50,7 +50,9 @@ export function Sidebar() {
             <Sparkle size={24} weight="fill" className="text-white dark:text-gray-900" />
           </div>
           <div>
-            <h1 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Veselity Inc.</h1>
+            <h1 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Veselity Inc.
+            </h1>
             <p className="text-xs text-gray-500 dark:text-gray-400">Free Plan</p>
           </div>
         </div>
@@ -124,7 +126,9 @@ export function Sidebar() {
                       <item.icon size={20} />
                       <span>{item.label}</span>
                     </div>
-                    {item.label === 'Account' && <Gear size={16} className="text-gray-400 dark:text-gray-500" />}
+                    {item.label === 'Account' && (
+                      <Gear size={16} className="text-gray-400 dark:text-gray-500" />
+                    )}
                   </Button>
                 </RouterLink>
               ))}

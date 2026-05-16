@@ -7,4 +7,3 @@ export {
   closeDataSource,
   closeAllDataSources,
 } from './sqlserver';
-
