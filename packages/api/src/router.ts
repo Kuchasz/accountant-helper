@@ -1,14 +1,14 @@
 import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
-import { getDatabase } from './db';
-import { CdnBazy } from './db/optimaSchema';
-import { Setting, SqlServerConnection, User } from './db/schema';
+import { getDatabase } from './db/index.js';
+import { CdnBazy } from './db/optimaSchema.js';
+import { Setting, SqlServerConnection, User } from './db/schema.js';
 import {
   getOptimaConfigDataSource,
   getPayerDataSource,
   getSqlServerDataSource,
-} from './db/sqlserver';
-import type { SqlServerConfig } from './db/sqlserver';
+} from './db/sqlserver.js';
+import type { SqlServerConfig } from './db/sqlserver.js';
 
 const t = initTRPC.create({
   errorFormatter: ({ shape, error }) => {

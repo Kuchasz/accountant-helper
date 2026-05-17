@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { getDatabase } from './data-source';
-import { CdnBazy } from './optimaSchema';
-import { SqlServerConnection } from './schema';
+import { getDatabase } from './data-source.js';
+import { CdnBazy } from './optimaSchema.js';
+import { SqlServerConnection } from './schema.js';
 
 export interface SqlServerConfig {
   server: string;

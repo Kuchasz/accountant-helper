@@ -9,8 +9,8 @@ import path from 'node:path';
 import { promisify } from 'node:util';
 import multer from 'multer';
 import sharp from 'sharp';
-import { initializeDatabase } from './db';
-import { appRouter } from './router';
+import { initializeDatabase } from './db/index.js';
+import { appRouter } from './router.js';
 
 const execFileAsync = promisify(execFile);
 

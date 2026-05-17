@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { appRouter } from '../router';
+import { appRouter } from '../router.js';
 
 describe('tRPC Router', () => {
   it('should return hello world greeting', async () => {
