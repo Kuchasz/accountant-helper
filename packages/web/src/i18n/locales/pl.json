@@ -84,7 +84,7 @@
     "sat": "SOB",
     "sun": "NIE",
     "payers": {
-      "title": "Płatnicy bez deklaracji",
+      "title": "Płatnicy bez wysłanej deklaracji",
       "overdue": "zaległe",
       "pending": "oczekujące",
       "noData": "Brak danych",
