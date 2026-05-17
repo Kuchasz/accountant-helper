@@ -1,4 +1,8 @@
 {
+  "app": {
+    "title": "Asystent Księgowego",
+    "description": "Narzędzia Asystenta Księgowego do pracy z Optimą, deklaracjami ZUS Płatnik i dokumentami."
+  },
   "header": {
     "configDbNotAvailable": "Baza konfiguracyjna niedostępna",
     "loadingCompanies": "Ładowanie firm...",

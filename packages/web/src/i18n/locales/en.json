@@ -1,4 +1,8 @@
 {
+  "app": {
+    "title": "Accountant Helper",
+    "description": "Accountant Helper tools for Optima, ZUS Payer declarations, and document workflows."
+  },
   "header": {
     "configDbNotAvailable": "Config DB not available",
     "loadingCompanies": "Loading companies...",
