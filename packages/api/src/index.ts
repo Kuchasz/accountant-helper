@@ -10,12 +10,14 @@ import { promisify } from 'node:util';
 import multer from 'multer';
 import sharp from 'sharp';
 import { initializeDatabase } from './db/index.js';
+import { startJobScheduler } from './jobs/index.js';
 import { appRouter } from './router.js';
 
 const execFileAsync = promisify(execFile);
 
 const app = express();
 const port = process.env.PORT || 3000;
+let jobScheduler: ReturnType<typeof startJobScheduler> | null = null;
 
 app.use(cors());
 app.use(express.json());
@@ -156,6 +158,7 @@ app.use(
 async function bootstrap() {
   try {
     await initializeDatabase();
+    jobScheduler = startJobScheduler();
 
     app.listen(port, () => {
       console.log(`🚀 Server running at http://localhost:${port}`);
@@ -166,5 +169,14 @@ async function bootstrap() {
     process.exit(1);
   }
 }
+
+function shutdown(signal: NodeJS.Signals): void {
+  console.log(`Received ${signal}, shutting down jobs`);
+  jobScheduler?.stop();
+  process.exit(0);
+}
+
+process.once('SIGINT', shutdown);
+process.once('SIGTERM', shutdown);
 
 bootstrap();
