@@ -86,9 +86,18 @@
       "title": "Płatnicy bez deklaracji",
       "overdue": "zaległe",
       "noData": "Brak danych",
+      "lastSent": "Ost. wysłanie",
       "loadError": "Błąd ładowania płatników",
       "checkedAfter15": "Deklaracje weryfikowane są po 15. dniu miesiąca",
       "allCompliant": "Wszyscy płatnicy złożyli deklaracje w tym miesiącu"
+    },
+    "payersDeclarations": {
+      "title": "Deklaracje w tym miesiącu",
+      "subtitle": "płatników złożyło deklaracje",
+      "of": "z",
+      "sent": "Złożono",
+      "pending": "Nie złożono",
+      "ignored": "Ignorowani"
     }
   },
   "pages": {

@@ -11,7 +11,7 @@ export function PayersListCard() {
   const isAfter15th = now.getDate() > 15;
 
   const overduePayers = isAfter15th
-    ? payers.filter((p) => getPayerStatus(p.lastSentDate).color === 'red')
+    ? payers.filter((p) => { const s = getPayerStatus(p.lastSentDate); return s.showWarning; })
     : [];
 
   return (
@@ -53,22 +53,27 @@ export function PayersListCard() {
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="overflow-y-auto max-h-64 pr-1 divide-y divide-gray-100 dark:divide-gray-700">
           {overduePayers.map((payer) => (
             <div
               key={payer.id}
-              className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30"
+              className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
             >
               <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                 {payer.name}
               </p>
-              <span className="ml-4 flex-shrink-0 text-xs text-red-600 dark:text-red-400 font-medium">
-                {payer.lastSentDate
-                  ? new Intl.DateTimeFormat('pl-PL', { month: 'short', day: 'numeric' }).format(
-                      new Date(payer.lastSentDate),
-                    )
-                  : t('dashboard.payers.noData')}
-              </span>
+              <div className="ml-4 flex-shrink-0 flex flex-col items-end gap-0.5">
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                  {t('dashboard.payers.lastSent')}
+                </span>
+                <span className="px-2.5 py-0.5 text-xs font-medium rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
+                  {payer.lastSentDate
+                    ? new Intl.DateTimeFormat('pl-PL', { month: 'short', day: 'numeric', year: 'numeric' }).format(
+                        new Date(payer.lastSentDate),
+                      )
+                    : t('dashboard.payers.noData')}
+                </span>
+              </div>
             </div>
           ))}
         </div>

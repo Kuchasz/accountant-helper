@@ -86,9 +86,18 @@
       "title": "Payers without declarations",
       "overdue": "overdue",
       "noData": "No data",
+      "lastSent": "Last sent",
       "loadError": "Failed to load payers",
       "checkedAfter15": "Declarations are checked after the 15th day of the month",
       "allCompliant": "All payers have submitted their declarations this month"
+    },
+    "payersDeclarations": {
+      "title": "Declarations this month",
+      "subtitle": "payers submitted declarations",
+      "of": "of",
+      "sent": "Submitted",
+      "pending": "Not submitted",
+      "ignored": "Ignored"
     }
   },
   "pages": {
