@@ -1,8 +1,9 @@
 # Backend Dockerfile
 FROM node:20-alpine AS base
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install pnpm and ghostscript
+RUN corepack enable && corepack prepare pnpm@latest --activate && \
+    apk add --no-cache ghostscript
 
 FROM base AS builder
 WORKDIR /app

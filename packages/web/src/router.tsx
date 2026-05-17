@@ -13,6 +13,7 @@ import { OrdersPage } from './pages/OrdersPage';
 import { PerformancePage } from './pages/PerformancePage';
 import { ProductsPage } from './pages/ProductsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { PdfCompressorPage } from './pages/PdfCompressorPage';
 import { XmlFixerPage } from './pages/XmlFixerPage';
 import { PayersPage } from './pages/zus/PayersPage';
 
@@ -113,6 +114,12 @@ const xmlFixerRoute = createRoute({
   component: XmlFixerPage,
 });
 
+const pdfCompressorRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/tools/pdf-compressor',
+  component: PdfCompressorPage,
+});
+
 const zusPayersRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/zus/payers',
@@ -134,6 +141,7 @@ const routeTree = rootRoute.addChildren([
   membersRoute,
   settingsRoute,
   xmlFixerRoute,
+  pdfCompressorRoute,
   zusPayersRoute,
 ]);
 

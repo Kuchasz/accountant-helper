@@ -8,6 +8,7 @@ import {
   EnvelopeSimple,
   Export,
   FileDashed,
+  FilePdf,
   Gear,
   GridFour,
   Link,
@@ -50,6 +51,7 @@ export function Sidebar() {
 
   const toolsItems: SidebarMenuItemProps[] = [
     { icon: FileDashed, label: t('sidebar.xmlFixer'), path: '/tools/xml-fixer' },
+    { icon: FilePdf, label: t('sidebar.pdfCompressor'), path: '/tools/pdf-compressor' },
   ];
 
   const accountItems: SidebarMenuItemProps[] = [

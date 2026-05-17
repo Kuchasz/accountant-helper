@@ -27,7 +27,8 @@
     "feedback": "Opinie",
     "zus": "ZUS",
     "zusPayersLabel": "Płatnicy",
-    "xmlFixer": "Naprawa XML"
+    "xmlFixer": "Naprawa XML",
+    "pdfCompressor": "Kompresor Dokumentów"
   },
   "dashboard": {
     "title": "Panel",
@@ -164,7 +165,7 @@
     "xmlFixerDescription": "Napraw pliki XML aby przygotować je do importu do Comarch Optima poprzez wyczyszczenie określonych tagów",
     "uploadInfo": "Jak używać",
     "upload": "Prześlij Plik",
-    "uploadDescription": "Prześlij plik XML lub archiwum ZIP zawierające pojedynczy plik XML. Narzędzie wyczyści tagi BAZA_ZRD_ID i BAZA_DOC_ID, dzięki czemu plik będzie gotowy do importu w Comarch Optima przez Narzędzia → Praca Rozproszona → Import.",
+    "uploadDescription": "Prześlij plik XML lub archiwum ZIP zawierające pojedynczy plik XML. Narzędzie wyczyści tagi BAZA_ZRD_ID i BAZA_DOC_ID, dzięki czemu plik będzie gotowy do importu w Comarch Optima przez Narzędzia → Praca Rozproszona → Import",
     "dropZone": "Upuść plik XML lub ZIP tutaj, lub kliknij aby przeglądać",
     "acceptedFormats": "Akceptowane formaty: .xml, .zip",
     "processing": "Przetwarzanie pliku...",
@@ -173,6 +174,42 @@
     "success": "Plik przetworzony pomyślnie!",
     "successMessage": "Plik XML został naprawiony i jest gotowy do pobrania. Tagi BAZA_ZRD_ID i BAZA_DOC_ID zostały wyczyszczone.",
     "filePrefix": "poprawiony_",
+    "pdfCompressor": {
+      "title": "Kompresor Dokumentów",
+      "description": "Zmniejsz rozmiar pliku PDF lub obrazu (PNG, JPEG, BMP) po stronie serwera",
+      "pueInfo": "Portal ZUS PUE wymaga, aby załączone pliki PDF miały rozmiar do 1 MB. Użyj tego narzędzia, aby zmniejszyć pliki przekraczające ten limit.",
+      "dropZone": "Upuść plik PDF lub obraz tutaj, lub kliknij aby przeglądać",
+      "acceptedFormats": "Akceptowane formaty: .pdf, .png, .jpg, .bmp",
+      "originalSize": "Rozmiar oryginalny",
+      "tooBigForPue": "Za duży dla PUE (>1 MB)",
+      "stillTooBigForPue": "Skompresowany plik nadal przekracza 1 MB wymagane przez ZUS PUE. Spróbuj niższej jakości.",
+      "estimatedSize": "Rozmiar po kompresji",
+      "fitsForPue": "Mieści się w PUE",
+      "previewPending": "Wybierz plik, aby zobaczyć wynik...",
+      "quality": "Jakość kompresji",
+      "smallerFile": "Mniejszy plik",
+      "betterQuality": "Lepsza jakość",
+      "preset": {
+        "screen": "Ekran (72 dpi)",
+        "ebook": "Ebook (96 dpi)",
+        "printer": "Drukarka (150 dpi)",
+        "prepress": "Poligrafia (300 dpi)",
+        "imageMin": "Minimum (20%)",
+        "imageMed": "Średnia (50%)",
+        "imageHigh": "Wysoka (75%)",
+        "imageMax": "Maksimum (92%)"
+      },
+      "compress": "Kompresuj",
+      "compressing": "Kompresowanie...",
+      "changeFile": "Zmień plik",
+      "success": "Plik skompresowany pomyślnie!",
+      "download": "Pobierz skompresowany plik",
+      "compressAnother": "Kompresuj kolejny",
+      "error": {
+        "ghostscriptNotFound": "Ghostscript nie jest zainstalowany na serwerze. Skontaktuj się z administratorem.",
+        "compressionFailed": "Kompresja nie powiodła się. Sprawdź czy plik jest prawidłowym plikiem PDF."
+      }
+    },
     "error": {
       "title": "Błąd Przetwarzania Pliku",
       "noXmlInZip": "Nie znaleziono pliku XML w archiwum ZIP. Upewnij się, że ZIP zawiera co najmniej jeden plik XML.",

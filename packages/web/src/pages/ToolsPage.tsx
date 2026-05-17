@@ -1,4 +1,4 @@
-import { ArrowRight, FileDashed } from '@phosphor-icons/react';
+import { ArrowRight, FileDashed, FilePdf } from '@phosphor-icons/react';
 import { Link as RouterLink } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
@@ -11,6 +11,13 @@ export function ToolsPage() {
       description: t('tools.xmlFixerDescription'),
       icon: FileDashed,
       path: '/tools/xml-fixer',
+      color: 'from-blue-500 to-cyan-500',
+    },
+    {
+      title: t('tools.pdfCompressor.title'),
+      description: t('tools.pdfCompressor.description'),
+      icon: FilePdf,
+      path: '/tools/pdf-compressor',
       color: 'from-blue-500 to-cyan-500',
     },
   ];

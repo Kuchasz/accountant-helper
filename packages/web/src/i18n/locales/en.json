@@ -27,7 +27,8 @@
     "feedback": "Feedback",
     "zus": "ZUS",
     "zusPayersLabel": "Payers",
-    "xmlFixer": "XML Fixer"
+    "xmlFixer": "XML Fixer",
+    "pdfCompressor": "Document Compressor"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -173,6 +174,42 @@
     "success": "File processed successfully!",
     "successMessage": "The XML file has been fixed and is ready for download. BAZA_ZRD_ID and BAZA_DOC_ID tags have been cleared.",
     "filePrefix": "fixed_",
+    "pdfCompressor": {
+      "title": "PDF Compressor",
+      "description": "Reduce file size of PDF or images (PNG, JPEG, BMP) server-side",
+      "pueInfo": "ZUS PUE portal requires attached PDF files to be at most 1 MB. Use this tool to compress files that exceed this limit.",
+      "dropZone": "Drop a PDF or image file here, or click to browse",
+      "acceptedFormats": "Accepted formats: .pdf, .png, .jpg, .bmp",
+      "originalSize": "Original size",
+      "tooBigForPue": "Too large for PUE (>1 MB)",
+      "stillTooBigForPue": "The compressed file still exceeds the 1 MB limit required by ZUS PUE. Try a lower quality setting.",
+      "estimatedSize": "Size after compression",
+      "fitsForPue": "Fits PUE limit",
+      "previewPending": "Select a file to see the result...",
+      "quality": "Compression quality",
+      "smallerFile": "Smaller file",
+      "betterQuality": "Better quality",
+      "preset": {
+        "screen": "Screen (72 dpi)",
+        "ebook": "Ebook (96 dpi)",
+        "printer": "Printer (150 dpi)",
+        "prepress": "Prepress (300 dpi)",
+        "imageMin": "Minimum (20%)",
+        "imageMed": "Medium (50%)",
+        "imageHigh": "High (75%)",
+        "imageMax": "Maximum (92%)"
+      },
+      "compress": "Compress",
+      "compressing": "Compressing...",
+      "changeFile": "Change file",
+      "success": "File compressed successfully!",
+      "download": "Download compressed file",
+      "compressAnother": "Compress another",
+      "error": {
+        "ghostscriptNotFound": "Ghostscript is not installed on the server. Please contact your administrator.",
+        "compressionFailed": "Compression failed. Please ensure the file is a valid PDF."
+      }
+    },
     "error": {
       "title": "Error Processing File",
       "noXmlInZip": "No XML file found in the ZIP archive. Please ensure the ZIP contains at least one XML file.",
