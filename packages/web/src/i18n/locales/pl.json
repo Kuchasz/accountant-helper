@@ -196,6 +196,12 @@
       "neverSent": "Nigdy nie wysłano",
       "noData": "Brak danych",
       "warningTooltip": "Ten płatnik wysłał dokumenty w poprzednim miesiącu, ale nie wysłał w tym miesiącu (po terminie)",
+      "filter": {
+        "all": "Wszyscy",
+        "sent": "Z deklaracją",
+        "notSent": "Bez deklaracji",
+        "ignored": "Ignorowani"
+      },
       "loadError": "Błąd ładowania płatników",
       "empty": "Nie znaleziono płatników",
       "columns": {

@@ -196,6 +196,12 @@
       "neverSent": "Never sent",
       "noData": "No data",
       "warningTooltip": "This payer sent documents last month but hasn't sent any this month (past due date)",
+      "filter": {
+        "all": "All",
+        "sent": "Sent declaration",
+        "notSent": "Not sent declaration",
+        "ignored": "Ignored"
+      },
       "loadError": "Failed to load payers",
       "empty": "No payers found",
       "columns": {

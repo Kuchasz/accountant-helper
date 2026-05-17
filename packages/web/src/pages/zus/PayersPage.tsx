@@ -1,10 +1,14 @@
+import { Tabs } from '@base-ui/react/tabs';
 import { Tooltip } from '@base-ui/react/tooltip';
 import { Warning } from '@phosphor-icons/react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { DataTableColumn } from '../../components/ui/DataTable';
 import { DataTable } from '../../components/ui/DataTable';
 import { getPayerStatus } from '../../lib/payerStatus';
 import { trpc } from '../../lib/trpc';
+
+type FilterTab = 'all' | 'sent' | 'not-sent' | 'ignored';
 
 interface Payer {
   id: number;
@@ -39,6 +43,35 @@ export function PayersPage() {
   const { data: dueDateSetting } = trpc.getSetting.useQuery({ key: 'zus_due_date_day' });
   const dueDateDay = dueDateSetting?.value ? Number.parseInt(dueDateSetting.value) || 20 : 20;
 
+  const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
+
+  const filterCounts = {
+    sent: 0,
+    'not-sent': 0,
+    ignored: 0,
+  };
+  for (const p of payers) {
+    const { color } = getPayerStatus(p.lastSentDate, dueDateDay);
+    if (color === 'green') filterCounts.sent++;
+    else if (color === 'orange' || color === 'red') filterCounts['not-sent']++;
+    else filterCounts.ignored++;
+  }
+
+  const filteredPayers = payers.filter((p) => {
+    if (activeFilter === 'all') return true;
+    const { color } = getPayerStatus(p.lastSentDate, dueDateDay);
+    if (activeFilter === 'sent') return color === 'green';
+    if (activeFilter === 'not-sent') return color === 'orange' || color === 'red';
+    return color === 'gray';
+  });
+
+  const filterTabs: { value: FilterTab; labelKey: string; count: number }[] = [
+    { value: 'all', labelKey: 'zus.payers.filter.all', count: payers.length },
+    { value: 'sent', labelKey: 'zus.payers.filter.sent', count: filterCounts.sent },
+    { value: 'not-sent', labelKey: 'zus.payers.filter.notSent', count: filterCounts['not-sent'] },
+    { value: 'ignored', labelKey: 'zus.payers.filter.ignored', count: filterCounts.ignored },
+  ];
+
   const formatDate = (iso: string | null) => {
     if (!iso) return t('zus.payers.neverSent');
     return new Intl.DateTimeFormat('pl-PL', {
@@ -52,6 +85,8 @@ export function PayersPage() {
     {
       key: 'name',
       header: t('zus.payers.columns.name'),
+      sortable: true,
+      sortValue: (row) => row.name,
       render: (row) => {
         const status = getPayerStatus(row.lastSentDate, dueDateDay);
         return (
@@ -89,6 +124,8 @@ export function PayersPage() {
     {
       key: 'lastSent',
       header: t('zus.payers.columns.lastSent'),
+      sortable: true,
+      sortValue: (row) => (row.lastSentDate ? new Date(row.lastSentDate).getTime() : null),
       render: (row) => (
         <span className="text-gray-600 dark:text-gray-300">{formatDate(row.lastSentDate)}</span>
       ),
@@ -141,7 +178,7 @@ export function PayersPage() {
         </div>
         {!isLoading && (
           <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full">
-            {payers.length} {t('zus.payers.total')}
+            {filteredPayers.length}{activeFilter !== 'all' ? `/${payers.length}` : ''} {t('zus.payers.total')}
           </span>
         )}
       </div>
@@ -150,10 +187,37 @@ export function PayersPage() {
         <p className="text-sm text-red-500 dark:text-red-400 mb-4">{t('zus.payers.loadError')}</p>
       )}
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <Tabs.Root
+          value={activeFilter}
+          onValueChange={(v) => setActiveFilter(v as FilterTab)}
+        >
+          <Tabs.List className="relative flex border-b border-gray-200 dark:border-gray-700">
+            {filterTabs.map((tab) => (
+              <Tabs.Tab
+                key={tab.value}
+                value={tab.value}
+                className="relative flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 data-[active]:text-gray-900 dark:data-[active]:text-gray-100 transition-colors cursor-pointer border-0 bg-transparent"
+              >
+                {t(tab.labelKey)}
+                <span
+                  className={`text-xs px-1.5 py-0.5 rounded-full transition-colors ${
+                    activeFilter === tab.value
+                      ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              </Tabs.Tab>
+            ))}
+            <Tabs.Indicator className="absolute bottom-0 left-0 h-0.5 bg-gray-900 dark:bg-gray-100 transition-all duration-200 ease-in-out" />
+          </Tabs.List>
+        </Tabs.Root>
+
         <DataTable<Payer>
           columns={columns}
-          data={payers}
+          data={filteredPayers}
           keyExtractor={(row) => row.id}
           isLoading={isLoading}
           emptyMessage={t('zus.payers.empty')}
