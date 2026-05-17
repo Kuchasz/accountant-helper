@@ -1,8 +1,9 @@
 # Frontend Dockerfile
 FROM node:24-alpine AS base
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
+# Install pnpm and native build dependencies for API types imported by the web app
+RUN corepack enable && corepack prepare pnpm@10.15.1 --activate && \
+    apk add --no-cache python3 make g++
 
 FROM base AS builder
 WORKDIR /app
@@ -12,12 +13,14 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
 
 # Copy frontend package files
 COPY packages/web/package.json ./packages/web/
+COPY packages/api/package.json ./packages/api/
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
 # Copy frontend source
 COPY packages/web ./packages/web
+COPY packages/api ./packages/api
 COPY biome.json ./
 
 # Build

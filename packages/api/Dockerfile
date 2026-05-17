@@ -1,9 +1,9 @@
 # Backend Dockerfile
 FROM node:24-alpine AS base
 
-# Install pnpm and ghostscript
+# Install pnpm, runtime tools, and native build dependencies
 RUN corepack enable && corepack prepare pnpm@10.15.1 --activate && \
-    apk add --no-cache ghostscript
+    apk add --no-cache ghostscript python3 make g++
 
 FROM base AS builder
 WORKDIR /app
@@ -31,7 +31,6 @@ WORKDIR /app
 # Copy necessary files from builder
 COPY --from=builder /app/packages/api/dist ./dist
 COPY --from=builder /app/packages/api/package.json ./
-COPY --from=builder /app/packages/api/drizzle ./drizzle
 COPY --from=builder /app/node_modules ./node_modules
 
 # Create data directory for SQLite
