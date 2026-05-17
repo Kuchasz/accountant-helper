@@ -180,6 +180,15 @@ Mutation procedure to create a new user.
 PORT=3000
 DATABASE_URL=./data/db.sqlite
 NODE_ENV=development
+
+# Example Comarch Optima company database (development only)
+OPTIMA_COMPANY_SERVER=
+OPTIMA_COMPANY_DATABASE=
+OPTIMA_COMPANY_USER=
+OPTIMA_COMPANY_PASSWORD=
+OPTIMA_COMPANY_PORT=1433
+OPTIMA_COMPANY_ENCRYPT=true
+OPTIMA_COMPANY_TRUST_SERVER_CERTIFICATE=false
 ```
 
 ### Frontend (`.env`)
