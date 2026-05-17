@@ -18,14 +18,18 @@ import {
   UsersThree,
   Wrench,
 } from '@phosphor-icons/react';
-import { Link as RouterLink, useMatchRoute } from '@tanstack/react-router';
+import { Link as RouterLink } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
+import { trpc } from '../lib/trpc';
+import { SidebarMenuItem } from './sidebar/SidebarMenuItem';
+import type { SidebarMenuItemProps } from './sidebar/SidebarMenuItem';
+import { SidebarSection } from './sidebar/SidebarSection';
 
 export function Sidebar() {
   const { t } = useTranslation();
-  const matchRoute = useMatchRoute();
+  const { data: payers } = trpc.getPayersList.useQuery();
 
-  const menuItems = [
+  const menuItems: SidebarMenuItemProps[] = [
     { icon: GridFour, label: t('sidebar.dashboard'), path: '/' },
     { icon: Package, label: t('sidebar.products'), path: '/products' },
     { icon: ShoppingCart, label: t('sidebar.order'), path: '/orders' },
@@ -33,17 +37,23 @@ export function Sidebar() {
     { icon: ClipboardText, label: t('sidebar.chat'), path: '/chat', badge: 22 },
   ];
 
-  const otherItems = [
+  const zusItems: SidebarMenuItemProps[] = [
+    { icon: UsersThree, label: t('sidebar.zusPayersLabel'), path: '/zus/payers', badge: payers?.length },
+  ];
+
+  const otherItems: SidebarMenuItemProps[] = [
     { icon: EnvelopeSimple, label: t('sidebar.email'), path: '/email' },
     { icon: ChartLine, label: t('sidebar.analytics'), path: '/analytics' },
     { icon: Link, label: t('sidebar.integration'), path: '/integration' },
     { icon: Rocket, label: t('sidebar.performance'), path: '/performance' },
   ];
 
-  const toolsItems = [{ icon: Wrench, label: t('sidebar.tools'), path: '/tools' }];
+  const toolsItems: SidebarMenuItemProps[] = [
+    { icon: Wrench, label: t('sidebar.tools'), path: '/tools' },
+  ];
 
-  const accountItems = [
-    { icon: Gear, label: t('sidebar.account'), path: '/account' },
+  const accountItems: SidebarMenuItemProps[] = [
+    { icon: Gear, label: t('sidebar.account'), path: '/account', trailingIcon: Gear },
     { icon: Users, label: t('sidebar.members'), path: '/members' },
   ];
 
@@ -67,7 +77,7 @@ export function Sidebar() {
         </Button>
       </div>
 
-      {/* Main Menu */}
+      {/* Scrollable nav */}
       <ScrollArea.Root className="flex-1 overflow-hidden">
         <ScrollArea.Viewport className="h-full py-4 overflow-y-auto">
           <div className="px-3">
@@ -75,109 +85,16 @@ export function Sidebar() {
               {t('sidebar.mainMenu')}
             </p>
             <div className="space-y-1">
-              {menuItems.map((item) => {
-                const isActive = matchRoute({ to: item.path, fuzzy: false });
-                return (
-                  <RouterLink key={item.path} to={item.path} className="block">
-                    <Button
-                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors border-0 cursor-pointer ${
-                        isActive
-                          ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-                          : 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <item.icon size={20} />
-                        <span>{item.label}</span>
-                      </div>
-                      {item.badge && (
-                        <span className="px-2 py-0.5 text-xs font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
-                          {item.badge}
-                        </span>
-                      )}
-                    </Button>
-                  </RouterLink>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* ZUS Section */}
-          <div className="px-3 mt-6">
-            <p className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-              {t('sidebar.zus')}
-            </p>
-            <div className="space-y-1">
-              <RouterLink to="/zus/payers" className="block">
-                <Button
-                  className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors border-0 cursor-pointer ${
-                    matchRoute({ to: '/zus/payers' })
-                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-                      : 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  <UsersThree size={20} />
-                  <span>{t('sidebar.zusPayersLabel')}</span>
-                </Button>
-              </RouterLink>
-            </div>
-          </div>
-
-          {/* Other Section */}
-          <div className="px-3 mt-6">
-            <p className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-              {t('sidebar.other')}
-            </p>
-            <div className="space-y-1">
-              {otherItems.map((item) => (
-                <RouterLink key={item.path} to={item.path} className="block">
-                  <Button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-0 bg-transparent cursor-pointer">
-                    <item.icon size={20} />
-                    <span>{item.label}</span>
-                  </Button>
-                </RouterLink>
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.path} {...item} />
               ))}
             </div>
           </div>
 
-          {/* Tools Section */}
-          <div className="px-3 mt-6">
-            <p className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-              {t('sidebar.tools')}
-            </p>
-            <div className="space-y-1">
-              {toolsItems.map((item) => (
-                <RouterLink key={item.path} to={item.path} className="block">
-                  <Button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-0 bg-transparent cursor-pointer">
-                    <item.icon size={20} />
-                    <span>{item.label}</span>
-                  </Button>
-                </RouterLink>
-              ))}
-            </div>
-          </div>
-
-          {/* Account Section */}
-          <div className="px-3 mt-6">
-            <p className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-              {t('sidebar.account')}
-            </p>
-            <div className="space-y-1">
-              {accountItems.map((item) => (
-                <RouterLink key={item.path} to={item.path} className="block">
-                  <Button className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-0 bg-transparent cursor-pointer">
-                    <div className="flex items-center space-x-3">
-                      <item.icon size={20} />
-                      <span>{item.label}</span>
-                    </div>
-                    {item.label === t('sidebar.account') && (
-                      <Gear size={16} className="text-gray-400 dark:text-gray-500" />
-                    )}
-                  </Button>
-                </RouterLink>
-              ))}
-            </div>
-          </div>
+          <SidebarSection label={t('sidebar.zus')} items={zusItems} />
+          <SidebarSection label={t('sidebar.other')} items={otherItems} />
+          <SidebarSection label={t('sidebar.tools')} items={toolsItems} />
+          <SidebarSection label={t('sidebar.account')} items={accountItems} />
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
           orientation="vertical"
