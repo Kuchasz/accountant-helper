@@ -6,6 +6,7 @@ import { SidebarProvider } from './contexts/SidebarContext';
 import { SettingsPage } from './pages/SettingsPage';
 import { DocumentCompressorPage } from './pages/DocumentCompressorPage';
 import { XmlFixerPage } from './pages/XmlFixerPage';
+import { VatDeclarationsPage } from './pages/optima/VatDeclarationsPage';
 import { PayersPage } from './pages/zus/PayersPage';
 
 // Root layout component
@@ -59,6 +60,12 @@ const zusPayersRoute = createRoute({
   component: PayersPage,
 });
 
+const optimaVatDeclarationsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/optima/vat-declarations',
+  component: VatDeclarationsPage,
+});
+
 // Create route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -66,6 +73,7 @@ const routeTree = rootRoute.addChildren([
   xmlFixerRoute,
   documentCompressorRoute,
   zusPayersRoute,
+  optimaVatDeclarationsRoute,
 ]);
 
 // Create router

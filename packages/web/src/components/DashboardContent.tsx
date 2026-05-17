@@ -7,6 +7,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { trpc } from '../lib/trpc';
 import { ConversionCard } from './dashboard/ConversionCard';
+import { JpkVatCompaniesListCard } from './dashboard/JpkVatCompaniesListCard';
+import { JpkVatDeclarationsCard } from './dashboard/JpkVatDeclarationsCard';
 import { PayersDeclarationsCard } from './dashboard/PayersDeclarationsCard';
 import { PayersListCard } from './dashboard/PayersListCard';
 import { TopProductsCard } from './dashboard/TopProductsCard';
@@ -96,6 +98,11 @@ export function DashboardContent() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         <PayersListCard />
         <PayersDeclarationsCard />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <JpkVatCompaniesListCard />
+        <JpkVatDeclarationsCard />
       </div>
 
       {showFakeWidgets && (

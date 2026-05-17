@@ -19,6 +19,8 @@
     "settings": "Settings",
     "zus": "ZUS",
     "zusPayersLabel": "Payers",
+    "optima": "Optima",
+    "optimaVatDeclarationsLabel": "VAT Declarations",
     "xmlFixer": "XML Fixer",
     "documentCompressor": "Document Compressor"
   },
@@ -93,6 +95,30 @@
       "sent": "Submitted",
       "pending": "Not submitted",
       "ignored": "Ignored"
+    },
+    "jpkVat": {
+      "title": "Companies without sent VAT declarations",
+      "pending": "without declarations",
+      "loadError": "Failed to load VAT declarations",
+      "allCompliant": "All companies sent VAT declarations this month",
+      "noChecksYet": "No verification results for the current month yet",
+      "errorHint": "{{count}} companies could not be checked",
+      "lastChecked": "Last check: {{date}}",
+      "company": "Company",
+      "database": "Database",
+      "checkedAt": "Checked",
+      "status": "Status",
+      "noData": "No data",
+      "notSent": "Not sent",
+      "checkError": "Check error"
+    },
+    "jpkVatDeclarations": {
+      "title": "VAT declarations this month",
+      "subtitle": "companies sent VAT declarations",
+      "of": "of",
+      "sent": "Sent",
+      "pending": "Not sent",
+      "errors": "Check errors"
     }
   },
   "pages": {
@@ -206,6 +232,17 @@
     "dueDateDayHint": "Day of month when ZUS declarations are due (1–28). Default: 20.",
     "saved": "Saved"
   },
+  "vatSettings": {
+    "title": "VAT Settings",
+    "subtitle": "Configure VAT declaration parameters",
+    "dueDateDay": "VAT Declaration Due Date Day",
+    "dueDateDayHint": "Day of month when VAT declarations are due (1–28). Default: 25.",
+    "updatesEnabled": "VAT declaration updates",
+    "updatesEnabledHint": "When disabled, the VAT declaration status check job will be skipped.",
+    "updateIntervalMinutes": "Update interval (minutes)",
+    "updateIntervalMinutesHint": "The job wakes up every 5 minutes and only runs when the selected interval boundary is due.",
+    "saved": "Saved"
+  },
   "zus": {
     "payers": {
       "title": "Payers",
@@ -237,6 +274,42 @@
         "orange": "Last declaration sent last month. Not yet submitted this month, but the due date hasn't passed yet.",
         "red": "Last declaration sent last month. Not submitted this month and the due date has already passed.",
         "gray": "No declaration submitted in the last month. Payer may be inactive or not tracked."
+      }
+    }
+  },
+  "optima": {
+    "vatDeclarations": {
+      "title": "VAT Declarations",
+      "subtitle": "VAT declaration delivery status from Comarch Optima company databases",
+      "total": "companies",
+      "notSent": "Not sent",
+      "notChecked": "Not checked",
+      "loadError": "Failed to load VAT declarations",
+      "empty": "No VAT declarations for the current month",
+      "filter": {
+        "all": "All",
+        "sent": "Sent",
+        "notSent": "Not sent",
+        "errors": "Errors"
+      },
+      "columns": {
+        "companyName": "Company",
+        "databaseName": "Database",
+        "sentAt": "Sent",
+        "checkedAt": "Checked",
+        "status": "Status"
+      },
+      "status": {
+        "sent": "Sent",
+        "pending": "Not sent",
+        "overdue": "Overdue",
+        "error": "Error"
+      },
+      "statusTooltip": {
+        "sent": "VAT declaration was sent in the current month.",
+        "pending": "VAT declaration has not been sent in the current month yet.",
+        "overdue": "VAT declaration has not been sent in the current month and the due date has passed.",
+        "error": "VAT declaration status could not be checked."
       }
     }
   }

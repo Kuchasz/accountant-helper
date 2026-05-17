@@ -41,12 +41,23 @@ export function SettingsPage() {
   const [isTesting, setIsTesting] = useState<'optima' | 'payer' | null>(null);
   const [dueDateDay, setDueDateDay] = useState<number>(20);
   const [dueDateSaved, setDueDateSaved] = useState(false);
+  const [vatDueDateDay, setVatDueDateDay] = useState<number>(25);
+  const [vatDueDateSaved, setVatDueDateSaved] = useState(false);
+  const [vatUpdatesEnabled, setVatUpdatesEnabled] = useState(true);
+  const [vatUpdateIntervalMinutes, setVatUpdateIntervalMinutes] = useState(15);
   const [showFakeDashboardWidgets, setShowFakeDashboardWidgets] = useState(false);
   const [dashboardSettingsSaved, setDashboardSettingsSaved] = useState(false);
 
   const utils = trpc.useUtils();
   const { data: connections = [], isLoading } = trpc.getSqlServerConnections.useQuery();
   const { data: dueDateSetting } = trpc.getSetting.useQuery({ key: 'zus_due_date_day' });
+  const { data: vatDueDateSetting } = trpc.getSetting.useQuery({ key: 'vat_due_date_day' });
+  const { data: vatUpdatesEnabledSetting } = trpc.getSetting.useQuery({
+    key: 'vat_updates_enabled',
+  });
+  const { data: vatUpdateIntervalSetting } = trpc.getSetting.useQuery({
+    key: 'vat_update_interval_minutes',
+  });
   const { data: fakeDashboardWidgetsSetting } = trpc.getSetting.useQuery({
     key: 'dashboard_show_fake_widgets',
   });
@@ -60,6 +71,16 @@ export function SettingsPage() {
       if (setting.key === 'zus_due_date_day') {
         setDueDateSaved(true);
         setTimeout(() => setDueDateSaved(false), 2000);
+      }
+
+      if (setting.key === 'vat_due_date_day') {
+        setVatDueDateSaved(true);
+        setTimeout(() => setVatDueDateSaved(false), 2000);
+      }
+
+      if (setting.key === 'vat_updates_enabled' || setting.key === 'vat_update_interval_minutes') {
+        setVatDueDateSaved(true);
+        setTimeout(() => setVatDueDateSaved(false), 2000);
       }
 
       if (setting.key === 'dashboard_show_fake_widgets') {
@@ -138,6 +159,24 @@ export function SettingsPage() {
   }, [dueDateSetting]);
 
   useEffect(() => {
+    if (vatDueDateSetting?.value) {
+      const parsed = Number.parseInt(vatDueDateSetting.value);
+      if (!Number.isNaN(parsed)) setVatDueDateDay(parsed);
+    }
+  }, [vatDueDateSetting]);
+
+  useEffect(() => {
+    setVatUpdatesEnabled(vatUpdatesEnabledSetting?.value !== 'false');
+  }, [vatUpdatesEnabledSetting]);
+
+  useEffect(() => {
+    if (vatUpdateIntervalSetting?.value) {
+      const parsed = Number.parseInt(vatUpdateIntervalSetting.value);
+      if (!Number.isNaN(parsed)) setVatUpdateIntervalMinutes(parsed);
+    }
+  }, [vatUpdateIntervalSetting]);
+
+  useEffect(() => {
     setShowFakeDashboardWidgets(fakeDashboardWidgetsSetting?.value === 'true');
   }, [fakeDashboardWidgetsSetting]);
 
@@ -176,6 +215,24 @@ export function SettingsPage() {
       port: form.port,
       encrypt: form.encrypt,
       trustServerCertificate: form.trustServerCertificate,
+    });
+  };
+
+  const handleSaveVatSettings = () => {
+    setSettingMutation.mutate({
+      key: 'vat_due_date_day',
+      value: vatDueDateDay.toString(),
+      description: 'VAT declaration due date day of month',
+    });
+    setSettingMutation.mutate({
+      key: 'vat_updates_enabled',
+      value: vatUpdatesEnabled ? 'true' : 'false',
+      description: 'Enable VAT declaration status updates',
+    });
+    setSettingMutation.mutate({
+      key: 'vat_update_interval_minutes',
+      value: vatUpdateIntervalMinutes.toString(),
+      description: 'VAT declaration status update interval in minutes',
     });
   };
 
@@ -512,6 +569,111 @@ export function SettingsPage() {
                   description: 'ZUS declaration due date day of month',
                 })
               }
+              disabled={setSettingMutation.isPending}
+              className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {setSettingMutation.isPending ? t('sqlSettings.saving') : t('sqlSettings.save')}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <FileText size={24} />
+              {t('vatSettings.title')}
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {t('vatSettings.subtitle')}
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-2xl space-y-4">
+          <Field.Root>
+            <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('vatSettings.dueDateDay')}
+            </Field.Label>
+            <Field.Control
+              render={(props) => (
+                <Input
+                  {...props}
+                  type="number"
+                  value={vatDueDateDay.toString()}
+                  onValueChange={(value) => {
+                    const n = Number.parseInt(value);
+                    if (!Number.isNaN(n) && n >= 1 && n <= 28) setVatDueDateDay(n);
+                  }}
+                  min={1}
+                  max={28}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
+                />
+              )}
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {t('vatSettings.dueDateDayHint')}
+            </p>
+          </Field.Root>
+
+          <Field.Root className="flex items-center justify-between gap-6 pt-2">
+            <div>
+              <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('vatSettings.updatesEnabled')}
+              </Field.Label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {t('vatSettings.updatesEnabledHint')}
+              </p>
+            </div>
+            <Switch.Root
+              checked={vatUpdatesEnabled}
+              onCheckedChange={setVatUpdatesEnabled}
+              className="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
+            >
+              <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
+            </Switch.Root>
+          </Field.Root>
+
+          <Field.Root className="max-w-xs">
+            <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('vatSettings.updateIntervalMinutes')}
+            </Field.Label>
+            <Field.Control
+              render={(props) => (
+                <Input
+                  {...props}
+                  type="number"
+                  value={vatUpdateIntervalMinutes.toString()}
+                  onValueChange={(value) => {
+                    const n = Number.parseInt(value);
+                    if (!Number.isNaN(n) && n >= 5 && n <= 1440) {
+                      setVatUpdateIntervalMinutes(Math.round(n / 5) * 5);
+                    }
+                  }}
+                  min={5}
+                  max={1440}
+                  step={5}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
+                />
+              )}
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {t('vatSettings.updateIntervalMinutesHint')}
+            </p>
+          </Field.Root>
+
+          <div className="flex items-center gap-3 pt-2">
+            {vatDueDateSaved && (
+              <span className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+                <CheckCircle size={16} weight="fill" />
+                {t('vatSettings.saved')}
+              </span>
+            )}
+            <div className="flex-1" />
+            <Button
+              type="button"
+              onClick={handleSaveVatSettings}
               disabled={setSettingMutation.isPending}
               className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >

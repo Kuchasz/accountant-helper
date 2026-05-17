@@ -16,6 +16,11 @@ export interface SqlServerConfig {
   };
 }
 
+export interface OptimaCompanyConnectionTarget {
+  database: string;
+  server?: string;
+}
+
 // Connection pool cache to reuse connections
 const dataSources = new Map<string, DataSource>();
 
@@ -73,8 +78,36 @@ export async function getOptimaConfigDataSource(): Promise<DataSource | null> {
     });
 
     if (!optimaConnection || !optimaConnection.server || !optimaConnection.database) {
-      console.warn('Optima config database not configured or incomplete');
-      return null;
+      if (process.env.NODE_ENV !== 'development') {
+        console.warn('Optima config database not configured or incomplete');
+        return null;
+      }
+
+      const envServer = process.env.OPTIMA_CONFIG_SERVER;
+      const envDatabase = process.env.OPTIMA_CONFIG_DATABASE;
+      const envUser = process.env.OPTIMA_CONFIG_USER;
+      const envPassword = process.env.OPTIMA_CONFIG_PASSWORD;
+
+      if (!envServer || !envDatabase || !envUser || !envPassword) {
+        console.warn(
+          'Optima config database not configured (no SQLite settings; env var fallback is dev-only)',
+        );
+        return null;
+      }
+
+      const config: SqlServerConfig = {
+        server: envServer,
+        database: envDatabase,
+        user: envUser,
+        password: envPassword,
+        port: Number.parseInt(process.env.OPTIMA_CONFIG_PORT ?? '1433', 10),
+        options: {
+          encrypt: process.env.OPTIMA_CONFIG_ENCRYPT !== 'false',
+          trustServerCertificate: process.env.OPTIMA_CONFIG_TRUST_SERVER_CERTIFICATE === 'true',
+        },
+      };
+
+      return getSqlServerDataSource(config, 'optima-config-env');
     }
 
     const config: SqlServerConfig = {
@@ -94,6 +127,46 @@ export async function getOptimaConfigDataSource(): Promise<DataSource | null> {
     console.error('Error loading Optima config database configuration:', error);
     return null;
   }
+}
+
+/**
+ * Get an Optima company database connection. In development this uses the
+ * sample company connection from .env and lets callers override database/server
+ * for each company listed in CDN.Bazy.
+ */
+export async function getOptimaCompanyDataSource(
+  target?: OptimaCompanyConnectionTarget,
+): Promise<DataSource | null> {
+  if (process.env.NODE_ENV !== 'development') {
+    console.warn('Optima company database env fallback is development-only');
+    return null;
+  }
+
+  const envServer = process.env.OPTIMA_COMPANY_SERVER;
+  const envDatabase = process.env.OPTIMA_COMPANY_DATABASE;
+  const envUser = process.env.OPTIMA_COMPANY_USER;
+  const envPassword = process.env.OPTIMA_COMPANY_PASSWORD;
+
+  if (!envServer || !envDatabase || !envUser || !envPassword) {
+    console.warn('Optima company database not configured in env vars');
+    return null;
+  }
+
+  const database = target?.database || envDatabase;
+  const server = target?.server || envServer;
+  const config: SqlServerConfig = {
+    server,
+    database,
+    user: envUser,
+    password: envPassword,
+    port: Number.parseInt(process.env.OPTIMA_COMPANY_PORT ?? '1433', 10),
+    options: {
+      encrypt: process.env.OPTIMA_COMPANY_ENCRYPT !== 'false',
+      trustServerCertificate: process.env.OPTIMA_COMPANY_TRUST_SERVER_CERTIFICATE === 'true',
+    },
+  };
+
+  return getSqlServerDataSource(config, `optima-company-${server}-${database}`);
 }
 
 /**
@@ -153,8 +226,10 @@ export async function getPayerDataSource(): Promise<DataSource | null> {
       return getSqlServerDataSource(config, 'payer');
     }
 
-    console.warn('Payer database not configured (no SQLite settings; env var fallback is dev-only)');
-      return null;
+    console.warn(
+      'Payer database not configured (no SQLite settings; env var fallback is dev-only)',
+    );
+    return null;
   } catch (error) {
     console.error('Error loading Payer database configuration:', error);
     return null;

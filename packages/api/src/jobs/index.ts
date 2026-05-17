@@ -1,7 +1,8 @@
 import { exampleDevelopmentJob } from './exampleDevelopmentJob.js';
+import { jpkVatDeclarationStatusJob } from './jpkVatDeclarationStatusJob.js';
 import { JobScheduler } from './scheduler.js';
 
-const scheduledJobs = [exampleDevelopmentJob];
+const scheduledJobs = [exampleDevelopmentJob, jpkVatDeclarationStatusJob];
 
 export function startJobScheduler(): JobScheduler {
   const scheduler = new JobScheduler();

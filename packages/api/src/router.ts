@@ -2,13 +2,14 @@ import { initTRPC } from '@trpc/server';
 import { z } from 'zod';
 import { getDatabase } from './db/index.js';
 import { CdnBazy } from './db/optimaSchema.js';
-import { Setting, SqlServerConnection, User } from './db/schema.js';
+import { JpkVatDeclarationStatus, Setting, SqlServerConnection, User } from './db/schema.js';
 import {
   getOptimaConfigDataSource,
   getPayerDataSource,
   getSqlServerDataSource,
 } from './db/sqlserver.js';
 import type { SqlServerConfig } from './db/sqlserver.js';
+import { refreshJpkVatDeclarationStatuses } from './services/jpkVatDeclarationStatus.js';
 
 const t = initTRPC.create({
   errorFormatter: ({ shape, error }) => {
@@ -363,7 +364,9 @@ export const appRouter = t.router({
     if (!payerDs) {
       return [];
     }
-    const rows = await payerDs.query<Array<{ ID: number; NAZWASKR: string; LAST_SENT: Date | null }>>(
+    const rows = await payerDs.query<
+      Array<{ ID: number; NAZWASKR: string; LAST_SENT: Date | null }>
+    >(
       `SELECT p.ID, p.NAZWASKR, MAX(pr.DATA_WYS_ODB) AS LAST_SENT
       FROM PLATNIK p
       LEFT JOIN PRZESYLKA pr
@@ -374,12 +377,28 @@ export const appRouter = t.router({
       WHERE p.STATUS_AKTYWNOSCI = 'A'
       GROUP BY p.ID, p.NAZWASKR
       ORDER BY p.NAZWASKR
-    `);
+    `,
+    );
     return (rows as Array<{ ID: number; NAZWASKR: string; LAST_SENT: Date | null }>).map((r) => ({
       id: r.ID,
       name: r.NAZWASKR,
       lastSentDate: r.LAST_SENT ? r.LAST_SENT.toISOString() : null,
     }));
+  }),
+
+  getJpkVatDeclarationStatuses: t.procedure.query(async () => {
+    const db = await getDatabase();
+    const repository = db.getRepository(JpkVatDeclarationStatus);
+    return repository.find({
+      order: {
+        hasSent: 'ASC',
+        companyName: 'ASC',
+      },
+    });
+  }),
+
+  refreshJpkVatDeclarationStatuses: t.procedure.mutation(async () => {
+    return refreshJpkVatDeclarationStatuses();
   }),
 });
 

@@ -19,6 +19,8 @@
     "settings": "Ustawienia",
     "zus": "ZUS",
     "zusPayersLabel": "Płatnicy",
+    "optima": "Optima",
+    "optimaVatDeclarationsLabel": "Deklaracje VAT",
     "xmlFixer": "Naprawa XML",
     "documentCompressor": "Kompresor Dokumentów"
   },
@@ -93,6 +95,30 @@
       "sent": "Złożono",
       "pending": "Nie złożono",
       "ignored": "Ignorowani"
+    },
+    "jpkVat": {
+      "title": "Firmy bez wysłanej deklaracji VAT",
+      "pending": "bez deklaracji",
+      "loadError": "Błąd ładowania deklaracji VAT",
+      "allCompliant": "Wszystkie firmy wysłały deklarację VAT w tym miesiącu",
+      "noChecksYet": "Brak wyników weryfikacji dla bieżącego miesiąca",
+      "errorHint": "{{count}} firm nie udało się sprawdzić",
+      "lastChecked": "Ostatnie sprawdzenie: {{date}}",
+      "company": "Firma",
+      "database": "Baza",
+      "checkedAt": "Sprawdzono",
+      "status": "Status",
+      "noData": "Brak danych",
+      "notSent": "Nie wysłano",
+      "checkError": "Błąd sprawdzenia"
+    },
+    "jpkVatDeclarations": {
+      "title": "Deklaracje VAT w tym miesiącu",
+      "subtitle": "firm wysłało deklarację VAT",
+      "of": "z",
+      "sent": "Wysłano",
+      "pending": "Nie wysłano",
+      "errors": "Błędy sprawdzenia"
     }
   },
   "pages": {
@@ -206,6 +232,17 @@
     "dueDateDayHint": "Dzień miesiąca, w którym upływa termin deklaracji ZUS (1–28). Domyślnie: 20.",
     "saved": "Zapisano"
   },
+  "vatSettings": {
+    "title": "Ustawienia VAT",
+    "subtitle": "Konfiguruj parametry deklaracji VAT",
+    "dueDateDay": "Dzień terminu złożenia deklaracji VAT",
+    "dueDateDayHint": "Dzień miesiąca, w którym upływa termin deklaracji VAT (1–28). Domyślnie: 25.",
+    "updatesEnabled": "Aktualizacje deklaracji VAT",
+    "updatesEnabledHint": "Po wyłączeniu zadanie sprawdzania deklaracji VAT będzie pomijane.",
+    "updateIntervalMinutes": "Interwał aktualizacji (minuty)",
+    "updateIntervalMinutesHint": "Zadanie budzi się co 5 minut i wykonuje sprawdzenie tylko na granicy wybranego interwału.",
+    "saved": "Zapisano"
+  },
   "zus": {
     "payers": {
       "title": "Płatnicy",
@@ -237,6 +274,42 @@
         "orange": "Ostatnia deklaracja wysłana w poprzednim miesiącu. Jeszcze nie złożono w tym miesiącu, ale termin jeszcze nie minął.",
         "red": "Ostatnia deklaracja wysłana w poprzednim miesiącu. Nie złożono w tym miesiącu, a termin już minął.",
         "gray": "Brak deklaracji złożonej w ostatnim miesiącu. Płatnik może być nieaktywny lub nieśledzony."
+      }
+    }
+  },
+  "optima": {
+    "vatDeclarations": {
+      "title": "Deklaracje VAT",
+      "subtitle": "Status wysyłki deklaracji VAT z baz firm Comarch Optima",
+      "total": "firm",
+      "notSent": "Nie wysłano",
+      "notChecked": "Nie sprawdzono",
+      "loadError": "Błąd ładowania deklaracji VAT",
+      "empty": "Brak deklaracji VAT dla bieżącego miesiąca",
+      "filter": {
+        "all": "Wszystkie",
+        "sent": "Wysłane",
+        "notSent": "Niewysłane",
+        "errors": "Błędy"
+      },
+      "columns": {
+        "companyName": "Firma",
+        "databaseName": "Baza",
+        "sentAt": "Wysłano",
+        "checkedAt": "Sprawdzono",
+        "status": "Status"
+      },
+      "status": {
+        "sent": "Wysłano",
+        "pending": "Nie wysłano",
+        "overdue": "Po terminie",
+        "error": "Błąd"
+      },
+      "statusTooltip": {
+        "sent": "Deklaracja VAT została wysłana w bieżącym miesiącu.",
+        "pending": "Deklaracja VAT nie została jeszcze wysłana w bieżącym miesiącu.",
+        "overdue": "Deklaracja VAT nie została wysłana w bieżącym miesiącu, a termin już minął.",
+        "error": "Nie udało się sprawdzić statusu deklaracji VAT."
       }
     }
   }

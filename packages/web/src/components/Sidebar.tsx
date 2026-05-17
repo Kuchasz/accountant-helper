@@ -4,6 +4,7 @@ import {
   CaretDown,
   FileDashed,
   FilePdf,
+  FileText,
   Gear,
   GridFour,
   Lightning,
@@ -21,6 +22,7 @@ export function Sidebar() {
   const { t } = useTranslation();
   const { isCollapsed, toggleSidebar } = useSidebar();
   const { data: payers } = trpc.getPayersList.useQuery();
+  const { data: vatStatuses = [] } = trpc.getJpkVatDeclarationStatuses.useQuery();
 
   const menuItems: SidebarMenuItemProps[] = [
     { icon: GridFour, label: t('sidebar.dashboard'), path: '/' },
@@ -28,6 +30,15 @@ export function Sidebar() {
 
   const zusItems: SidebarMenuItemProps[] = [
     { icon: UsersThree, label: t('sidebar.zusPayersLabel'), path: '/zus/payers', badge: payers?.length },
+  ];
+
+  const optimaItems: SidebarMenuItemProps[] = [
+    {
+      icon: FileText,
+      label: t('sidebar.optimaVatDeclarationsLabel'),
+      path: '/optima/vat-declarations',
+      badge: vatStatuses.length,
+    },
   ];
 
   const toolsItems: SidebarMenuItemProps[] = [
@@ -91,6 +102,7 @@ export function Sidebar() {
           </div>
 
           <SidebarSection label={t('sidebar.zus')} items={zusItems} isCollapsed={isCollapsed} />
+          <SidebarSection label={t('sidebar.optima')} items={optimaItems} isCollapsed={isCollapsed} />
           <SidebarSection label={t('sidebar.tools')} items={toolsItems} isCollapsed={isCollapsed} />
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
