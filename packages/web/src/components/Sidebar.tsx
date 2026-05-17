@@ -2,21 +2,11 @@ import { Button } from '@base-ui/react/button';
 import { ScrollArea } from '@base-ui/react/scroll-area';
 import {
   CaretDown,
-  ChartLine,
-  Clipboard,
-  ClipboardText,
-  EnvelopeSimple,
-  Export,
   FileDashed,
   FilePdf,
   Gear,
   GridFour,
-  Link,
-  Package,
-  Rocket,
-  ShoppingCart,
   Sparkle,
-  Users,
   UsersThree,
 } from '@phosphor-icons/react';
 import { Link as RouterLink } from '@tanstack/react-router';
@@ -32,31 +22,15 @@ export function Sidebar() {
 
   const menuItems: SidebarMenuItemProps[] = [
     { icon: GridFour, label: t('sidebar.dashboard'), path: '/' },
-    { icon: Package, label: t('sidebar.products'), path: '/products' },
-    { icon: ShoppingCart, label: t('sidebar.order'), path: '/orders' },
-    { icon: Users, label: t('sidebar.customers'), path: '/customers' },
-    { icon: ClipboardText, label: t('sidebar.chat'), path: '/chat', badge: 22 },
   ];
 
   const zusItems: SidebarMenuItemProps[] = [
     { icon: UsersThree, label: t('sidebar.zusPayersLabel'), path: '/zus/payers', badge: payers?.length },
   ];
 
-  const otherItems: SidebarMenuItemProps[] = [
-    { icon: EnvelopeSimple, label: t('sidebar.email'), path: '/email' },
-    { icon: ChartLine, label: t('sidebar.analytics'), path: '/analytics' },
-    { icon: Link, label: t('sidebar.integration'), path: '/integration' },
-    { icon: Rocket, label: t('sidebar.performance'), path: '/performance' },
-  ];
-
   const toolsItems: SidebarMenuItemProps[] = [
     { icon: FileDashed, label: t('sidebar.xmlFixer'), path: '/tools/xml-fixer' },
     { icon: FilePdf, label: t('sidebar.documentCompressor'), path: '/tools/document-compressor' },
-  ];
-
-  const accountItems: SidebarMenuItemProps[] = [
-    { icon: Gear, label: t('sidebar.account'), path: '/account', trailingIcon: Gear },
-    { icon: Users, label: t('sidebar.members'), path: '/members' },
   ];
 
   return (
@@ -94,9 +68,7 @@ export function Sidebar() {
           </div>
 
           <SidebarSection label={t('sidebar.zus')} items={zusItems} />
-          <SidebarSection label={t('sidebar.other')} items={otherItems} />
           <SidebarSection label={t('sidebar.tools')} items={toolsItems} />
-          <SidebarSection label={t('sidebar.account')} items={accountItems} />
         </ScrollArea.Viewport>
         <ScrollArea.Scrollbar
           orientation="vertical"
@@ -114,18 +86,11 @@ export function Sidebar() {
             <span>{t('sidebar.settings')}</span>
           </Button>
         </RouterLink>
-        <Button className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors border-0 bg-transparent cursor-pointer">
-          <Clipboard size={20} />
-          <span>{t('sidebar.feedback')}</span>
-        </Button>
         <div className="flex items-center space-x-3 px-3 py-2.5">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-pink-500" />
           <div className="flex-1">
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Jevline Klef</p>
           </div>
-          <Button className="text-orange-500 dark:text-orange-400 border-0 bg-transparent p-0 cursor-pointer">
-            <Export size={20} />
-          </Button>
         </div>
       </div>
     </aside>
