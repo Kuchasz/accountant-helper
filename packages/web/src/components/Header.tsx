@@ -65,9 +65,11 @@ export function Header() {
       });
     }
   };
+
   const toggleLanguage = () => {
     setLanguage(language === 'en' ? 'pl' : 'en');
   };
+  
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-8 py-4">
       <div className="flex items-center justify-between">

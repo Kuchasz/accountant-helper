@@ -64,28 +64,28 @@ export async function getOptimaConfigDataSource(): Promise<DataSource | null> {
     const db = await getDatabase();
     const repository = db.getRepository(SqlServerConnection);
 
-    // Find the active config connection
-    const configConnection = await repository.findOne({
+    // Find the optima connection
+    const optimaConnection = await repository.findOne({
       where: {
-        type: 'config',
-        isActive: true,
+        name: 'optima',
+        isConfigured: true,
       },
     });
 
-    if (!configConnection) {
-      console.warn('No active Optima config database connection found in database');
+    if (!optimaConnection || !optimaConnection.server || !optimaConnection.database) {
+      console.warn('Optima config database not configured or incomplete');
       return null;
     }
 
     const config: SqlServerConfig = {
-      server: configConnection.server,
-      database: configConnection.database,
-      user: configConnection.username,
-      password: configConnection.password,
-      port: configConnection.port,
+      server: optimaConnection.server,
+      database: optimaConnection.database,
+      user: optimaConnection.username!,
+      password: optimaConnection.password!,
+      port: optimaConnection.port,
       options: {
-        encrypt: configConnection.encrypt,
-        trustServerCertificate: configConnection.trustServerCertificate,
+        encrypt: optimaConnection.encrypt,
+        trustServerCertificate: optimaConnection.trustServerCertificate,
       },
     };
 
@@ -97,31 +97,43 @@ export async function getOptimaConfigDataSource(): Promise<DataSource | null> {
 }
 
 /**
- * Get a company database connection using stored configuration
+ * Get Payer database connection from stored configuration
  */
-export async function getCompanyDataSource(connectionConfig: {
-  server: string;
-  database: string;
-  username: string;
-  password: string;
-  port: number;
-  encrypt: boolean;
-  trustServerCertificate: boolean;
-}): Promise<DataSource> {
-  const config: SqlServerConfig = {
-    server: connectionConfig.server,
-    database: connectionConfig.database,
-    user: connectionConfig.username,
-    password: connectionConfig.password,
-    port: connectionConfig.port,
-    options: {
-      encrypt: connectionConfig.encrypt,
-      trustServerCertificate: connectionConfig.trustServerCertificate,
-    },
-  };
+export async function getPayerDataSource(): Promise<DataSource | null> {
+  try {
+    const db = await getDatabase();
+    const repository = db.getRepository(SqlServerConnection);
 
-  const poolKey = `company-${connectionConfig.database}`;
-  return getSqlServerDataSource(config, poolKey);
+    // Find the payer connection
+    const payerConnection = await repository.findOne({
+      where: {
+        name: 'payer',
+        isConfigured: true,
+      },
+    });
+
+    if (!payerConnection || !payerConnection.server || !payerConnection.database) {
+      console.warn('Payer database not configured or incomplete');
+      return null;
+    }
+
+    const config: SqlServerConfig = {
+      server: payerConnection.server,
+      database: payerConnection.database,
+      user: payerConnection.username!,
+      password: payerConnection.password!,
+      port: payerConnection.port,
+      options: {
+        encrypt: payerConnection.encrypt,
+        trustServerCertificate: payerConnection.trustServerCertificate,
+      },
+    };
+
+    return getSqlServerDataSource(config, 'payer');
+  } catch (error) {
+    console.error('Error loading Payer database configuration:', error);
+    return null;
+  }
 }
 
 /**

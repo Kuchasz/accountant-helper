@@ -46,22 +46,19 @@ export class SqlServerConnection {
   id!: number;
 
   @Column('text', { unique: true })
-  name!: string;
+  name!: string; // "optima" or "payer"
 
-  @Column('text')
-  type!: string; // "config" or "company"
+  @Column('text', { nullable: true })
+  server?: string;
 
-  @Column('text')
-  server!: string;
+  @Column('text', { nullable: true })
+  database?: string;
 
-  @Column('text')
-  database!: string;
+  @Column('text', { nullable: true })
+  username?: string;
 
-  @Column('text')
-  username!: string;
-
-  @Column('text')
-  password!: string; // Should be encrypted in production
+  @Column('text', { nullable: true })
+  password?: string; // Should be encrypted in production
 
   @Column('int', { default: 1433 })
   port!: number;
@@ -72,8 +69,8 @@ export class SqlServerConnection {
   @Column('boolean', { name: 'trust_server_certificate', default: false })
   trustServerCertificate!: boolean;
 
-  @Column('boolean', { name: 'is_active', default: true })
-  isActive!: boolean;
+  @Column('boolean', { name: 'is_configured', default: false })
+  isConfigured!: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

@@ -3,7 +3,11 @@ import { z } from 'zod';
 import { getDatabase } from './db';
 import { CdnBazy } from './db/optimaSchema';
 import { Setting, SqlServerConnection, User } from './db/schema';
-import { getOptimaConfigDataSource, getSqlServerDataSource } from './db/sqlserver';
+import {
+  getOptimaConfigDataSource,
+  getPayerDataSource,
+  getSqlServerDataSource,
+} from './db/sqlserver';
 import type { SqlServerConfig } from './db/sqlserver';
 
 const t = initTRPC.create({
@@ -19,16 +23,15 @@ const t = initTRPC.create({
 });
 
 const sqlServerConnectionSchema = z.object({
-  name: z.string().min(1),
-  type: z.enum(['config', 'company']),
-  server: z.string().min(1),
-  database: z.string().min(1),
-  username: z.string().min(1),
-  password: z.string().min(1),
+  name: z.enum(['optima', 'payer']),
+  server: z.string().min(1).optional(),
+  database: z.string().min(1).optional(),
+  username: z.string().min(1).optional(),
+  password: z.string().min(1).optional(),
   port: z.number().int().default(1433),
   encrypt: z.boolean().default(true),
   trustServerCertificate: z.boolean().default(false),
-  isActive: z.boolean().default(true),
+  isConfigured: z.boolean().default(false),
 });
 
 export const appRouter = t.router({
@@ -63,47 +66,55 @@ export const appRouter = t.router({
   getSqlServerConnections: t.procedure.query(async () => {
     const db = await getDatabase();
     const repository = db.getRepository(SqlServerConnection);
-    return repository.find();
+    
+    // Ensure both connections exist
+    const connections = await repository.find();
+    const hasOptima = connections.some((c) => c.name === 'optima');
+    const hasPayer = connections.some((c) => c.name === 'payer');
+    
+    if (!hasOptima) {
+      const optima = repository.create({ name: 'optima', isConfigured: false });
+      await repository.save(optima);
+    }
+    
+    if (!hasPayer) {
+      const payer = repository.create({ name: 'payer', isConfigured: false });
+      await repository.save(payer);
+    }
+    
+    return repository.find({ order: { name: 'ASC' } });
   }),
 
   getSqlServerConnection: t.procedure
-    .input(z.object({ id: z.number().int() }))
+    .input(z.object({ name: z.enum(['optima', 'payer']) }))
     .query(async ({ input }) => {
       const db = await getDatabase();
       const repository = db.getRepository(SqlServerConnection);
-      return repository.findOne({ where: { id: input.id } });
-    }),
-
-  createSqlServerConnection: t.procedure
-    .input(sqlServerConnectionSchema)
-    .mutation(async ({ input }) => {
-      const db = await getDatabase();
-      const repository = db.getRepository(SqlServerConnection);
-      const connection = repository.create(input);
-      return repository.save(connection);
+      return repository.findOne({ where: { name: input.name } });
     }),
 
   updateSqlServerConnection: t.procedure
     .input(
       z.object({
-        id: z.number().int(),
-        data: sqlServerConnectionSchema.partial(),
+        name: z.enum(['optima', 'payer']),
+        data: sqlServerConnectionSchema.partial().omit({ name: true }),
       }),
     )
     .mutation(async ({ input }) => {
       const db = await getDatabase();
       const repository = db.getRepository(SqlServerConnection);
-      await repository.update(input.id, input.data);
-      return repository.findOne({ where: { id: input.id } });
-    }),
-
-  deleteSqlServerConnection: t.procedure
-    .input(z.object({ id: z.number().int() }))
-    .mutation(async ({ input }) => {
-      const db = await getDatabase();
-      const repository = db.getRepository(SqlServerConnection);
-      await repository.delete(input.id);
-      return { success: true };
+      
+      // Find by name
+      const existing = await repository.findOne({ where: { name: input.name } });
+      
+      if (!existing) {
+        // Create if doesn't exist
+        const connection = repository.create({ name: input.name, ...input.data });
+        return repository.save(connection);
+      }
+      
+      await repository.update(existing.id, input.data);
+      return repository.findOne({ where: { id: existing.id } });
     }),
 
   testSqlServerConnection: t.procedure
@@ -145,18 +156,38 @@ export const appRouter = t.router({
       }
     }),
 
-  testOptimaConfigConnection: t.procedure.query(async () => {
+  testOptimaConnection: t.procedure.query(async () => {
     try {
       const configDs = await getOptimaConfigDataSource();
       if (!configDs) {
         return {
           success: false,
-          message: 'Optima config database credentials not configured',
+          message: 'Optima database credentials not configured',
         };
       }
       // Try a simple query to verify connection
       await configDs.query('SELECT 1');
-      return { success: true, message: 'Optima config database connection successful' };
+      return { success: true, message: 'Optima database connection successful' };
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Connection failed',
+      };
+    }
+  }),
+
+  testPayerConnection: t.procedure.query(async () => {
+    try {
+      const payerDs = await getPayerDataSource();
+      if (!payerDs) {
+        return {
+          success: false,
+          message: 'Payer database credentials not configured',
+        };
+      }
+      // Try a simple query to verify connection
+      await payerDs.query('SELECT 1');
+      return { success: true, message: 'Payer database connection successful' };
     } catch (error) {
       return {
         success: false,
@@ -211,12 +242,52 @@ export const appRouter = t.router({
     return { success: true };
   }),
 
-  // Company Database Selection
+  checkOptimaAvailable: t.procedure.query(async () => {
+    try {
+      const configDs = await getOptimaConfigDataSource();
+      if (!configDs) {
+        return { available: false };
+      }
+      await configDs.query('SELECT 1');
+      return { available: true };
+    } catch (error) {
+      return { available: false };
+    }
+  }),
+
+  // Alias for backwards compatibility
+  checkConfigDbAvailable: t.procedure.query(async () => {
+    try {
+      const configDs = await getOptimaConfigDataSource();
+      if (!configDs) {
+        return { available: false };
+      }
+      await configDs.query('SELECT 1');
+      return { available: true };
+    } catch (error) {
+      return { available: false };
+    }
+  }),
+
+  checkPayerAvailable: t.procedure.query(async () => {
+    try {
+      const payerDs = await getPayerDataSource();
+      if (!payerDs) {
+        return { available: false };
+      }
+      await payerDs.query('SELECT 1');
+      return { available: true };
+    } catch (error) {
+      return { available: false };
+    }
+  }),
+
+  // Optima Database queries (only if available)
   getAvailableCompanies: t.procedure.query(async () => {
     try {
       const configDs = await getOptimaConfigDataSource();
       if (!configDs) {
-        throw new Error('Optima config database not configured');
+        return [];
       }
 
       // Query CDN.Bazy table for available databases using TypeORM
@@ -235,7 +306,7 @@ export const appRouter = t.router({
       }));
     } catch (error) {
       console.error('Error fetching companies:', error);
-      throw new Error('Failed to fetch available companies');
+      return [];
     }
   }),
 
@@ -285,19 +356,6 @@ export const appRouter = t.router({
       });
       return repository.save(setting);
     }),
-
-  checkConfigDbAvailable: t.procedure.query(async () => {
-    try {
-      const configDs = await getOptimaConfigDataSource();
-      if (!configDs) {
-        return { available: false };
-      }
-      await configDs.query('SELECT 1');
-      return { available: true };
-    } catch (error) {
-      return { available: false };
-    }
-  }),
 });
 
 export type AppRouter = typeof appRouter;

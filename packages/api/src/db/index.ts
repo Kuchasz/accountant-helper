@@ -3,7 +3,7 @@ export { User, Setting, SqlServerConnection } from './schema';
 export { CdnBazy } from './optimaSchema';
 export {
   getOptimaConfigDataSource,
-  getCompanyDataSource,
+  getPayerDataSource,
   closeDataSource,
   closeAllDataSources,
 } from './sqlserver';
