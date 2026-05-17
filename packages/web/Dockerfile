@@ -27,14 +27,14 @@ COPY biome.json ./
 WORKDIR /app/packages/web
 RUN pnpm build
 
-FROM nginx:alpine AS runner
+FROM caddy:2-alpine AS runner
 
-# Copy built files to nginx
-COPY --from=builder /app/packages/web/dist /usr/share/nginx/html
+# Copy built files to Caddy's site root
+COPY --from=builder /app/packages/web/dist /srv
 
-# Copy nginx config
-COPY packages/web/nginx.conf /etc/nginx/conf.d/default.conf
+# Copy Caddy config
+COPY packages/web/Caddyfile /etc/caddy/Caddyfile
 
-EXPOSE 80
+EXPOSE 4006
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InfoBanner } from '../components/ui/InfoBanner';
 
-const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_URL ?? '';
 const PUE_LIMIT = 1 * 1024 * 1024; // 1 MB
 const DEBOUNCE_MS = 600;
 

@@ -1,34 +1,33 @@
-version: '3.8'
-
 services:
   api:
-    build:
-      context: .
-      dockerfile: packages/api/Dockerfile
+    image: kuchasz/accountant-helper:api-latest
+    pull_policy: always
     ports:
-      - '3000:3000'
+      - '4005:4005'
     volumes:
       - api-data:/app/data
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=4005
       - DATABASE_URL=/app/data/db.sqlite
     healthcheck:
-      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:3000/health']
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:4005/health']
       interval: 30s
       timeout: 10s
       retries: 3
 
   web:
-    build:
-      context: .
-      dockerfile: packages/web/Dockerfile
+    image: kuchasz/accountant-helper:web-latest
+    pull_policy: always
     ports:
-      - '8080:80'
-    depends_on:
-      - api
+      - '4006:4006'
+    volumes:
+      - ./packages/web/Caddyfile:/etc/caddy/Caddyfile:ro
     environment:
-      - VITE_API_URL=http://localhost:3000
+      - API_UPSTREAM=api:4005
+    depends_on:
+      api:
+        condition: service_healthy
 
 volumes:
   api-data:

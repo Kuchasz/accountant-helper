@@ -1,0 +1,22 @@
+:4006 {
+	root * /srv
+	encode zstd gzip
+
+	handle /trpc* {
+		reverse_proxy {$API_UPSTREAM}
+	}
+
+	handle /compress-pdf* {
+		request_body {
+			max_size 50MB
+		}
+		reverse_proxy {$API_UPSTREAM}
+	}
+
+	handle /health* {
+		reverse_proxy {$API_UPSTREAM}
+	}
+
+	try_files {path} /index.html
+	file_server
+}
