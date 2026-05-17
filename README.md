@@ -26,7 +26,7 @@ A modern full-stack monorepo built with Vite, React, tRPC, Express, TypeScript, 
 ## Project Structure
 
 ```
-optima-helper-2/
+accountant-helper/
 ├── packages/
 │   ├── api/                 # Backend Express + tRPC server
 │   │   ├── src/

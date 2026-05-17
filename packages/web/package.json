@@ -1,5 +1,5 @@
 {
-  "name": "@optima-helper-2/web",
+  "name": "@ah/web",
   "version": "1.0.0",
   "private": true,
   "type": "module",
