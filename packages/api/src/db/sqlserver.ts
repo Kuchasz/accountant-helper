@@ -97,7 +97,7 @@ export async function getOptimaConfigDataSource(): Promise<DataSource | null> {
 }
 
 /**
- * Get Payer database connection from stored configuration
+ * Get Payer database connection — first tries stored SQLite config, then falls back to env vars.
  */
 export async function getPayerDataSource(): Promise<DataSource | null> {
   try {
@@ -112,24 +112,49 @@ export async function getPayerDataSource(): Promise<DataSource | null> {
       },
     });
 
-    if (!payerConnection || !payerConnection.server || !payerConnection.database) {
-      console.warn('Payer database not configured or incomplete');
+    if (payerConnection?.server && payerConnection.database) {
+      const config: SqlServerConfig = {
+        server: payerConnection.server,
+        database: payerConnection.database,
+        user: payerConnection.username!,
+        password: payerConnection.password!,
+        port: payerConnection.port,
+        options: {
+          encrypt: payerConnection.encrypt,
+          trustServerCertificate: payerConnection.trustServerCertificate,
+        },
+      };
+      return getSqlServerDataSource(config, 'payer');
+    }
+
+    // Fall back to environment variables (development only)
+    if (process.env.NODE_ENV !== 'development') {
+      console.warn('Payer database not configured in SQLite settings');
       return null;
     }
 
-    const config: SqlServerConfig = {
-      server: payerConnection.server,
-      database: payerConnection.database,
-      user: payerConnection.username!,
-      password: payerConnection.password!,
-      port: payerConnection.port,
-      options: {
-        encrypt: payerConnection.encrypt,
-        trustServerCertificate: payerConnection.trustServerCertificate,
-      },
-    };
+    const envServer = process.env.PAYER_DB_SERVER;
+    const envDatabase = process.env.PAYER_DB_DATABASE;
+    const envUser = process.env.PAYER_DB_USER;
+    const envPassword = process.env.PAYER_DB_PASSWORD;
 
-    return getSqlServerDataSource(config, 'payer');
+    if (envServer && envDatabase && envUser && envPassword) {
+      const config: SqlServerConfig = {
+        server: envServer,
+        database: envDatabase,
+        user: envUser,
+        password: envPassword,
+        port: Number.parseInt(process.env.PAYER_DB_PORT ?? '1433', 10),
+        options: {
+          encrypt: process.env.PAYER_DB_ENCRYPT !== 'false',
+          trustServerCertificate: process.env.PAYER_DB_TRUST_SERVER_CERTIFICATE === 'true',
+        },
+      };
+      return getSqlServerDataSource(config, 'payer');
+    }
+
+    console.warn('Payer database not configured (no SQLite settings; env var fallback is dev-only)');
+      return null;
   } catch (error) {
     console.error('Error loading Payer database configuration:', error);
     return null;

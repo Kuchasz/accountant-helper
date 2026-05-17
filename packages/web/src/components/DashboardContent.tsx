@@ -6,6 +6,7 @@ import { CaretDown, Funnel, Gear, Plus } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ConversionCard } from './dashboard/ConversionCard';
+import { PayersListCard } from './dashboard/PayersListCard';
 import { TopProductsCard } from './dashboard/TopProductsCard';
 import { TotalVisitsCard } from './dashboard/TotalVisitsCard';
 
@@ -461,7 +462,7 @@ export function DashboardContent() {
       </div>
 
       {/* Bottom Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Conversion & Total Visits */}
         <div className="space-y-6">
           <ConversionCard />
@@ -469,6 +470,11 @@ export function DashboardContent() {
         </div>
 
         <TopProductsCard />
+      </div>
+
+      {/* Payers Status Row */}
+      <div className="grid grid-cols-1 gap-6">
+        <PayersListCard />
       </div>
     </div>
   );

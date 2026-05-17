@@ -66,22 +66,22 @@ export const appRouter = t.router({
   getSqlServerConnections: t.procedure.query(async () => {
     const db = await getDatabase();
     const repository = db.getRepository(SqlServerConnection);
-    
+
     // Ensure both connections exist
     const connections = await repository.find();
     const hasOptima = connections.some((c) => c.name === 'optima');
     const hasPayer = connections.some((c) => c.name === 'payer');
-    
+
     if (!hasOptima) {
       const optima = repository.create({ name: 'optima', isConfigured: false });
       await repository.save(optima);
     }
-    
+
     if (!hasPayer) {
       const payer = repository.create({ name: 'payer', isConfigured: false });
       await repository.save(payer);
     }
-    
+
     return repository.find({ order: { name: 'ASC' } });
   }),
 
@@ -103,16 +103,16 @@ export const appRouter = t.router({
     .mutation(async ({ input }) => {
       const db = await getDatabase();
       const repository = db.getRepository(SqlServerConnection);
-      
+
       // Find by name
       const existing = await repository.findOne({ where: { name: input.name } });
-      
+
       if (!existing) {
         // Create if doesn't exist
         const connection = repository.create({ name: input.name, ...input.data });
         return repository.save(connection);
       }
-      
+
       await repository.update(existing.id, input.data);
       return repository.findOne({ where: { id: existing.id } });
     }),
@@ -356,6 +356,31 @@ export const appRouter = t.router({
       });
       return repository.save(setting);
     }),
+
+  // Payer database queries
+  getPayersList: t.procedure.query(async () => {
+    const payerDs = await getPayerDataSource();
+    if (!payerDs) {
+      return [];
+    }
+    const rows = await payerDs.query<Array<{ ID: number; NAZWASKR: string; LAST_SENT: Date | null }>>(
+      `SELECT p.ID, p.NAZWASKR, MAX(pr.DATA_WYS_ODB) AS LAST_SENT
+      FROM PLATNIK p
+      LEFT JOIN PRZESYLKA pr
+        ON pr.ID_PLATNIK = p.ID
+        AND pr.RODZAJ = 'D'
+        AND pr.TYP = 'Z'
+        AND pr.POZIOM = 0
+      WHERE p.STATUS_AKTYWNOSCI = 'A'
+      GROUP BY p.ID, p.NAZWASKR
+      ORDER BY p.NAZWASKR
+    `);
+    return (rows as Array<{ ID: number; NAZWASKR: string; LAST_SENT: Date | null }>).map((r) => ({
+      id: r.ID,
+      name: r.NAZWASKR,
+      lastSentDate: r.LAST_SENT ? r.LAST_SENT.toISOString() : null,
+    }));
+  }),
 });
 
 export type AppRouter = typeof appRouter;

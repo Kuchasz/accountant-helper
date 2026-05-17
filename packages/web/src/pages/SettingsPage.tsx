@@ -106,8 +106,7 @@ export function SettingsPage() {
 
   const handleSave = (dbType: 'optima' | 'payer') => {
     const form = dbType === 'optima' ? optimaForm : payerForm;
-    const isConfigured =
-      !!form.server && !!form.database && !!form.username && !!form.password;
+    const isConfigured = !!form.server && !!form.database && !!form.username && !!form.password;
 
     updateMutation.mutate({
       name: dbType,
@@ -278,9 +277,7 @@ export function SettingsPage() {
             </Field.Label>
             <Switch.Root
               checked={form.trustServerCertificate}
-              onCheckedChange={(checked) =>
-                setForm({ ...form, trustServerCertificate: checked })
-              }
+              onCheckedChange={(checked) => setForm({ ...form, trustServerCertificate: checked })}
               className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
             >
               <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />

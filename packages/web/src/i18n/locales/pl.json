@@ -79,7 +79,15 @@
     "thu": "CZW",
     "fri": "PIĄ",
     "sat": "SOB",
-    "sun": "NIE"
+    "sun": "NIE",
+    "payers": {
+      "title": "Status Płatników",
+      "total": "płatników",
+      "lastSent": "Ostatnio wysłano",
+      "neverSent": "Nigdy nie wysłano",
+      "noData": "Brak danych",
+      "warning": "Ten płatnik wysłał dokumenty w poprzednim miesiącu, ale nie wysłał w tym miesiącu (po 15. dniu)"
+    }
   },
   "pages": {
     "products": "Produkty",
