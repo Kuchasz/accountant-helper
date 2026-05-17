@@ -26,7 +26,8 @@
     "settings": "Settings",
     "feedback": "Feedback",
     "zus": "ZUS",
-    "zusPayersLabel": "Payers"
+    "zusPayersLabel": "Payers",
+    "xmlFixer": "XML Fixer"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -161,8 +162,9 @@
     "description": "Utility tools for working with Comarch Optima",
     "xmlFixer": "XML Fixer for Optima Import",
     "xmlFixerDescription": "Fix XML files to prepare them for import into Comarch Optima by clearing specific tags",
+    "uploadInfo": "How to use",
     "upload": "Upload File",
-    "uploadDescription": "Upload an XML file or ZIP archive containing a single XML file. The tool will clear BAZA_ZRD_ID and BAZA_DOC_ID tags to prepare the file for Optima import.",
+    "uploadDescription": "Upload an XML file or ZIP archive containing a single XML file. The tool will clear BAZA_ZRD_ID and BAZA_DOC_ID tags so the file can be imported in Comarch Optima via Tools → Distributed Work → Import.",
     "dropZone": "Drop XML or ZIP file here, or click to browse",
     "acceptedFormats": "Accepted formats: .xml, .zip",
     "processing": "Processing file...",

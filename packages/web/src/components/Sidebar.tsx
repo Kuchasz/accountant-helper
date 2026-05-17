@@ -7,6 +7,7 @@ import {
   ClipboardText,
   EnvelopeSimple,
   Export,
+  FileDashed,
   Gear,
   GridFour,
   Link,
@@ -16,7 +17,6 @@ import {
   Sparkle,
   Users,
   UsersThree,
-  Wrench,
 } from '@phosphor-icons/react';
 import { Link as RouterLink } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
@@ -49,7 +49,7 @@ export function Sidebar() {
   ];
 
   const toolsItems: SidebarMenuItemProps[] = [
-    { icon: Wrench, label: t('sidebar.tools'), path: '/tools' },
+    { icon: FileDashed, label: t('sidebar.xmlFixer'), path: '/tools/xml-fixer' },
   ];
 
   const accountItems: SidebarMenuItemProps[] = [

@@ -26,7 +26,8 @@
     "settings": "Ustawienia",
     "feedback": "Opinie",
     "zus": "ZUS",
-    "zusPayersLabel": "Płatnicy"
+    "zusPayersLabel": "Płatnicy",
+    "xmlFixer": "Naprawa XML"
   },
   "dashboard": {
     "title": "Panel",
@@ -161,8 +162,9 @@
     "description": "Narzędzia pomocnicze do pracy z Comarch Optima",
     "xmlFixer": "Naprawa XML dla importu do Optimy",
     "xmlFixerDescription": "Napraw pliki XML aby przygotować je do importu do Comarch Optima poprzez wyczyszczenie określonych tagów",
+    "uploadInfo": "Jak używać",
     "upload": "Prześlij Plik",
-    "uploadDescription": "Prześlij plik XML lub archiwum ZIP zawierające pojedynczy plik XML. Narzędzie wyczyści tagi BAZA_ZRD_ID i BAZA_DOC_ID aby przygotować plik do importu do Optimy.",
+    "uploadDescription": "Prześlij plik XML lub archiwum ZIP zawierające pojedynczy plik XML. Narzędzie wyczyści tagi BAZA_ZRD_ID i BAZA_DOC_ID, dzięki czemu plik będzie gotowy do importu w Comarch Optima przez Narzędzia → Praca Rozproszona → Import.",
     "dropZone": "Upuść plik XML lub ZIP tutaj, lub kliknij aby przeglądać",
     "acceptedFormats": "Akceptowane formaty: .xml, .zip",
     "processing": "Przetwarzanie pliku...",

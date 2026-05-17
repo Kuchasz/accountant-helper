@@ -1,5 +1,6 @@
 import { Button } from '@base-ui/react/button';
-import { CheckCircle, DownloadSimple, FileDashed, Upload, Warning } from '@phosphor-icons/react';
+import { Collapsible } from '@base-ui/react/collapsible';
+import { CaretDown, CheckCircle, DownloadSimple, FileDashed, Info, Upload, Warning } from '@phosphor-icons/react';
 import JSZip from 'jszip';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -179,12 +180,31 @@ export function XmlFixerPage() {
     <div className="p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            {t('tools.xmlFixer')}
-          </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">{t('tools.uploadDescription')}</p>
+        <div className="mb-8 flex items-start gap-4">
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center flex-shrink-0">
+            <FileDashed size={28} weight="duotone" className="text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+              {t('tools.xmlFixer')}
+            </h1>
+            <p className="mt-1 text-gray-600 dark:text-gray-400">{t('tools.xmlFixerDescription')}</p>
+          </div>
         </div>
+
+        {/* Collapsible description */}
+        <Collapsible.Root className="mb-6">
+          <Collapsible.Trigger className="group flex cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+            <Info size={15} />
+            <span>{t('tools.uploadInfo')}</span>
+            <CaretDown size={13} className="transition-transform duration-200 group-data-[panel-open]:rotate-180" />
+          </Collapsible.Trigger>
+          <Collapsible.Panel className="mt-2 overflow-hidden data-[closed]:hidden">
+            <p className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-gray-600 dark:border-blue-900/40 dark:bg-blue-950/20 dark:text-gray-400">
+              {t('tools.uploadDescription')}
+            </p>
+          </Collapsible.Panel>
+        </Collapsible.Root>
 
         {/* Main Content */}
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-8">
