@@ -1,5 +1,5 @@
 # Backend Dockerfile
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 
 # Install pnpm and ghostscript
 RUN corepack enable && corepack prepare pnpm@latest --activate && \
