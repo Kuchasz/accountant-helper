@@ -2,7 +2,7 @@ import { Button } from '@base-ui/react/button';
 import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
 import { Switch } from '@base-ui/react/switch';
-import { CheckCircle, Database, XCircle } from '@phosphor-icons/react';
+import { CheckCircle, Database, FileText, XCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { trpc } from '../lib/trpc';
@@ -39,9 +39,20 @@ export function SettingsPage() {
     message: string;
   } | null>(null);
   const [isTesting, setIsTesting] = useState<'optima' | 'payer' | null>(null);
+  const [dueDateDay, setDueDateDay] = useState<number>(20);
+  const [dueDateSaved, setDueDateSaved] = useState(false);
 
   const utils = trpc.useUtils();
   const { data: connections = [], isLoading } = trpc.getSqlServerConnections.useQuery();
+  const { data: dueDateSetting } = trpc.getSetting.useQuery({ key: 'zus_due_date_day' });
+
+  const setSettingMutation = trpc.setSetting.useMutation({
+    onSuccess: () => {
+      utils.getSetting.invalidate({ key: 'zus_due_date_day' });
+      setDueDateSaved(true);
+      setTimeout(() => setDueDateSaved(false), 2000);
+    },
+  });
 
   const updateMutation = trpc.updateSqlServerConnection.useMutation({
     onSuccess: () => {
@@ -103,6 +114,13 @@ export function SettingsPage() {
       }
     }
   }, [connections]);
+
+  useEffect(() => {
+    if (dueDateSetting?.value) {
+      const parsed = Number.parseInt(dueDateSetting.value);
+      if (!Number.isNaN(parsed)) setDueDateDay(parsed);
+    }
+  }, [dueDateSetting]);
 
   const handleSave = (dbType: 'optima' | 'payer') => {
     const form = dbType === 'optima' ? optimaForm : payerForm;
@@ -359,6 +377,69 @@ export function SettingsPage() {
           payerForm,
           setPayerForm,
         )}
+      </div>
+
+      <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <FileText size={24} />
+              {t('zusSettings.title')}
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('zusSettings.subtitle')}</p>
+          </div>
+        </div>
+
+        <div className="max-w-xs space-y-4">
+          <Field.Root>
+            <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('zusSettings.dueDateDay')}
+            </Field.Label>
+            <Field.Control
+              render={(props) => (
+                <Input
+                  {...props}
+                  type="number"
+                  value={dueDateDay.toString()}
+                  onValueChange={(value) => {
+                    const n = Number.parseInt(value);
+                    if (!Number.isNaN(n) && n >= 1 && n <= 28) setDueDateDay(n);
+                  }}
+                  min={1}
+                  max={28}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
+                />
+              )}
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {t('zusSettings.dueDateDayHint')}
+            </p>
+          </Field.Root>
+
+          <div className="flex items-center gap-3 pt-2">
+            {dueDateSaved && (
+              <span className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+                <CheckCircle size={16} weight="fill" />
+                {t('zusSettings.saved')}
+              </span>
+            )}
+            <div className="flex-1" />
+            <Button
+              type="button"
+              onClick={() =>
+                setSettingMutation.mutate({
+                  key: 'zus_due_date_day',
+                  value: dueDateDay.toString(),
+                  description: 'ZUS declaration due date day of month',
+                })
+              }
+              disabled={setSettingMutation.isPending}
+              className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {setSettingMutation.isPending ? t('sqlSettings.saving') : t('sqlSettings.save')}
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

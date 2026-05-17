@@ -13,10 +13,15 @@ function getArcColor(percent: number): string {
 export function PayersDeclarationsCard() {
   const { t } = useTranslation();
   const { data: payers = [], isLoading } = trpc.getPayersList.useQuery();
+  const { data: dueDateSetting } = trpc.getSetting.useQuery({ key: 'zus_due_date_day' });
+  const dueDateDay = dueDateSetting?.value ? Number.parseInt(dueDateSetting.value) || 20 : 20;
 
   const total = payers.length;
-  const sentCount = payers.filter((p) => getPayerStatus(p.lastSentDate).color === 'green').length;
-  const notSubmittedCount = payers.filter((p) => getPayerStatus(p.lastSentDate).showWarning).length;
+  const sentCount = payers.filter((p) => getPayerStatus(p.lastSentDate, dueDateDay).color === 'green').length;
+  const notSubmittedCount = payers.filter((p) => {
+    const { color } = getPayerStatus(p.lastSentDate, dueDateDay);
+    return color === 'orange' || color === 'red';
+  }).length;
   const ignoredCount = total - sentCount - notSubmittedCount;
   const activeCount = sentCount + notSubmittedCount;
   const percent = activeCount > 0 ? Math.round((sentCount / activeCount) * 100) : 0;

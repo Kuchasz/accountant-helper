@@ -85,10 +85,11 @@
     "payers": {
       "title": "Payers without declarations",
       "overdue": "overdue",
+      "pending": "pending",
       "noData": "No data",
       "lastSent": "Last sent",
       "loadError": "Failed to load payers",
-      "checkedAfter15": "Declarations are checked after the 15th day of the month",
+      "checkedAfterDueDate": "Declarations are checked after the due date",
       "allCompliant": "All payers have submitted their declarations this month"
     },
     "payersDeclarations": {
@@ -180,6 +181,13 @@
       "zipError": "Error extracting ZIP file. The archive may be corrupted."
     }
   },
+  "zusSettings": {
+    "title": "ZUS Settings",
+    "subtitle": "Configure ZUS declaration parameters",
+    "dueDateDay": "Declaration Due Date Day",
+    "dueDateDayHint": "Day of month when ZUS declarations are due (1–28). Default: 20.",
+    "saved": "Saved"
+  },
   "zus": {
     "payers": {
       "title": "Payers",
@@ -187,13 +195,24 @@
       "total": "payers",
       "neverSent": "Never sent",
       "noData": "No data",
-      "warningTooltip": "This payer sent documents last month but hasn't sent any this month (past 15th day)",
+      "warningTooltip": "This payer sent documents last month but hasn't sent any this month (past due date)",
       "loadError": "Failed to load payers",
       "empty": "No payers found",
       "columns": {
         "name": "Name",
         "lastSent": "Last sent",
-        "status": "Status"
+        "declarationStatus": "Declaration Status"
+      },
+      "status": {
+        "sent": "Sent",
+        "notSent": "Not sent",
+        "ignored": "Ignored"
+      },
+      "statusTooltip": {
+        "green": "Declaration submitted this month.",
+        "orange": "Last declaration sent last month. Not yet submitted this month, but the due date hasn't passed yet.",
+        "red": "Last declaration sent last month. Not submitted this month and the due date has already passed.",
+        "gray": "No declaration submitted in the last month. Payer may be inactive or not tracked."
       }
     }
   }

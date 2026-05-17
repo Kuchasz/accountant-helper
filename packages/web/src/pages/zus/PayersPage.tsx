@@ -14,14 +14,30 @@ interface Payer {
 
 const STATUS_CLASS: Record<string, string> = {
   green: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
-  yellow: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400',
+  orange: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
   red: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
   gray: 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400',
+};
+
+const STATUS_LABEL_KEY: Record<string, string> = {
+  green: 'zus.payers.status.sent',
+  orange: 'zus.payers.status.notSent',
+  red: 'zus.payers.status.notSent',
+  gray: 'zus.payers.status.ignored',
+};
+
+const STATUS_TOOLTIP_KEY: Record<string, string> = {
+  green: 'zus.payers.statusTooltip.green',
+  orange: 'zus.payers.statusTooltip.orange',
+  red: 'zus.payers.statusTooltip.red',
+  gray: 'zus.payers.statusTooltip.gray',
 };
 
 export function PayersPage() {
   const { t } = useTranslation();
   const { data: payers = [], isLoading, isError } = trpc.getPayersList.useQuery();
+  const { data: dueDateSetting } = trpc.getSetting.useQuery({ key: 'zus_due_date_day' });
+  const dueDateDay = dueDateSetting?.value ? Number.parseInt(dueDateSetting.value) || 20 : 20;
 
   const formatDate = (iso: string | null) => {
     if (!iso) return t('zus.payers.neverSent');
@@ -37,7 +53,7 @@ export function PayersPage() {
       key: 'name',
       header: t('zus.payers.columns.name'),
       render: (row) => {
-        const status = getPayerStatus(row.lastSentDate);
+        const status = getPayerStatus(row.lastSentDate, dueDateDay);
         return (
           <div className="flex items-center space-x-2">
             <span className="font-medium text-gray-900 dark:text-gray-100">{row.name}</span>
@@ -79,22 +95,34 @@ export function PayersPage() {
     },
     {
       key: 'status',
-      header: t('zus.payers.columns.status'),
+      header: t('zus.payers.columns.declarationStatus'),
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => {
-        const status = getPayerStatus(row.lastSentDate);
-        const label = row.lastSentDate
-          ? new Intl.DateTimeFormat('pl-PL', { month: 'short', day: 'numeric' }).format(
-              new Date(row.lastSentDate),
-            )
-          : t('zus.payers.noData');
+        const status = getPayerStatus(row.lastSentDate, dueDateDay);
         return (
-          <span
-            className={`inline-block px-2.5 py-1 text-xs font-medium rounded-full ${STATUS_CLASS[status.color]}`}
-          >
-            {label}
-          </span>
+          <Tooltip.Provider>
+            <Tooltip.Root>
+              <Tooltip.Trigger
+                render={(props) => (
+                  <span
+                    {...props}
+                    className={`inline-block px-2.5 py-1 text-xs font-medium rounded-full cursor-default ${STATUS_CLASS[status.color]}`}
+                  >
+                    {t(STATUS_LABEL_KEY[status.color])}
+                  </span>
+                )}
+              />
+              <Tooltip.Portal>
+                <Tooltip.Positioner sideOffset={4}>
+                  <Tooltip.Popup className="bg-gray-900 dark:bg-gray-700 text-white text-xs px-3 py-2 rounded max-w-xs z-50">
+                    <Tooltip.Arrow className="fill-gray-900 dark:fill-gray-700" />
+                    {t(STATUS_TOOLTIP_KEY[status.color])}
+                  </Tooltip.Popup>
+                </Tooltip.Positioner>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+          </Tooltip.Provider>
         );
       },
     },

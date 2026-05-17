@@ -85,10 +85,11 @@
     "payers": {
       "title": "Płatnicy bez deklaracji",
       "overdue": "zaległe",
+      "pending": "oczekujące",
       "noData": "Brak danych",
       "lastSent": "Ost. wysłanie",
       "loadError": "Błąd ładowania płatników",
-      "checkedAfter15": "Deklaracje weryfikowane są po 15. dniu miesiąca",
+      "checkedAfterDueDate": "Deklaracje weryfikowane są po terminie",
       "allCompliant": "Wszyscy płatnicy złożyli deklaracje w tym miesiącu"
     },
     "payersDeclarations": {
@@ -180,6 +181,13 @@
       "zipError": "Błąd podczas wyodrębniania pliku ZIP. Archiwum może być uszkodzone."
     }
   },
+  "zusSettings": {
+    "title": "Ustawienia ZUS",
+    "subtitle": "Konfiguruj parametry deklaracji ZUS",
+    "dueDateDay": "Dzień terminu złożenia deklaracji",
+    "dueDateDayHint": "Dzień miesiąca, w którym upływa termin deklaracji ZUS (1–28). Domyślnie: 20.",
+    "saved": "Zapisano"
+  },
   "zus": {
     "payers": {
       "title": "Płatnicy",
@@ -187,13 +195,24 @@
       "total": "płatników",
       "neverSent": "Nigdy nie wysłano",
       "noData": "Brak danych",
-      "warningTooltip": "Ten płatnik wysłał dokumenty w poprzednim miesiącu, ale nie wysłał w tym miesiącu (po 15. dniu)",
+      "warningTooltip": "Ten płatnik wysłał dokumenty w poprzednim miesiącu, ale nie wysłał w tym miesiącu (po terminie)",
       "loadError": "Błąd ładowania płatników",
       "empty": "Nie znaleziono płatników",
       "columns": {
         "name": "Nazwa",
         "lastSent": "Ostatnio wysłano",
-        "status": "Status"
+        "declarationStatus": "Status Deklaracji"
+      },
+      "status": {
+        "sent": "Wysłano",
+        "notSent": "Nie wysłano",
+        "ignored": "Ignorowany"
+      },
+      "statusTooltip": {
+        "green": "Deklaracja złożona w bieżącym miesiącu.",
+        "orange": "Ostatnia deklaracja wysłana w poprzednim miesiącu. Jeszcze nie złożono w tym miesiącu, ale termin jeszcze nie minął.",
+        "red": "Ostatnia deklaracja wysłana w poprzednim miesiącu. Nie złożono w tym miesiącu, a termin już minął.",
+        "gray": "Brak deklaracji złożonej w ostatnim miesiącu. Płatnik może być nieaktywny lub nieśledzony."
       }
     }
   }
