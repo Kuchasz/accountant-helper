@@ -2,6 +2,7 @@ import { Outlet, createRootRoute, createRoute, createRouter } from '@tanstack/re
 import { DashboardContent } from './components/DashboardContent';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
+import { SidebarProvider } from './contexts/SidebarContext';
 import { SettingsPage } from './pages/SettingsPage';
 import { DocumentCompressorPage } from './pages/DocumentCompressorPage';
 import { XmlFixerPage } from './pages/XmlFixerPage';
@@ -10,13 +11,15 @@ import { PayersPage } from './pages/zus/PayersPage';
 // Root layout component
 function RootLayout() {
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto">
-        <Header />
-        <Outlet />
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
+        <Sidebar />
+        <main className="flex-1 overflow-y-auto">
+          <Header />
+          <Outlet />
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }
 
