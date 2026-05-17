@@ -5,13 +5,13 @@ import {
   DownloadSimple,
   FileImage,
   FilePdf,
-  Info,
   SpinnerGap,
   Warning,
   WarningCircle,
 } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { InfoBanner } from '../components/ui/InfoBanner';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 const PUE_LIMIT = 1 * 1024 * 1024; // 1 MB
@@ -45,7 +45,7 @@ interface PreviewResult {
   compressedSize: number;
 }
 
-export function PdfCompressorPage() {
+export function DocumentCompressorPage() {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -93,8 +93,8 @@ export function PdfCompressorPage() {
           const json = (await response.json().catch(() => ({}))) as { error?: string };
           throw new Error(
             json.error === 'ghostscript_not_found'
-              ? t('tools.pdfCompressor.error.ghostscriptNotFound')
-              : t('tools.pdfCompressor.error.compressionFailed'),
+              ? t('tools.documentCompressor.error.ghostscriptNotFound')
+              : t('tools.documentCompressor.error.compressionFailed'),
           );
         }
 
@@ -110,7 +110,7 @@ export function PdfCompressorPage() {
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') return;
         setPreviewError(
-          err instanceof Error ? err.message : t('tools.pdfCompressor.error.compressionFailed'),
+          err instanceof Error ? err.message : t('tools.documentCompressor.error.compressionFailed'),
         );
         setPreviewStage('error');
       }
@@ -171,18 +171,17 @@ export function PdfCompressorPage() {
           </div>
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-              {t('tools.pdfCompressor.title')}
+              {t('tools.documentCompressor.title')}
             </h1>
             <p className="mt-1 text-gray-600 dark:text-gray-400">
-              {t('tools.pdfCompressor.description')}
+              {t('tools.documentCompressor.description')}
             </p>
           </div>
         </div>
 
         {/* PUE info banner */}
-        <div className="mb-6 flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800 dark:border-blue-800/40 dark:bg-blue-950/20 dark:text-blue-300">
-          <Info size={16} className="mt-0.5 flex-shrink-0" />
-          <span>{t('tools.pdfCompressor.pueInfo')}</span>
+        <div className="mb-6">
+          <InfoBanner>{t('tools.documentCompressor.pueInfo')}</InfoBanner>
         </div>
 
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-8 space-y-6">
@@ -205,10 +204,10 @@ export function PdfCompressorPage() {
                 </div>
                 <div>
                   <p className="text-base font-medium text-gray-700 dark:text-gray-300">
-                    {t('tools.pdfCompressor.dropZone')}
+                    {t('tools.documentCompressor.dropZone')}
                   </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {t('tools.pdfCompressor.acceptedFormats')}
+                    {t('tools.documentCompressor.acceptedFormats')}
                   </p>
                 </div>
               </div>
@@ -233,11 +232,11 @@ export function PdfCompressorPage() {
                     {selectedFile.name}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    {t('tools.pdfCompressor.originalSize')}: {formatBytes(selectedFile.size)}
+                    {t('tools.documentCompressor.originalSize')}: {formatBytes(selectedFile.size)}
                     {selectedFile.size > PUE_LIMIT && (
                       <span className="ml-2 inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium">
                         <Warning size={12} />
-                        {t('tools.pdfCompressor.tooBigForPue')}
+                        {t('tools.documentCompressor.tooBigForPue')}
                       </span>
                     )}
                   </p>
@@ -246,7 +245,7 @@ export function PdfCompressorPage() {
                   className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 border-0 bg-transparent cursor-pointer p-1"
                   onClick={handleReset}
                 >
-                  {t('tools.pdfCompressor.changeFile')}
+                  {t('tools.documentCompressor.changeFile')}
                 </Button>
               </div>
 
@@ -254,7 +253,7 @@ export function PdfCompressorPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t('tools.pdfCompressor.quality')}
+                    {t('tools.documentCompressor.quality')}
                   </label>
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                     {isImage ? `${quality}% — JPEG` : `${quality}% — ${qualityLabel(quality)}`}
@@ -269,8 +268,8 @@ export function PdfCompressorPage() {
                 </div>
 
                 <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500">
-                  <span>{t('tools.pdfCompressor.smallerFile')}</span>
-                  <span>{t('tools.pdfCompressor.betterQuality')}</span>
+                  <span>{t('tools.documentCompressor.smallerFile')}</span>
+                  <span>{t('tools.documentCompressor.betterQuality')}</span>
                 </div>
 
                 {/* Presets — PDF */}
@@ -319,14 +318,14 @@ export function PdfCompressorPage() {
                 {previewStage === 'loading' && (
                   <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                     <SpinnerGap size={16} className="animate-spin flex-shrink-0" />
-                    <span>{t('tools.pdfCompressor.compressing')}</span>
+                    <span>{t('tools.documentCompressor.compressing')}</span>
                   </div>
                 )}
 
                 {previewStage === 'done' && previewResult && (
                   <div className="flex items-center justify-between flex-wrap gap-2 w-full">
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {t('tools.pdfCompressor.estimatedSize')}
+                      {t('tools.documentCompressor.estimatedSize')}
                     </span>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs text-gray-400 dark:text-gray-500 line-through">
@@ -343,12 +342,12 @@ export function PdfCompressorPage() {
                       {previewResult.compressedSize > PUE_LIMIT ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
                           <Warning size={11} weight="fill" />
-                          {t('tools.pdfCompressor.tooBigForPue')}
+                          {t('tools.documentCompressor.tooBigForPue')}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
                           <CheckCircle size={11} weight="fill" />
-                          {t('tools.pdfCompressor.fitsForPue')}
+                          {t('tools.documentCompressor.fitsForPue')}
                         </span>
                       )}
                     </div>
@@ -364,7 +363,7 @@ export function PdfCompressorPage() {
 
                 {previewStage === 'idle' && (
                   <p className="text-xs text-gray-400 dark:text-gray-500 italic">
-                    {t('tools.pdfCompressor.previewPending')}
+                    {t('tools.documentCompressor.previewPending')}
                   </p>
                 )}
               </div>
@@ -373,7 +372,7 @@ export function PdfCompressorPage() {
               {previewStage === 'done' && previewResult && previewResult.compressedSize > PUE_LIMIT && (
                 <div className="flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-700/40 dark:bg-amber-950/20 dark:text-amber-300">
                   <Warning size={16} className="mt-0.5 flex-shrink-0" weight="fill" />
-                  <span>{t('tools.pdfCompressor.stillTooBigForPue')}</span>
+                  <span>{t('tools.documentCompressor.stillTooBigForPue')}</span>
                 </div>
               )}
 
@@ -387,12 +386,12 @@ export function PdfCompressorPage() {
                   {previewStage === 'loading' ? (
                     <>
                       <SpinnerGap size={18} className="animate-spin" />
-                      {t('tools.pdfCompressor.compressing')}
+                      {t('tools.documentCompressor.compressing')}
                     </>
                   ) : (
                     <>
                       <DownloadSimple size={18} />
-                      {t('tools.pdfCompressor.download')}
+                      {t('tools.documentCompressor.download')}
                     </>
                   )}
                 </Button>
@@ -401,7 +400,7 @@ export function PdfCompressorPage() {
                   className="flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm cursor-pointer bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   <ArrowCounterClockwise size={18} />
-                  {t('tools.pdfCompressor.compressAnother')}
+                  {t('tools.documentCompressor.compressAnother')}
                 </Button>
               </div>
             </>

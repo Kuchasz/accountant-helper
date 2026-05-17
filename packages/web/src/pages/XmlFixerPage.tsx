@@ -1,9 +1,9 @@
 import { Button } from '@base-ui/react/button';
-import { Collapsible } from '@base-ui/react/collapsible';
-import { CaretDown, CheckCircle, DownloadSimple, FileDashed, Info, Upload, Warning } from '@phosphor-icons/react';
+import { CheckCircle, DownloadSimple, FileDashed, Upload, Warning } from '@phosphor-icons/react';
 import JSZip from 'jszip';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { InfoBanner } from '../components/ui/InfoBanner';
 
 type ProcessingState = 'idle' | 'processing' | 'success' | 'error';
 
@@ -192,19 +192,10 @@ export function XmlFixerPage() {
           </div>
         </div>
 
-        {/* Collapsible description */}
-        <Collapsible.Root className="mb-6">
-          <Collapsible.Trigger className="group flex cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-            <Info size={15} />
-            <span>{t('tools.uploadInfo')}</span>
-            <CaretDown size={13} className="transition-transform duration-200 group-data-[panel-open]:rotate-180" />
-          </Collapsible.Trigger>
-          <Collapsible.Panel className="mt-2 overflow-hidden data-[closed]:hidden">
-            <p className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-gray-600 dark:border-blue-900/40 dark:bg-blue-950/20 dark:text-gray-400">
-              {t('tools.uploadDescription')}
-            </p>
-          </Collapsible.Panel>
-        </Collapsible.Root>
+        {/* Info banner */}
+        <div className="mb-6">
+          <InfoBanner>{t('tools.uploadDescription')}</InfoBanner>
+        </div>
 
         {/* Main Content */}
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-8">

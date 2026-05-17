@@ -28,7 +28,7 @@
     "zus": "ZUS",
     "zusPayersLabel": "Payers",
     "xmlFixer": "XML Fixer",
-    "pdfCompressor": "Document Compressor"
+    "documentCompressor": "Document Compressor"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -174,7 +174,7 @@
     "success": "File processed successfully!",
     "successMessage": "The XML file has been fixed and is ready for download. BAZA_ZRD_ID and BAZA_DOC_ID tags have been cleared.",
     "filePrefix": "fixed_",
-    "pdfCompressor": {
+    "documentCompressor": {
       "title": "PDF Compressor",
       "description": "Reduce file size of PDF or images (PNG, JPEG, BMP) server-side",
       "pueInfo": "ZUS PUE portal requires attached PDF files to be at most 1 MB. Use this tool to compress files that exceed this limit.",

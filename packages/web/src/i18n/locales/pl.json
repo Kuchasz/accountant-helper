@@ -28,7 +28,7 @@
     "zus": "ZUS",
     "zusPayersLabel": "Płatnicy",
     "xmlFixer": "Naprawa XML",
-    "pdfCompressor": "Kompresor Dokumentów"
+    "documentCompressor": "Kompresor Dokumentów"
   },
   "dashboard": {
     "title": "Panel",
@@ -174,7 +174,7 @@
     "success": "Plik przetworzony pomyślnie!",
     "successMessage": "Plik XML został naprawiony i jest gotowy do pobrania. Tagi BAZA_ZRD_ID i BAZA_DOC_ID zostały wyczyszczone.",
     "filePrefix": "poprawiony_",
-    "pdfCompressor": {
+    "documentCompressor": {
       "title": "Kompresor Dokumentów",
       "description": "Zmniejsz rozmiar pliku PDF lub obrazu (PNG, JPEG, BMP) po stronie serwera",
       "pueInfo": "Portal ZUS PUE wymaga, aby załączone pliki PDF miały rozmiar do 1 MB. Użyj tego narzędzia, aby zmniejszyć pliki przekraczające ten limit.",

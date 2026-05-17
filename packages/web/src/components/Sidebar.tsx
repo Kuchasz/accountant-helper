@@ -51,7 +51,7 @@ export function Sidebar() {
 
   const toolsItems: SidebarMenuItemProps[] = [
     { icon: FileDashed, label: t('sidebar.xmlFixer'), path: '/tools/xml-fixer' },
-    { icon: FilePdf, label: t('sidebar.pdfCompressor'), path: '/tools/pdf-compressor' },
+    { icon: FilePdf, label: t('sidebar.documentCompressor'), path: '/tools/document-compressor' },
   ];
 
   const accountItems: SidebarMenuItemProps[] = [

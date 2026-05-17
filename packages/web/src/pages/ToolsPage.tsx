@@ -14,10 +14,10 @@ export function ToolsPage() {
       color: 'from-blue-500 to-cyan-500',
     },
     {
-      title: t('tools.pdfCompressor.title'),
-      description: t('tools.pdfCompressor.description'),
+      title: t('tools.documentCompressor.title'),
+      description: t('tools.documentCompressor.description'),
       icon: FilePdf,
-      path: '/tools/pdf-compressor',
+      path: '/tools/document-compressor',
       color: 'from-blue-500 to-cyan-500',
     },
   ];
