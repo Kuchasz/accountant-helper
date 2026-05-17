@@ -2,6 +2,7 @@
   "name": "accountant-helper",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@10.15.1",
   "scripts": {
     "dev": "pnpm --parallel --stream dev",
     "build": "pnpm --recursive build",
