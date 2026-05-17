@@ -1,4 +1,5 @@
-import { CheckCircle } from '@phosphor-icons/react';
+import { CheckCircle, User } from '@phosphor-icons/react';
+import { ScrollArea } from '@base-ui/react/scroll-area';
 import { useTranslation } from 'react-i18next';
 import { getPayerStatus } from '../../lib/payerStatus';
 import { trpc } from '../../lib/trpc';
@@ -61,33 +62,70 @@ export function PayersListCard() {
           </p>
         </div>
       ) : (
-        <div className="overflow-y-auto max-h-64 pr-1 divide-y divide-gray-100 dark:divide-gray-700">
-          {pendingPayers.map((payer) => {
-            const statusColor = getPayerStatus(payer.lastSentDate, dueDateDay).color as 'orange' | 'red';
-            return (
-              <div
-                key={payer.id}
-                className="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-              >
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                  {payer.name}
-                </p>
-                <div className="ml-4 flex-shrink-0 flex flex-col items-end gap-0.5">
-                  <span className="text-xs text-gray-400 dark:text-gray-500">
-                    {t('dashboard.payers.lastSent')}
-                  </span>
-                  <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full ${ROW_BADGE_CLASS[statusColor]}`}>
-                    {payer.lastSentDate
-                      ? new Intl.DateTimeFormat('pl-PL', { month: 'short', day: 'numeric', year: 'numeric' }).format(
-                          new Date(payer.lastSentDate),
-                        )
-                      : t('dashboard.payers.noData')}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <ScrollArea.Root className="overflow-hidden">
+          <ScrollArea.Viewport className="max-h-80 overflow-y-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                    <div className="flex items-center space-x-1">
+                      <User size={14} />
+                      <span>{t('zus.payers.columns.name')}</span>
+                    </div>
+                  </th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                    {t('zus.payers.columns.lastSent')}
+                  </th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase">
+                    {t('zus.payers.columns.declarationStatus')}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {pendingPayers.map((payer, index) => {
+                  const statusColor = getPayerStatus(payer.lastSentDate, dueDateDay).color as 'orange' | 'red';
+                  const isLastRow = index === pendingPayers.length - 1;
+                  return (
+                    <tr
+                      key={payer.id}
+                      className={`${!isLastRow ? 'border-b border-gray-100 dark:border-gray-700' : ''} hover:bg-gray-50 dark:hover:bg-gray-700`}
+                    >
+                      <td className="py-4 px-4">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                          {payer.name}
+                        </div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="text-sm text-gray-900 dark:text-gray-100">
+                          {payer.lastSentDate
+                            ? new Intl.DateTimeFormat('pl-PL', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              }).format(new Date(payer.lastSentDate))
+                            : t('dashboard.payers.noData')}
+                        </div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <span
+                          className={`px-2.5 py-1 text-xs font-medium rounded ${ROW_BADGE_CLASS[statusColor]}`}
+                        >
+                          {statusColor === 'red' ? t('dashboard.payers.overdue') : t('dashboard.payers.pending')}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </ScrollArea.Viewport>
+          <ScrollArea.Scrollbar
+            orientation="vertical"
+            className="flex w-2 bg-gray-100 dark:bg-gray-800 rounded-full p-0.5"
+          >
+            <ScrollArea.Thumb className="flex-1 bg-gray-400 dark:bg-gray-600 rounded-full hover:bg-gray-500 dark:hover:bg-gray-500 transition-colors" />
+          </ScrollArea.Scrollbar>
+        </ScrollArea.Root>
       )}
     </div>
   );
