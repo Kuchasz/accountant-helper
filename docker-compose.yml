@@ -4,6 +4,8 @@ services:
     pull_policy: always
     ports:
       - '4005:4005'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     volumes:
       - api-data:/app/data
     environment:
