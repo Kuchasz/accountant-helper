@@ -17,6 +17,7 @@
     "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "useDefineForClassFields": false,
     "types": ["node"]
   },
   "include": ["src/**/*"],
