@@ -17,7 +17,9 @@ export function PayersDeclarationsCard() {
   const dueDateDay = dueDateSetting?.value ? Number.parseInt(dueDateSetting.value) || 20 : 20;
 
   const total = payers.length;
-  const sentCount = payers.filter((p) => getPayerStatus(p.lastSentDate, dueDateDay).color === 'green').length;
+  const sentCount = payers.filter(
+    (p) => getPayerStatus(p.lastSentDate, dueDateDay).color === 'green',
+  ).length;
   const notSubmittedCount = payers.filter((p) => {
     const { color } = getPayerStatus(p.lastSentDate, dueDateDay);
     return color === 'orange' || color === 'red';
@@ -29,7 +31,7 @@ export function PayersDeclarationsCard() {
   const arcColor = getArcColor(percent);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
+    <div className="min-h-[39rem] bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
       <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-6">
         {t('dashboard.payersDeclarations.title')}
       </h3>
@@ -45,7 +47,15 @@ export function PayersDeclarationsCard() {
               aria-label={t('dashboard.payersDeclarations.title')}
             >
               <title>{t('dashboard.payersDeclarations.title')}</title>
-              <circle cx="50" cy="50" r="40" stroke="#f3f4f6" strokeWidth="12" fill="none" className="dark:stroke-gray-700" />
+              <circle
+                cx="50"
+                cy="50"
+                r="40"
+                stroke="#f3f4f6"
+                strokeWidth="12"
+                fill="none"
+                className="dark:stroke-gray-700"
+              />
               <circle
                 cx="50"
                 cy="50"

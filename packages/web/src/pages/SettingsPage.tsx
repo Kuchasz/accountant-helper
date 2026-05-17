@@ -41,16 +41,31 @@ export function SettingsPage() {
   const [isTesting, setIsTesting] = useState<'optima' | 'payer' | null>(null);
   const [dueDateDay, setDueDateDay] = useState<number>(20);
   const [dueDateSaved, setDueDateSaved] = useState(false);
+  const [showFakeDashboardWidgets, setShowFakeDashboardWidgets] = useState(false);
+  const [dashboardSettingsSaved, setDashboardSettingsSaved] = useState(false);
 
   const utils = trpc.useUtils();
   const { data: connections = [], isLoading } = trpc.getSqlServerConnections.useQuery();
   const { data: dueDateSetting } = trpc.getSetting.useQuery({ key: 'zus_due_date_day' });
+  const { data: fakeDashboardWidgetsSetting } = trpc.getSetting.useQuery({
+    key: 'dashboard_show_fake_widgets',
+  });
 
   const setSettingMutation = trpc.setSetting.useMutation({
-    onSuccess: () => {
-      utils.getSetting.invalidate({ key: 'zus_due_date_day' });
-      setDueDateSaved(true);
-      setTimeout(() => setDueDateSaved(false), 2000);
+    onSuccess: (setting) => {
+      if (!setting) return;
+
+      utils.getSetting.invalidate({ key: setting.key });
+
+      if (setting.key === 'zus_due_date_day') {
+        setDueDateSaved(true);
+        setTimeout(() => setDueDateSaved(false), 2000);
+      }
+
+      if (setting.key === 'dashboard_show_fake_widgets') {
+        setDashboardSettingsSaved(true);
+        setTimeout(() => setDashboardSettingsSaved(false), 2000);
+      }
     },
   });
 
@@ -121,6 +136,10 @@ export function SettingsPage() {
       if (!Number.isNaN(parsed)) setDueDateDay(parsed);
     }
   }, [dueDateSetting]);
+
+  useEffect(() => {
+    setShowFakeDashboardWidgets(fakeDashboardWidgetsSetting?.value === 'true');
+  }, [fakeDashboardWidgetsSetting]);
 
   const handleSave = (dbType: 'optima' | 'payer') => {
     const form = dbType === 'optima' ? optimaForm : payerForm;
@@ -384,9 +403,69 @@ export function SettingsPage() {
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
               <FileText size={24} />
+              {t('dashboardSettings.title')}
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {t('dashboardSettings.subtitle')}
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-2xl space-y-4">
+          <Field.Root className="flex items-center justify-between gap-6">
+            <div>
+              <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('dashboardSettings.showFakeWidgets')}
+              </Field.Label>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {t('dashboardSettings.showFakeWidgetsHint')}
+              </p>
+            </div>
+            <Switch.Root
+              checked={showFakeDashboardWidgets}
+              onCheckedChange={setShowFakeDashboardWidgets}
+              className="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
+            >
+              <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
+            </Switch.Root>
+          </Field.Root>
+
+          <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+            {dashboardSettingsSaved && (
+              <span className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+                <CheckCircle size={16} weight="fill" />
+                {t('dashboardSettings.saved')}
+              </span>
+            )}
+            <div className="flex-1" />
+            <Button
+              type="button"
+              onClick={() =>
+                setSettingMutation.mutate({
+                  key: 'dashboard_show_fake_widgets',
+                  value: showFakeDashboardWidgets ? 'true' : 'false',
+                  description: 'Show fake dashboard widgets',
+                })
+              }
+              disabled={setSettingMutation.isPending}
+              className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {setSettingMutation.isPending ? t('sqlSettings.saving') : t('sqlSettings.save')}
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <FileText size={24} />
               {t('zusSettings.title')}
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('zusSettings.subtitle')}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {t('zusSettings.subtitle')}
+            </p>
           </div>
         </div>
 

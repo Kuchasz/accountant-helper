@@ -126,6 +126,13 @@
     "payerDatabase": "Baza Płatnik",
     "payerDatabaseDesc": "Skonfiguruj połączenie z bazą danych Płatnik MSSQL"
   },
+  "dashboardSettings": {
+    "title": "Ustawienia panelu",
+    "subtitle": "Kontroluj widoczność widgetów na panelu",
+    "showFakeWidgets": "Pokaż widgety demonstracyjne",
+    "showFakeWidgetsHint": "Po wyłączeniu panel pokazuje tylko prawdziwe widgety związane z Płatnikiem.",
+    "saved": "Zapisano"
+  },
   "tools": {
     "title": "Narzędzia",
     "description": "Narzędzia pomocnicze do pracy z Comarch Optima",

@@ -126,6 +126,13 @@
     "payerDatabase": "Payer Database",
     "payerDatabaseDesc": "Configure connection to the Payer MSSQL database"
   },
+  "dashboardSettings": {
+    "title": "Dashboard Settings",
+    "subtitle": "Control which dashboard widgets are visible",
+    "showFakeWidgets": "Show demo widgets",
+    "showFakeWidgetsHint": "When disabled, the dashboard shows only real Payer-related widgets.",
+    "saved": "Saved"
+  },
   "tools": {
     "title": "Tools",
     "description": "Utility tools for working with Comarch Optima",

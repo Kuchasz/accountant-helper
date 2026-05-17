@@ -1,5 +1,5 @@
-import { CheckCircle, User } from '@phosphor-icons/react';
 import { ScrollArea } from '@base-ui/react/scroll-area';
+import { CheckCircle, User } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { getPayerStatus } from '../../lib/payerStatus';
 import { trpc } from '../../lib/trpc';
@@ -30,7 +30,7 @@ export function PayersListCard() {
       : 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400';
 
   return (
-    <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+    <div className="lg:col-span-2 min-h-[39rem] bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
           {t('dashboard.payers.title')}
@@ -63,7 +63,7 @@ export function PayersListCard() {
         </div>
       ) : (
         <ScrollArea.Root className="overflow-hidden">
-          <ScrollArea.Viewport className="max-h-80 overflow-y-auto">
+          <ScrollArea.Viewport className="max-h-[30rem] overflow-y-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -83,7 +83,9 @@ export function PayersListCard() {
               </thead>
               <tbody>
                 {pendingPayers.map((payer, index) => {
-                  const statusColor = getPayerStatus(payer.lastSentDate, dueDateDay).color as 'orange' | 'red';
+                  const statusColor = getPayerStatus(payer.lastSentDate, dueDateDay).color as
+                    | 'orange'
+                    | 'red';
                   const isLastRow = index === pendingPayers.length - 1;
                   return (
                     <tr
@@ -110,7 +112,9 @@ export function PayersListCard() {
                         <span
                           className={`px-2.5 py-1 text-xs font-medium rounded ${ROW_BADGE_CLASS[statusColor]}`}
                         >
-                          {statusColor === 'red' ? t('dashboard.payers.overdue') : t('dashboard.payers.pending')}
+                          {statusColor === 'red'
+                            ? t('dashboard.payers.overdue')
+                            : t('dashboard.payers.pending')}
                         </span>
                       </td>
                     </tr>
@@ -130,4 +134,3 @@ export function PayersListCard() {
     </div>
   );
 }
-
