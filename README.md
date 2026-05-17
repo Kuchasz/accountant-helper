@@ -1,4 +1,4 @@
-# Optima Helper 2
+# Accountant Helper
 
 A modern full-stack monorepo built with Vite, React, tRPC, Express, TypeScript, and Tailwind CSS.
 
