@@ -109,14 +109,6 @@ export function Sidebar() {
             {!isCollapsed && <span>{t('sidebar.settings')}</span>}
           </Button>
         </RouterLink>
-        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2.5`}>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex-shrink-0" />
-          {!isCollapsed && (
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Jevline Klef</p>
-            </div>
-          )}
-        </div>
       </div>
     </aside>
   );
