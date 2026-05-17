@@ -24,7 +24,9 @@
     "performance": "Performance",
     "members": "Members",
     "settings": "Settings",
-    "feedback": "Feedback"
+    "feedback": "Feedback",
+    "zus": "ZUS",
+    "zusPayersLabel": "Payers"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -81,12 +83,12 @@
     "sat": "SAT",
     "sun": "SUN",
     "payers": {
-      "title": "Payers Status",
-      "total": "payers",
-      "lastSent": "Last sent",
-      "neverSent": "Never sent",
+      "title": "Payers without declarations",
+      "overdue": "overdue",
       "noData": "No data",
-      "warning": "This payer sent documents last month but hasn't sent any this month (past 15th day)"
+      "loadError": "Failed to load payers",
+      "checkedAfter15": "Declarations are checked after the 15th day of the month",
+      "allCompliant": "All payers have submitted their declarations this month"
     }
   },
   "pages": {
@@ -167,6 +169,23 @@
       "invalidXml": "The file does not contain valid XML. Please check the file and try again.",
       "readError": "Error reading the file. Please try again.",
       "zipError": "Error extracting ZIP file. The archive may be corrupted."
+    }
+  },
+  "zus": {
+    "payers": {
+      "title": "Payers",
+      "subtitle": "Active payers from the ZUS Platnik database",
+      "total": "payers",
+      "neverSent": "Never sent",
+      "noData": "No data",
+      "warningTooltip": "This payer sent documents last month but hasn't sent any this month (past 15th day)",
+      "loadError": "Failed to load payers",
+      "empty": "No payers found",
+      "columns": {
+        "name": "Name",
+        "lastSent": "Last sent",
+        "status": "Status"
+      }
     }
   }
 }

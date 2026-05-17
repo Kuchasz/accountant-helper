@@ -15,6 +15,7 @@ import {
   ShoppingCart,
   Sparkle,
   Users,
+  UsersThree,
   Wrench,
 } from '@phosphor-icons/react';
 import { Link as RouterLink, useMatchRoute } from '@tanstack/react-router';
@@ -98,6 +99,27 @@ export function Sidebar() {
                   </RouterLink>
                 );
               })}
+            </div>
+          </div>
+
+          {/* ZUS Section */}
+          <div className="px-3 mt-6">
+            <p className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+              {t('sidebar.zus')}
+            </p>
+            <div className="space-y-1">
+              <RouterLink to="/zus/payers" className="block">
+                <Button
+                  className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors border-0 cursor-pointer ${
+                    matchRoute({ to: '/zus/payers' })
+                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+                      : 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  }`}
+                >
+                  <UsersThree size={20} />
+                  <span>{t('sidebar.zusPayersLabel')}</span>
+                </Button>
+              </RouterLink>
             </div>
           </div>
 

@@ -24,7 +24,9 @@
     "performance": "Wydajność",
     "members": "Członkowie",
     "settings": "Ustawienia",
-    "feedback": "Opinie"
+    "feedback": "Opinie",
+    "zus": "ZUS",
+    "zusPayersLabel": "Płatnicy"
   },
   "dashboard": {
     "title": "Panel",
@@ -81,12 +83,12 @@
     "sat": "SOB",
     "sun": "NIE",
     "payers": {
-      "title": "Status Płatników",
-      "total": "płatników",
-      "lastSent": "Ostatnio wysłano",
-      "neverSent": "Nigdy nie wysłano",
+      "title": "Płatnicy bez deklaracji",
+      "overdue": "zaległe",
       "noData": "Brak danych",
-      "warning": "Ten płatnik wysłał dokumenty w poprzednim miesiącu, ale nie wysłał w tym miesiącu (po 15. dniu)"
+      "loadError": "Błąd ładowania płatników",
+      "checkedAfter15": "Deklaracje weryfikowane są po 15. dniu miesiąca",
+      "allCompliant": "Wszyscy płatnicy złożyli deklaracje w tym miesiącu"
     }
   },
   "pages": {
@@ -167,6 +169,23 @@
       "invalidXml": "Plik nie zawiera prawidłowego XML. Sprawdź plik i spróbuj ponownie.",
       "readError": "Błąd odczytu pliku. Spróbuj ponownie.",
       "zipError": "Błąd podczas wyodrębniania pliku ZIP. Archiwum może być uszkodzone."
+    }
+  },
+  "zus": {
+    "payers": {
+      "title": "Płatnicy",
+      "subtitle": "Aktywni płatnicy z bazy danych ZUS Płatnik",
+      "total": "płatników",
+      "neverSent": "Nigdy nie wysłano",
+      "noData": "Brak danych",
+      "warningTooltip": "Ten płatnik wysłał dokumenty w poprzednim miesiącu, ale nie wysłał w tym miesiącu (po 15. dniu)",
+      "loadError": "Błąd ładowania płatników",
+      "empty": "Nie znaleziono płatników",
+      "columns": {
+        "name": "Nazwa",
+        "lastSent": "Ostatnio wysłano",
+        "status": "Status"
+      }
     }
   }
 }

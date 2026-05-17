@@ -15,6 +15,7 @@ import { ProductsPage } from './pages/ProductsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ToolsPage } from './pages/ToolsPage';
 import { XmlFixerPage } from './pages/XmlFixerPage';
+import { PayersPage } from './pages/zus/PayersPage';
 
 // Root layout component
 function RootLayout() {
@@ -119,6 +120,12 @@ const xmlFixerRoute = createRoute({
   component: XmlFixerPage,
 });
 
+const zusPayersRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/zus/payers',
+  component: PayersPage,
+});
+
 // Create route tree
 const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -135,6 +142,7 @@ const routeTree = rootRoute.addChildren([
   settingsRoute,
   toolsRoute,
   xmlFixerRoute,
+  zusPayersRoute,
 ]);
 
 // Create router
