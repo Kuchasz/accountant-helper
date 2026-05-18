@@ -2,7 +2,11 @@ import type { DataSource } from 'typeorm';
 import { getDatabase } from '../db/index.js';
 import { CdnBazy } from '../db/optimaSchema.js';
 import { JpkVatDeclarationStatus } from '../db/schema.js';
-import { getOptimaCompanyDataSource, getOptimaConfigDataSource } from '../db/sqlserver.js';
+import { getOptimaConfigDataSource } from '../db/sqlserver.js';
+
+const DEFAULT_VAT_UPDATE_CONCURRENCY = 5;
+const MAX_VAT_UPDATE_CONCURRENCY = 10;
+const SLOW_COMPANY_CHECK_MS = 2000;
 
 export interface CompanyJpkVatStatusResult {
   companyId: number;
@@ -70,11 +74,54 @@ function normalizeServerName(serverName?: string): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
+export function normalizeVatUpdateConcurrency(value: string | number | undefined): number {
+  const parsed = typeof value === 'number' ? value : Number.parseInt(value ?? '', 10);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return DEFAULT_VAT_UPDATE_CONCURRENCY;
+  }
+
+  return Math.min(MAX_VAT_UPDATE_CONCURRENCY, Math.floor(parsed));
+}
+
+export function escapeSqlServerIdentifier(identifier: string): string {
+  const trimmed = identifier.trim();
+  if (!trimmed) {
+    throw new Error('SQL Server identifier cannot be empty');
+  }
+
+  return `[${trimmed.split(']').join(']]')}]`;
+}
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  mapper: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const normalizedConcurrency = normalizeVatUpdateConcurrency(concurrency);
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+
+  async function worker(): Promise<void> {
+    while (nextIndex < items.length) {
+      const currentIndex = nextIndex;
+      nextIndex += 1;
+      results[currentIndex] = await mapper(items[currentIndex], currentIndex);
+    }
+  }
+
+  const workerCount = Math.min(normalizedConcurrency, items.length);
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+
+  return results;
+}
+
 async function findSentJpkVatInMonth(
   dataSource: DataSource,
+  databaseName: string,
   start: Date,
   end: Date,
 ): Promise<JpkVatSentRow | null> {
+  const escapedDatabaseName = escapeSqlServerIdentifier(databaseName);
   const rows = await dataSource.query<JpkVatSentRow[]>(
     `
       SELECT TOP 1
@@ -88,7 +135,7 @@ async function findSentJpkVatInMonth(
         TRY_CONVERT(datetime2, NULLIF(JPK_DataOdebrania, ''), 120) AS ReceivedAt,
         Jpk_Rok,
         Jpk_Miesiac
-      FROM CDN.PlikiJPK
+      FROM ${escapedDatabaseName}.CDN.PlikiJPK
       WHERE Jpk_KodFormularza = 'JPK_VAT'
         AND Jpk_Deklaracja = 1
         AND JPK_Typ LIKE 'JPK_V7%'
@@ -107,6 +154,7 @@ async function findSentJpkVatInMonth(
 export async function checkCompanyJpkVatDeclarationSentInCurrentMonth(
   company: Pick<CdnBazy, 'id' | 'name' | 'databaseName' | 'serverName'>,
   checkedAt = new Date(),
+  dataSource?: DataSource,
 ): Promise<CompanyJpkVatStatusResult> {
   const { start, end, sentMonth } = monthRange(checkedAt);
   const baseResult = {
@@ -119,19 +167,17 @@ export async function checkCompanyJpkVatDeclarationSentInCurrentMonth(
   };
 
   try {
-    const companyDs = await getOptimaCompanyDataSource({
-      database: company.databaseName,
-    });
+    const sharedDs = dataSource ?? (await getOptimaConfigDataSource());
 
-    if (!companyDs) {
+    if (!sharedDs) {
       return {
         ...baseResult,
         hasSent: false,
-        lastError: 'Optima company database connection is not configured',
+        lastError: 'Optima database connection is not configured',
       };
     }
 
-    const sentRow = await findSentJpkVatInMonth(companyDs, start, end);
+    const sentRow = await findSentJpkVatInMonth(sharedDs, company.databaseName, start, end);
 
     if (!sentRow) {
       return {
@@ -165,6 +211,7 @@ export async function checkCompanyJpkVatDeclarationSentInCurrentMonth(
 
 export async function checkAllCompaniesJpkVatDeclarationSentInCurrentMonth(
   checkedAt = new Date(),
+  options: { concurrency?: number } = {},
 ): Promise<CompanyJpkVatStatusResult[]> {
   const configDs = await getOptimaConfigDataSource();
   if (!configDs) {
@@ -176,64 +223,101 @@ export async function checkAllCompaniesJpkVatDeclarationSentInCurrentMonth(
     order: { name: 'ASC' },
   });
 
-  const results: CompanyJpkVatStatusResult[] = [];
-  for (const company of companies) {
-    results.push(await checkCompanyJpkVatDeclarationSentInCurrentMonth(company, checkedAt));
-  }
+  const concurrency = normalizeVatUpdateConcurrency(options.concurrency);
+  const startedAt = Date.now();
+  console.log(
+    `[jobs] Checking JPK VAT declarations for ${companies.length} companies with concurrency ${concurrency}`,
+  );
+
+  const results = await mapWithConcurrency(companies, concurrency, async (company) => {
+    const companyStartedAt = Date.now();
+    const result = await checkCompanyJpkVatDeclarationSentInCurrentMonth(
+      company,
+      checkedAt,
+      configDs,
+    );
+    const durationMs = Date.now() - companyStartedAt;
+
+    if (durationMs >= SLOW_COMPANY_CHECK_MS) {
+      console.warn(
+        `[jobs] Slow JPK VAT declaration check for ${company.name} (${company.databaseName}) took ${durationMs}ms`,
+      );
+    }
+
+    return result;
+  });
+
+  console.log(`[jobs] Finished MSSQL JPK VAT declaration checks in ${Date.now() - startedAt}ms`);
 
   return results;
+}
+
+function toJpkVatDeclarationStatusData(
+  result: CompanyJpkVatStatusResult,
+): Partial<JpkVatDeclarationStatus> {
+  return {
+    companyId: result.companyId,
+    companyName: result.companyName,
+    databaseName: result.databaseName,
+    serverName: result.serverName ?? null,
+    sentMonth: result.sentMonth,
+    hasSent: result.hasSent,
+    jpkFileId: result.jpkFileId ?? null,
+    periodYear: result.periodYear ?? null,
+    periodMonth: result.periodMonth ?? null,
+    jpkType: result.jpkType ?? null,
+    status: result.status ?? null,
+    statusCode: result.statusCode ?? null,
+    statusDescription: result.statusDescription ?? null,
+    referenceNumber: result.referenceNumber ?? null,
+    sentAt: result.sentAt ?? null,
+    receivedAt: result.receivedAt ?? null,
+    checkedAt: result.checkedAt,
+    lastError: result.lastError ?? null,
+  };
 }
 
 export async function saveJpkVatDeclarationStatusResults(
   results: CompanyJpkVatStatusResult[],
 ): Promise<JpkVatDeclarationStatus[]> {
+  if (results.length === 0) {
+    return [];
+  }
+
   const db = await getDatabase();
   const repository = db.getRepository(JpkVatDeclarationStatus);
-  const saved: JpkVatDeclarationStatus[] = [];
+  const saveStartedAt = Date.now();
+  const rows = results.map(toJpkVatDeclarationStatusData);
 
-  for (const result of results) {
-    const existing = await repository.findOne({
-      where: {
-        companyId: result.companyId,
-        sentMonth: result.sentMonth,
-      },
-    });
+  await repository.upsert(rows, ['companyId', 'sentMonth']);
 
-    const data: Partial<JpkVatDeclarationStatus> = {
+  const saved = await repository.find({
+    where: results.map((result) => ({
       companyId: result.companyId,
-      companyName: result.companyName,
-      databaseName: result.databaseName,
-      serverName: result.serverName ?? null,
       sentMonth: result.sentMonth,
-      hasSent: result.hasSent,
-      jpkFileId: result.jpkFileId ?? null,
-      periodYear: result.periodYear ?? null,
-      periodMonth: result.periodMonth ?? null,
-      jpkType: result.jpkType ?? null,
-      status: result.status ?? null,
-      statusCode: result.statusCode ?? null,
-      statusDescription: result.statusDescription ?? null,
-      referenceNumber: result.referenceNumber ?? null,
-      sentAt: result.sentAt ?? null,
-      receivedAt: result.receivedAt ?? null,
-      checkedAt: result.checkedAt,
-      lastError: result.lastError ?? null,
-    };
+    })),
+  });
 
-    if (existing) {
-      repository.merge(existing, data);
-      saved.push(await repository.save(existing));
-    } else {
-      saved.push(await repository.save(repository.create(data)));
-    }
-  }
+  console.log(
+    `[jobs] Saved ${saved.length} JPK VAT declaration statuses in ${Date.now() - saveStartedAt}ms`,
+  );
 
   return saved;
 }
 
 export async function refreshJpkVatDeclarationStatuses(
   checkedAt = new Date(),
+  options: { concurrency?: number } = {},
 ): Promise<JpkVatDeclarationStatus[]> {
-  const results = await checkAllCompaniesJpkVatDeclarationSentInCurrentMonth(checkedAt);
-  return saveJpkVatDeclarationStatusResults(results);
+  const startedAt = Date.now();
+  const results = await checkAllCompaniesJpkVatDeclarationSentInCurrentMonth(checkedAt, options);
+  const checkedDurationMs = Date.now() - startedAt;
+  const saveStartedAt = Date.now();
+  const saved = await saveJpkVatDeclarationStatusResults(results);
+
+  console.log(
+    `[jobs] Refreshed JPK VAT declaration statuses in ${Date.now() - startedAt}ms (checks ${checkedDurationMs}ms, save ${Date.now() - saveStartedAt}ms)`,
+  );
+
+  return saved;
 }

@@ -1,6 +1,9 @@
 import { getDatabase } from '../db/index.js';
 import { Setting } from '../db/schema.js';
-import { refreshJpkVatDeclarationStatuses } from '../services/jpkVatDeclarationStatus.js';
+import {
+  normalizeVatUpdateConcurrency,
+  refreshJpkVatDeclarationStatuses,
+} from '../services/jpkVatDeclarationStatus.js';
 import { type ScheduledJob, durationToMs } from './scheduler.js';
 
 const FIVE_MINUTES_MS = durationToMs('5m');
@@ -27,17 +30,23 @@ export function shouldRunVatUpdate(startedAt: Date, intervalMinutes: number): bo
   return roundedToFiveMinutes % intervalMinutes === 0;
 }
 
-async function getVatUpdateSettings(): Promise<{ enabled: boolean; intervalMinutes: number }> {
+async function getVatUpdateSettings(): Promise<{
+  enabled: boolean;
+  intervalMinutes: number;
+  concurrency: number;
+}> {
   const db = await getDatabase();
   const repository = db.getRepository(Setting);
-  const [enabledSetting, intervalSetting] = await Promise.all([
+  const [enabledSetting, intervalSetting, concurrencySetting] = await Promise.all([
     repository.findOne({ where: { key: 'vat_updates_enabled' } }),
     repository.findOne({ where: { key: 'vat_update_interval_minutes' } }),
+    repository.findOne({ where: { key: 'vat_update_concurrency' } }),
   ]);
 
   return {
     enabled: enabledSetting?.value !== 'false',
     intervalMinutes: normalizeIntervalMinutes(intervalSetting?.value),
+    concurrency: normalizeVatUpdateConcurrency(concurrencySetting?.value),
   };
 }
 
@@ -58,7 +67,9 @@ export const jpkVatDeclarationStatusJob: ScheduledJob = {
       return;
     }
 
-    const statuses = await refreshJpkVatDeclarationStatuses(startedAt);
+    const statuses = await refreshJpkVatDeclarationStatuses(startedAt, {
+      concurrency: settings.concurrency,
+    });
     const missingCount = statuses.filter((status) => !status.hasSent).length;
 
     console.log(

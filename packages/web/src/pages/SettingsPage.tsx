@@ -29,6 +29,15 @@ const initialFormData: ConnectionFormData = {
   isConfigured: false,
 };
 
+function normalizeVatUpdateIntervalMinutes(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 15;
+  }
+
+  const clamped = Math.min(1440, Math.max(5, value));
+  return Math.round(clamped / 5) * 5;
+}
+
 export function SettingsPage() {
   const { t } = useTranslation();
   const [optimaForm, setOptimaForm] = useState<ConnectionFormData>(initialFormData);
@@ -219,6 +228,10 @@ export function SettingsPage() {
   };
 
   const handleSaveVatSettings = () => {
+    const normalizedVatUpdateIntervalMinutes =
+      normalizeVatUpdateIntervalMinutes(vatUpdateIntervalMinutes);
+    setVatUpdateIntervalMinutes(normalizedVatUpdateIntervalMinutes);
+
     setSettingMutation.mutate({
       key: 'vat_due_date_day',
       value: vatDueDateDay.toString(),
@@ -231,7 +244,7 @@ export function SettingsPage() {
     });
     setSettingMutation.mutate({
       key: 'vat_update_interval_minutes',
-      value: vatUpdateIntervalMinutes.toString(),
+      value: normalizedVatUpdateIntervalMinutes.toString(),
       description: 'VAT declaration status update interval in minutes',
     });
   };
@@ -647,13 +660,18 @@ export function SettingsPage() {
                   value={vatUpdateIntervalMinutes.toString()}
                   onValueChange={(value) => {
                     const n = Number.parseInt(value);
-                    if (!Number.isNaN(n) && n >= 5 && n <= 1440) {
-                      setVatUpdateIntervalMinutes(Math.round(n / 5) * 5);
+                    if (!Number.isNaN(n) && n >= 1 && n <= 1440) {
+                      setVatUpdateIntervalMinutes(n);
                     }
                   }}
+                  onBlur={() =>
+                    setVatUpdateIntervalMinutes(
+                      normalizeVatUpdateIntervalMinutes(vatUpdateIntervalMinutes),
+                    )
+                  }
                   min={5}
                   max={1440}
-                  step={5}
+                  step={1}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
                 />
               )}
