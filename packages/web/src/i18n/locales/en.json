@@ -239,8 +239,14 @@
     "dueDateDayHint": "Day of month when VAT declarations are due (1–28). Default: 25.",
     "updatesEnabled": "VAT declaration updates",
     "updatesEnabledHint": "When disabled, the VAT declaration status check job will be skipped.",
+    "updatesSectionTitle": "VAT declaration updates",
     "updateIntervalMinutes": "Update interval (minutes)",
     "updateIntervalMinutesHint": "The job wakes up every 5 minutes and only runs when the selected interval boundary is due.",
+    "lastSync": "Last sync",
+    "neverSynced": "Not run yet",
+    "forceSync": "Force now",
+    "syncing": "Syncing...",
+    "forceSyncHint": "Runs the VAT declaration check immediately, regardless of the interval.",
     "saved": "Saved"
   },
   "zus": {

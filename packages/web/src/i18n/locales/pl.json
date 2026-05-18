@@ -239,8 +239,14 @@
     "dueDateDayHint": "Dzień miesiąca, w którym upływa termin deklaracji VAT (1–28). Domyślnie: 25.",
     "updatesEnabled": "Aktualizacje deklaracji VAT",
     "updatesEnabledHint": "Po wyłączeniu zadanie sprawdzania deklaracji VAT będzie pomijane.",
+    "updatesSectionTitle": "Aktualizacje deklaracji VAT",
     "updateIntervalMinutes": "Interwał aktualizacji (minuty)",
     "updateIntervalMinutesHint": "Zadanie budzi się co 5 minut i wykonuje sprawdzenie tylko na granicy wybranego interwału.",
+    "lastSync": "Ostatnia synchronizacja",
+    "neverSynced": "Jeszcze nie wykonano",
+    "forceSync": "Wymuś teraz",
+    "syncing": "Synchronizowanie...",
+    "forceSyncHint": "Uruchamia sprawdzenie deklaracji VAT od razu, niezależnie od interwału.",
     "saved": "Zapisano"
   },
   "zus": {

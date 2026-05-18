@@ -2,7 +2,7 @@ import { Button } from '@base-ui/react/button';
 import { Field } from '@base-ui/react/field';
 import { Input } from '@base-ui/react/input';
 import { Switch } from '@base-ui/react/switch';
-import { CheckCircle, Database, FileText, XCircle } from '@phosphor-icons/react';
+import { ArrowsClockwise, CheckCircle, Database, FileText, XCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { trpc } from '../lib/trpc';
@@ -38,8 +38,27 @@ function normalizeVatUpdateIntervalMinutes(value: number): number {
   return Math.round(clamped / 5) * 5;
 }
 
+function formatDateTime(value: Date | string | null, locale: string, fallback: string): string {
+  if (!value) {
+    return fallback;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return fallback;
+  }
+
+  return new Intl.DateTimeFormat(locale, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+}
+
 export function SettingsPage() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [optimaForm, setOptimaForm] = useState<ConnectionFormData>(initialFormData);
   const [payerForm, setPayerForm] = useState<ConnectionFormData>(initialFormData);
   const [testResult, setTestResult] = useState<{
@@ -59,6 +78,7 @@ export function SettingsPage() {
 
   const utils = trpc.useUtils();
   const { data: connections = [], isLoading } = trpc.getSqlServerConnections.useQuery();
+  const { data: vatDeclarationStatuses = [] } = trpc.getJpkVatDeclarationStatuses.useQuery();
   const { data: dueDateSetting } = trpc.getSetting.useQuery({ key: 'zus_due_date_day' });
   const { data: vatDueDateSetting } = trpc.getSetting.useQuery({ key: 'vat_due_date_day' });
   const { data: vatUpdatesEnabledSetting } = trpc.getSetting.useQuery({
@@ -71,37 +91,51 @@ export function SettingsPage() {
     key: 'dashboard_show_fake_widgets',
   });
 
-  const setSettingMutation = trpc.setSetting.useMutation({
+  const dashboardSettingMutation = trpc.setSetting.useMutation({
     onSuccess: (setting) => {
-      if (!setting) return;
-
-      utils.getSetting.invalidate({ key: setting.key });
-
-      if (setting.key === 'zus_due_date_day') {
-        setDueDateSaved(true);
-        setTimeout(() => setDueDateSaved(false), 2000);
+      if (setting) {
+        void utils.getSetting.invalidate({ key: setting.key });
       }
-
-      if (setting.key === 'vat_due_date_day') {
-        setVatDueDateSaved(true);
-        setTimeout(() => setVatDueDateSaved(false), 2000);
-      }
-
-      if (setting.key === 'vat_updates_enabled' || setting.key === 'vat_update_interval_minutes') {
-        setVatDueDateSaved(true);
-        setTimeout(() => setVatDueDateSaved(false), 2000);
-      }
-
-      if (setting.key === 'dashboard_show_fake_widgets') {
-        setDashboardSettingsSaved(true);
-        setTimeout(() => setDashboardSettingsSaved(false), 2000);
-      }
+      setDashboardSettingsSaved(true);
+      setTimeout(() => setDashboardSettingsSaved(false), 2000);
     },
   });
 
-  const updateMutation = trpc.updateSqlServerConnection.useMutation({
+  const zusSettingMutation = trpc.setSetting.useMutation({
+    onSuccess: (setting) => {
+      if (setting) {
+        void utils.getSetting.invalidate({ key: setting.key });
+      }
+      setDueDateSaved(true);
+      setTimeout(() => setDueDateSaved(false), 2000);
+    },
+  });
+
+  const vatSettingsMutation = trpc.setSetting.useMutation({
+    onSuccess: (setting) => {
+      if (setting) {
+        void utils.getSetting.invalidate({ key: setting.key });
+      }
+      setVatDueDateSaved(true);
+      setTimeout(() => setVatDueDateSaved(false), 2000);
+    },
+  });
+
+  const refreshVatDeclarationsMutation = trpc.refreshJpkVatDeclarationStatuses.useMutation({
     onSuccess: () => {
-      utils.getSqlServerConnections.invalidate();
+      void utils.getJpkVatDeclarationStatuses.invalidate();
+    },
+  });
+
+  const optimaUpdateMutation = trpc.updateSqlServerConnection.useMutation({
+    onSuccess: () => {
+      void utils.getSqlServerConnections.invalidate();
+    },
+  });
+
+  const payerUpdateMutation = trpc.updateSqlServerConnection.useMutation({
+    onSuccess: () => {
+      void utils.getSqlServerConnections.invalidate();
     },
   });
 
@@ -193,7 +227,9 @@ export function SettingsPage() {
     const form = dbType === 'optima' ? optimaForm : payerForm;
     const isConfigured = !!form.server && !!form.database && !!form.username && !!form.password;
 
-    updateMutation.mutate({
+    const mutation = dbType === 'optima' ? optimaUpdateMutation : payerUpdateMutation;
+
+    mutation.mutate({
       name: dbType,
       data: {
         ...form,
@@ -232,22 +268,31 @@ export function SettingsPage() {
       normalizeVatUpdateIntervalMinutes(vatUpdateIntervalMinutes);
     setVatUpdateIntervalMinutes(normalizedVatUpdateIntervalMinutes);
 
-    setSettingMutation.mutate({
+    vatSettingsMutation.mutate({
       key: 'vat_due_date_day',
       value: vatDueDateDay.toString(),
       description: 'VAT declaration due date day of month',
     });
-    setSettingMutation.mutate({
+    vatSettingsMutation.mutate({
       key: 'vat_updates_enabled',
       value: vatUpdatesEnabled ? 'true' : 'false',
       description: 'Enable VAT declaration status updates',
     });
-    setSettingMutation.mutate({
+    vatSettingsMutation.mutate({
       key: 'vat_update_interval_minutes',
       value: normalizedVatUpdateIntervalMinutes.toString(),
       description: 'VAT declaration status update interval in minutes',
     });
   };
+
+  const latestVatSyncAt = vatDeclarationStatuses.reduce<Date | null>((latest, status) => {
+    const checkedAt = status.checkedAt ? new Date(status.checkedAt) : null;
+    if (!checkedAt || Number.isNaN(checkedAt.getTime())) {
+      return latest;
+    }
+
+    return !latest || checkedAt > latest ? checkedAt : latest;
+  }, null);
 
   const renderDatabaseConfig = (
     dbType: 'optima' | 'payer',
@@ -255,182 +300,187 @@ export function SettingsPage() {
     description: string,
     form: ConnectionFormData,
     setForm: React.Dispatch<React.SetStateAction<ConnectionFormData>>,
-  ) => (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Database size={24} />
-            {title}
-          </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{description}</p>
-        </div>
-        {form.isConfigured && (
-          <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            {t('sqlSettings.configured')}
-          </span>
-        )}
-      </div>
+  ) => {
+    const isSaving =
+      dbType === 'optima' ? optimaUpdateMutation.isPending : payerUpdateMutation.isPending;
 
-      <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <Field.Root>
-            <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('sqlSettings.server')}
-            </Field.Label>
-            <Field.Control
-              render={(props) => (
-                <Input
-                  {...props}
-                  type="text"
-                  value={form.server}
-                  onValueChange={(value) => setForm({ ...form, server: value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
-                  placeholder={t('sqlSettings.serverPlaceholder')}
-                />
-              )}
-            />
-          </Field.Root>
-          <Field.Root>
-            <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('sqlSettings.port')}
-            </Field.Label>
-            <Field.Control
-              render={(props) => (
-                <Input
-                  {...props}
-                  type="number"
-                  value={form.port.toString()}
-                  onValueChange={(value) =>
-                    setForm({ ...form, port: Number.parseInt(value) || 1433 })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
-                />
-              )}
-            />
-          </Field.Root>
-        </div>
-
-        <Field.Root>
-          <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            {t('sqlSettings.database')}
-          </Field.Label>
-          <Field.Control
-            render={(props) => (
-              <Input
-                {...props}
-                type="text"
-                value={form.database}
-                onValueChange={(value) => setForm({ ...form, database: value })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
-                placeholder={t('sqlSettings.databasePlaceholder')}
-              />
-            )}
-          />
-        </Field.Root>
-
-        <div className="grid grid-cols-2 gap-4">
-          <Field.Root>
-            <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('sqlSettings.username')}
-            </Field.Label>
-            <Field.Control
-              render={(props) => (
-                <Input
-                  {...props}
-                  type="text"
-                  value={form.username}
-                  onValueChange={(value) => setForm({ ...form, username: value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
-                />
-              )}
-            />
-          </Field.Root>
-          <Field.Root>
-            <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('sqlSettings.password')}
-            </Field.Label>
-            <Field.Control
-              render={(props) => (
-                <Input
-                  {...props}
-                  type="password"
-                  value={form.password}
-                  onValueChange={(value) => setForm({ ...form, password: value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
-                />
-              )}
-            />
-          </Field.Root>
-        </div>
-
-        <div className="space-y-3 pt-2">
-          <Field.Root className="flex items-center justify-between">
-            <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t('sqlSettings.encryptConnection')}
-            </Field.Label>
-            <Switch.Root
-              checked={form.encrypt}
-              onCheckedChange={(checked) => setForm({ ...form, encrypt: checked })}
-              className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
-            >
-              <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
-            </Switch.Root>
-          </Field.Root>
-
-          <Field.Root className="flex items-center justify-between">
-            <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t('sqlSettings.trustServerCertificate')}
-            </Field.Label>
-            <Switch.Root
-              checked={form.trustServerCertificate}
-              onCheckedChange={(checked) => setForm({ ...form, trustServerCertificate: checked })}
-              className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
-            >
-              <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
-            </Switch.Root>
-          </Field.Root>
-        </div>
-
-        {testResult && testResult.type === dbType && (
-          <div
-            className={`p-3 rounded-lg flex items-start gap-2 ${
-              testResult.success
-                ? 'bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                : 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-400'
-            }`}
-          >
-            {testResult.success ? (
-              <CheckCircle size={20} weight="fill" />
-            ) : (
-              <XCircle size={20} weight="fill" />
-            )}
-            <span className="text-sm">{testResult.message}</span>
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-start justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <Database size={24} />
+              {title}
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{description}</p>
           </div>
-        )}
+          {form.isConfigured && (
+            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              {t('sqlSettings.configured')}
+            </span>
+          )}
+        </div>
 
-        <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <Button
-            type="button"
-            onClick={() => handleTest(dbType)}
-            disabled={isTesting === dbType}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isTesting === dbType ? t('sqlSettings.testing') : t('sqlSettings.testConnection')}
-          </Button>
-          <div className="flex-1" />
-          <Button
-            type="button"
-            onClick={() => handleSave(dbType)}
-            disabled={updateMutation.isPending}
-            className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {updateMutation.isPending ? t('sqlSettings.saving') : t('sqlSettings.save')}
-          </Button>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Field.Root>
+              <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t('sqlSettings.server')}
+              </Field.Label>
+              <Field.Control
+                render={(props) => (
+                  <Input
+                    {...props}
+                    type="text"
+                    value={form.server}
+                    onValueChange={(value) => setForm({ ...form, server: value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
+                    placeholder={t('sqlSettings.serverPlaceholder')}
+                  />
+                )}
+              />
+            </Field.Root>
+            <Field.Root>
+              <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t('sqlSettings.port')}
+              </Field.Label>
+              <Field.Control
+                render={(props) => (
+                  <Input
+                    {...props}
+                    type="number"
+                    value={form.port.toString()}
+                    onValueChange={(value) =>
+                      setForm({ ...form, port: Number.parseInt(value) || 1433 })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
+                  />
+                )}
+              />
+            </Field.Root>
+          </div>
+
+          <Field.Root>
+            <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('sqlSettings.database')}
+            </Field.Label>
+            <Field.Control
+              render={(props) => (
+                <Input
+                  {...props}
+                  type="text"
+                  value={form.database}
+                  onValueChange={(value) => setForm({ ...form, database: value })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
+                  placeholder={t('sqlSettings.databasePlaceholder')}
+                />
+              )}
+            />
+          </Field.Root>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field.Root>
+              <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t('sqlSettings.username')}
+              </Field.Label>
+              <Field.Control
+                render={(props) => (
+                  <Input
+                    {...props}
+                    type="text"
+                    value={form.username}
+                    onValueChange={(value) => setForm({ ...form, username: value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
+                  />
+                )}
+              />
+            </Field.Root>
+            <Field.Root>
+              <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t('sqlSettings.password')}
+              </Field.Label>
+              <Field.Control
+                render={(props) => (
+                  <Input
+                    {...props}
+                    type="password"
+                    value={form.password}
+                    onValueChange={(value) => setForm({ ...form, password: value })}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
+                  />
+                )}
+              />
+            </Field.Root>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <Field.Root className="flex items-center justify-between">
+              <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('sqlSettings.encryptConnection')}
+              </Field.Label>
+              <Switch.Root
+                checked={form.encrypt}
+                onCheckedChange={(checked) => setForm({ ...form, encrypt: checked })}
+                className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
+              >
+                <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
+              </Switch.Root>
+            </Field.Root>
+
+            <Field.Root className="flex items-center justify-between">
+              <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {t('sqlSettings.trustServerCertificate')}
+              </Field.Label>
+              <Switch.Root
+                checked={form.trustServerCertificate}
+                onCheckedChange={(checked) => setForm({ ...form, trustServerCertificate: checked })}
+                className="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
+              >
+                <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
+              </Switch.Root>
+            </Field.Root>
+          </div>
+
+          {testResult && testResult.type === dbType && (
+            <div
+              className={`p-3 rounded-lg flex items-start gap-2 ${
+                testResult.success
+                  ? 'bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                  : 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+              }`}
+            >
+              {testResult.success ? (
+                <CheckCircle size={20} weight="fill" />
+              ) : (
+                <XCircle size={20} weight="fill" />
+              )}
+              <span className="text-sm">{testResult.message}</span>
+            </div>
+          )}
+
+          <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <Button
+              type="button"
+              onClick={() => handleTest(dbType)}
+              disabled={isTesting === dbType}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isTesting === dbType ? t('sqlSettings.testing') : t('sqlSettings.testConnection')}
+            </Button>
+            <div className="flex-1" />
+            <Button
+              type="button"
+              onClick={() => handleSave(dbType)}
+              disabled={isSaving}
+              className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSaving ? t('sqlSettings.saving') : t('sqlSettings.save')}
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   if (isLoading) {
     return (
@@ -511,16 +561,16 @@ export function SettingsPage() {
             <Button
               type="button"
               onClick={() =>
-                setSettingMutation.mutate({
+                dashboardSettingMutation.mutate({
                   key: 'dashboard_show_fake_widgets',
                   value: showFakeDashboardWidgets ? 'true' : 'false',
                   description: 'Show fake dashboard widgets',
                 })
               }
-              disabled={setSettingMutation.isPending}
+              disabled={dashboardSettingMutation.isPending}
               className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {setSettingMutation.isPending ? t('sqlSettings.saving') : t('sqlSettings.save')}
+              {dashboardSettingMutation.isPending ? t('sqlSettings.saving') : t('sqlSettings.save')}
             </Button>
           </div>
         </div>
@@ -576,16 +626,16 @@ export function SettingsPage() {
             <Button
               type="button"
               onClick={() =>
-                setSettingMutation.mutate({
+                zusSettingMutation.mutate({
                   key: 'zus_due_date_day',
                   value: dueDateDay.toString(),
                   description: 'ZUS declaration due date day of month',
                 })
               }
-              disabled={setSettingMutation.isPending}
+              disabled={zusSettingMutation.isPending}
               className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {setSettingMutation.isPending ? t('sqlSettings.saving') : t('sqlSettings.save')}
+              {zusSettingMutation.isPending ? t('sqlSettings.saving') : t('sqlSettings.save')}
             </Button>
           </div>
         </div>
@@ -604,8 +654,8 @@ export function SettingsPage() {
           </div>
         </div>
 
-        <div className="max-w-2xl space-y-4">
-          <Field.Root>
+        <div className="max-w-5xl space-y-6">
+          <Field.Root className="max-w-xs">
             <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t('vatSettings.dueDateDay')}
             </Field.Label>
@@ -630,73 +680,118 @@ export function SettingsPage() {
             </p>
           </Field.Root>
 
-          <Field.Root className="flex items-center justify-between gap-6 pt-2">
-            <div>
-              <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t('vatSettings.updatesEnabled')}
-              </Field.Label>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {t('vatSettings.updatesEnabledHint')}
-              </p>
+          <div className="border-t border-gray-200 pt-5 dark:border-gray-700">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              {t('vatSettings.updatesSectionTitle')}
+            </h3>
+            <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
+              <div className="space-y-4">
+                <Field.Root className="flex items-center justify-between gap-6 pt-2">
+                  <div>
+                    <Field.Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {t('vatSettings.updatesEnabled')}
+                    </Field.Label>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {t('vatSettings.updatesEnabledHint')}
+                    </p>
+                  </div>
+                  <Switch.Root
+                    checked={vatUpdatesEnabled}
+                    onCheckedChange={setVatUpdatesEnabled}
+                    className="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
+                  >
+                    <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
+                  </Switch.Root>
+                </Field.Root>
+
+                <Field.Root className="max-w-xs">
+                  <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {t('vatSettings.updateIntervalMinutes')}
+                  </Field.Label>
+                  <Field.Control
+                    render={(props) => (
+                      <Input
+                        {...props}
+                        type="number"
+                        value={vatUpdateIntervalMinutes.toString()}
+                        onValueChange={(value) => {
+                          const n = Number.parseInt(value);
+                          if (!Number.isNaN(n) && n >= 1 && n <= 1440) {
+                            setVatUpdateIntervalMinutes(n);
+                          }
+                        }}
+                        onBlur={() =>
+                          setVatUpdateIntervalMinutes(
+                            normalizeVatUpdateIntervalMinutes(vatUpdateIntervalMinutes),
+                          )
+                        }
+                        min={5}
+                        max={1440}
+                        step={1}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
+                      />
+                    )}
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {t('vatSettings.updateIntervalMinutesHint')}
+                  </p>
+                </Field.Root>
+
+                <div className="flex items-center gap-3 pt-2">
+                  {vatDueDateSaved && (
+                    <span className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+                      <CheckCircle size={16} weight="fill" />
+                      {t('vatSettings.saved')}
+                    </span>
+                  )}
+                  <div className="flex-1" />
+                  <Button
+                    type="button"
+                    onClick={handleSaveVatSettings}
+                    disabled={vatSettingsMutation.isPending}
+                    className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {vatSettingsMutation.isPending
+                      ? t('sqlSettings.saving')
+                      : t('sqlSettings.save')}
+                  </Button>
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 pt-5 dark:border-gray-700 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-gray-100 p-2 text-gray-700 dark:bg-gray-900 dark:text-gray-300">
+                    <ArrowsClockwise size={20} />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                      {t('vatSettings.lastSync')}
+                    </h3>
+                    <p className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      {formatDateTime(latestVatSyncAt, i18n.language, t('vatSettings.neverSynced'))}
+                    </p>
+                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      {t('vatSettings.forceSyncHint')}
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  onClick={() => refreshVatDeclarationsMutation.mutate()}
+                  disabled={refreshVatDeclarationsMutation.isPending}
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ArrowsClockwise
+                    size={16}
+                    className={refreshVatDeclarationsMutation.isPending ? 'animate-spin' : ''}
+                  />
+                  {refreshVatDeclarationsMutation.isPending
+                    ? t('vatSettings.syncing')
+                    : t('vatSettings.forceSync')}
+                </Button>
+              </div>
             </div>
-            <Switch.Root
-              checked={vatUpdatesEnabled}
-              onCheckedChange={setVatUpdatesEnabled}
-              className="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:ring-offset-2 data-[checked]:bg-gray-900 dark:data-[checked]:bg-gray-100 data-[unchecked]:bg-gray-300 dark:data-[unchecked]:bg-gray-600"
-            >
-              <Switch.Thumb className="inline-block h-4 w-4 transform rounded-full bg-white dark:bg-gray-900 transition-transform data-[checked]:translate-x-6 data-[unchecked]:translate-x-1" />
-            </Switch.Root>
-          </Field.Root>
-
-          <Field.Root className="max-w-xs">
-            <Field.Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('vatSettings.updateIntervalMinutes')}
-            </Field.Label>
-            <Field.Control
-              render={(props) => (
-                <Input
-                  {...props}
-                  type="number"
-                  value={vatUpdateIntervalMinutes.toString()}
-                  onValueChange={(value) => {
-                    const n = Number.parseInt(value);
-                    if (!Number.isNaN(n) && n >= 1 && n <= 1440) {
-                      setVatUpdateIntervalMinutes(n);
-                    }
-                  }}
-                  onBlur={() =>
-                    setVatUpdateIntervalMinutes(
-                      normalizeVatUpdateIntervalMinutes(vatUpdateIntervalMinutes),
-                    )
-                  }
-                  min={5}
-                  max={1440}
-                  step={1}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-900 dark:focus:ring-gray-100 focus:border-transparent"
-                />
-              )}
-            />
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {t('vatSettings.updateIntervalMinutesHint')}
-            </p>
-          </Field.Root>
-
-          <div className="flex items-center gap-3 pt-2">
-            {vatDueDateSaved && (
-              <span className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
-                <CheckCircle size={16} weight="fill" />
-                {t('vatSettings.saved')}
-              </span>
-            )}
-            <div className="flex-1" />
-            <Button
-              type="button"
-              onClick={handleSaveVatSettings}
-              disabled={setSettingMutation.isPending}
-              className="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors border-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {setSettingMutation.isPending ? t('sqlSettings.saving') : t('sqlSettings.save')}
-            </Button>
           </div>
         </div>
       </div>
