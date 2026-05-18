@@ -129,12 +129,18 @@ describe('saveJpkVatDeclarationStatusResults', () => {
     vi.clearAllMocks();
   });
 
-  it('persists status rows with a bulk upsert', async () => {
-    const upsert = vi.fn().mockResolvedValue(undefined);
+  it('persists status rows with a bulk insert-on-conflict without entity hydration', async () => {
     const find = vi.fn().mockResolvedValue([{ id: 1 }, { id: 2 }]);
+    const execute = vi.fn().mockResolvedValue(undefined);
+    const updateEntity = vi.fn(() => ({ execute }));
+    const orUpdate = vi.fn(() => ({ updateEntity }));
+    const values = vi.fn(() => ({ orUpdate }));
+    const into = vi.fn(() => ({ values }));
+    const insert = vi.fn(() => ({ into }));
+    const createQueryBuilder = vi.fn(() => ({ insert }));
     mockedGetDatabase.mockResolvedValue({
       getRepository: vi.fn(() => ({
-        upsert,
+        createQueryBuilder,
         find,
       })),
     } as never);
@@ -161,13 +167,18 @@ describe('saveJpkVatDeclarationStatusResults', () => {
     ]);
 
     expect(saved).toEqual([{ id: 1 }, { id: 2 }]);
-    expect(upsert).toHaveBeenCalledWith(
+    expect(values).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({ companyId: 1, hasSent: true }),
         expect.objectContaining({ companyId: 2, hasSent: false }),
       ]),
-      ['companyId', 'sentMonth'],
     );
+    expect(orUpdate).toHaveBeenCalledWith(
+      expect.arrayContaining(['company_name', 'checked_at', 'last_error']),
+      ['company_id', 'sent_month'],
+    );
+    expect(updateEntity).toHaveBeenCalledWith(false);
+    expect(execute).toHaveBeenCalledTimes(1);
     expect(find).toHaveBeenCalledWith({
       where: [
         { companyId: 1, sentMonth: '2026-05' },

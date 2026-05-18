@@ -277,6 +277,25 @@ function toJpkVatDeclarationStatusData(
   };
 }
 
+const JPK_VAT_DECLARATION_STATUS_UPSERT_COLUMNS = [
+  'company_name',
+  'database_name',
+  'server_name',
+  'has_sent',
+  'jpk_file_id',
+  'period_year',
+  'period_month',
+  'jpk_type',
+  'status',
+  'status_code',
+  'status_description',
+  'reference_number',
+  'sent_at',
+  'received_at',
+  'checked_at',
+  'last_error',
+];
+
 export async function saveJpkVatDeclarationStatusResults(
   results: CompanyJpkVatStatusResult[],
 ): Promise<JpkVatDeclarationStatus[]> {
@@ -289,7 +308,14 @@ export async function saveJpkVatDeclarationStatusResults(
   const saveStartedAt = Date.now();
   const rows = results.map(toJpkVatDeclarationStatusData);
 
-  await repository.upsert(rows, ['companyId', 'sentMonth']);
+  await repository
+    .createQueryBuilder()
+    .insert()
+    .into(JpkVatDeclarationStatus)
+    .values(rows)
+    .orUpdate(JPK_VAT_DECLARATION_STATUS_UPSERT_COLUMNS, ['company_id', 'sent_month'])
+    .updateEntity(false)
+    .execute();
 
   const saved = await repository.find({
     where: results.map((result) => ({
