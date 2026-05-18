@@ -2,7 +2,7 @@ import { Button } from '@base-ui/react/button';
 import { CheckCircle, DownloadSimple, FileDashed, Upload, Warning } from '@phosphor-icons/react';
 import JSZip from 'jszip';
 import { useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { InfoBanner } from '../components/ui/InfoBanner';
 
 type ProcessingState = 'idle' | 'processing' | 'success' | 'error';
@@ -194,7 +194,14 @@ export function XmlFixerPage() {
 
         {/* Info banner */}
         <div className="mb-6">
-          <InfoBanner>{t('tools.uploadDescription')}</InfoBanner>
+          <InfoBanner>
+            <Trans
+              i18nKey="tools.uploadDescription"
+              components={{
+                strong: <strong className="font-semibold text-gray-800 dark:text-gray-200" />,
+              }}
+            />
+          </InfoBanner>
         </div>
 
         {/* Main Content */}

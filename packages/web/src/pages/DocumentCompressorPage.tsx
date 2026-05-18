@@ -10,7 +10,7 @@ import {
   WarningCircle,
 } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { InfoBanner } from '../components/ui/InfoBanner';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '';
@@ -181,7 +181,14 @@ export function DocumentCompressorPage() {
 
         {/* PUE info banner */}
         <div className="mb-6">
-          <InfoBanner>{t('tools.documentCompressor.pueInfo')}</InfoBanner>
+          <InfoBanner>
+            <Trans
+              i18nKey="tools.documentCompressor.pueInfo"
+              components={{
+                strong: <strong className="font-semibold text-gray-800 dark:text-gray-200" />,
+              }}
+            />
+          </InfoBanner>
         </div>
 
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-8 space-y-6">

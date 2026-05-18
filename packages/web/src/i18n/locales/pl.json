@@ -26,7 +26,7 @@
   },
   "dashboard": {
     "title": "Panel",
-    "subtitle": "Śledź sprzedaż i wydajność swojej strategii",
+    "subtitle": "Monitoruj deklaracje ZUS Płatnik i statusy wysyłki JPK VAT z podłączonych baz danych.",
     "filters": "Filtry",
     "addWidget": "Dodaj Widget",
     "filterOptions": "Opcje filtrów",
@@ -170,7 +170,7 @@
     "xmlFixerDescription": "Napraw pliki XML aby przygotować je do importu do Comarch Optima poprzez wyczyszczenie określonych tagów",
     "uploadInfo": "Jak używać",
     "upload": "Prześlij Plik",
-    "uploadDescription": "Prześlij plik XML lub archiwum ZIP zawierające pojedynczy plik XML. Narzędzie wyczyści tagi BAZA_ZRD_ID i BAZA_DOC_ID, dzięki czemu plik będzie gotowy do importu w Comarch Optima przez Narzędzia → Praca Rozproszona → Import",
+    "uploadDescription": "Prześlij plik XML lub archiwum ZIP zawierające <strong>pojedynczy plik XML</strong>. Narzędzie wyczyści tagi <strong>BAZA_ZRD_ID i BAZA_DOC_ID</strong>, dzięki czemu plik będzie gotowy do importu w Comarch Optima przez <strong>Narzędzia → Praca Rozproszona → Import</strong>",
     "dropZone": "Upuść plik XML lub ZIP tutaj, lub kliknij aby przeglądać",
     "acceptedFormats": "Akceptowane formaty: .xml, .zip",
     "processing": "Przetwarzanie pliku...",
@@ -182,7 +182,7 @@
     "documentCompressor": {
       "title": "Kompresor Dokumentów",
       "description": "Zmniejsz rozmiar pliku PDF lub obrazu (PNG, JPEG, BMP) po stronie serwera",
-      "pueInfo": "Portal ZUS PUE wymaga, aby załączone pliki PDF miały rozmiar do 1 MB. Użyj tego narzędzia, aby zmniejszyć pliki przekraczające ten limit.",
+      "pueInfo": "Portal ZUS PUE wymaga, aby załączone pliki PDF miały rozmiar <strong>do 1 MB</strong>. Użyj tego narzędzia, aby zmniejszyć <strong>pliki przekraczające ten limit</strong>.",
       "dropZone": "Upuść plik PDF lub obraz tutaj, lub kliknij aby przeglądać",
       "acceptedFormats": "Akceptowane formaty: .pdf, .png, .jpg, .bmp",
       "originalSize": "Rozmiar oryginalny",
