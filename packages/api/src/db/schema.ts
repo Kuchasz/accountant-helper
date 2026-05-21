@@ -104,6 +104,9 @@ export class JpkVatDeclarationStatus {
   @Column('boolean', { name: 'has_sent' })
   hasSent!: boolean;
 
+  @Column('text', { name: 'delivery_status', nullable: true })
+  deliveryStatus?: 'sent' | 'upo_received' | null;
+
   @Column('int', { name: 'jpk_file_id', nullable: true })
   jpkFileId?: number | null;
 

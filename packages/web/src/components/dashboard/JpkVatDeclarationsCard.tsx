@@ -25,6 +25,12 @@ export function JpkVatDeclarationsCard() {
 
   const total = monthStatuses.length;
   const sentCount = monthStatuses.filter((status) => status.hasSent).length;
+  const upoCount = monthStatuses.filter(
+    (status) => status.deliveryStatus === 'upo_received',
+  ).length;
+  const sentWaitingCount = monthStatuses.filter(
+    (status) => status.deliveryStatus === 'sent',
+  ).length;
   const errorCount = monthStatuses.filter((status) => status.lastError).length;
   const pendingCount = total - sentCount;
   const isAfterVatDueDate = new Date().getDate() > vatDueDateDay;
@@ -106,7 +112,18 @@ export function JpkVatDeclarationsCard() {
               </span>
             </div>
             <span className="font-medium text-gray-900 dark:text-gray-100">
-              {isLoading ? '…' : sentCount}
+              {isLoading ? '…' : upoCount}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center space-x-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-500 flex-shrink-0" />
+              <span className="text-gray-600 dark:text-gray-400">
+                {t('dashboard.jpkVatDeclarations.sentWaiting')}
+              </span>
+            </div>
+            <span className="font-medium text-gray-900 dark:text-gray-100">
+              {isLoading ? '…' : sentWaitingCount}
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">

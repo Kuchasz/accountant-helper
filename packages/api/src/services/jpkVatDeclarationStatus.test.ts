@@ -70,6 +70,71 @@ describe('JPK VAT declaration status checks', () => {
     expect(result.hasSent).toBe(false);
     expect(query).toHaveBeenCalledTimes(1);
     expect(query.mock.calls[0][0]).toContain('FROM [Optima_A].CDN.PlikiJPK');
+    expect(query.mock.calls[0][0]).not.toContain('JPK_StatusCode = 200');
+  });
+
+  it('classifies sent declarations that do not have an answer yet', async () => {
+    const query = vi.fn().mockResolvedValue([
+      {
+        JPK_JPKID: 11,
+        JPK_Typ: 'JPK_V7M',
+        JPK_Status: 2,
+        JPK_StatusCode: null,
+        JPK_StatusOpis: 'Wysłano',
+        JPK_RefNr: 'abc-123',
+        SentAt: new Date('2026-05-18T09:00:00Z'),
+        ReceivedAt: null,
+        Jpk_Rok: 2026,
+        Jpk_Miesiac: 5,
+      },
+    ]);
+
+    const result = await checkCompanyJpkVatDeclarationSentInCurrentMonth(
+      {
+        id: 7,
+        name: 'Company A',
+        databaseName: 'Optima_A',
+        serverName: 'sql-01',
+      },
+      new Date('2026-05-18T10:00:00Z'),
+      { query } as unknown as DataSource,
+    );
+
+    expect(result.hasSent).toBe(true);
+    expect(result.deliveryStatus).toBe('sent');
+    expect(result.receivedAt).toBeUndefined();
+  });
+
+  it('classifies sent declarations with a received UPO answer', async () => {
+    const query = vi.fn().mockResolvedValue([
+      {
+        JPK_JPKID: 12,
+        JPK_Typ: 'JPK_V7M',
+        JPK_Status: 3,
+        JPK_StatusCode: 200,
+        JPK_StatusOpis: 'Przetwarzanie dokumentu zakończone poprawnie',
+        JPK_RefNr: 'def-456',
+        SentAt: new Date('2026-05-18T09:00:00Z'),
+        ReceivedAt: new Date('2026-05-18T09:10:00Z'),
+        Jpk_Rok: 2026,
+        Jpk_Miesiac: 5,
+      },
+    ]);
+
+    const result = await checkCompanyJpkVatDeclarationSentInCurrentMonth(
+      {
+        id: 7,
+        name: 'Company A',
+        databaseName: 'Optima_A',
+        serverName: 'sql-01',
+      },
+      new Date('2026-05-18T10:00:00Z'),
+      { query } as unknown as DataSource,
+    );
+
+    expect(result.hasSent).toBe(true);
+    expect(result.deliveryStatus).toBe('upo_received');
+    expect(result.receivedAt).toEqual(new Date('2026-05-18T09:10:00Z'));
   });
 
   it('returns a company-level error when the shared query fails', async () => {
@@ -153,6 +218,7 @@ describe('saveJpkVatDeclarationStatusResults', () => {
         databaseName: 'Optima_A',
         sentMonth: '2026-05',
         hasSent: true,
+        deliveryStatus: 'upo_received',
         checkedAt,
       },
       {

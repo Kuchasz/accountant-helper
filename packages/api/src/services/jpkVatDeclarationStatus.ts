@@ -8,6 +8,8 @@ const DEFAULT_VAT_UPDATE_CONCURRENCY = 5;
 const MAX_VAT_UPDATE_CONCURRENCY = 10;
 const SLOW_COMPANY_CHECK_MS = 2000;
 
+export type JpkVatDeclarationDeliveryStatus = 'sent' | 'upo_received';
+
 export interface CompanyJpkVatStatusResult {
   companyId: number;
   companyName: string;
@@ -15,6 +17,7 @@ export interface CompanyJpkVatStatusResult {
   serverName?: string;
   sentMonth: string;
   hasSent: boolean;
+  deliveryStatus?: JpkVatDeclarationDeliveryStatus;
   jpkFileId?: number;
   periodYear?: number;
   periodMonth?: number;
@@ -29,7 +32,7 @@ export interface CompanyJpkVatStatusResult {
   lastError?: string;
 }
 
-interface JpkVatSentRow {
+interface JpkVatDeclarationRow {
   JPK_JPKID: number;
   JPK_Typ: string;
   JPK_Status: number | null;
@@ -115,14 +118,18 @@ async function mapWithConcurrency<T, R>(
   return results;
 }
 
-async function findSentJpkVatInMonth(
+function hasReceivedUpo(row: Pick<JpkVatDeclarationRow, 'JPK_StatusCode' | 'ReceivedAt'>): boolean {
+  return row.JPK_StatusCode === 200 || Boolean(coerceDate(row.ReceivedAt));
+}
+
+async function findJpkVatDeclarationInMonth(
   dataSource: DataSource,
   databaseName: string,
   start: Date,
   end: Date,
-): Promise<JpkVatSentRow | null> {
+): Promise<JpkVatDeclarationRow | null> {
   const escapedDatabaseName = escapeSqlServerIdentifier(databaseName);
-  const rows = await dataSource.query<JpkVatSentRow[]>(
+  const rows = await dataSource.query<JpkVatDeclarationRow[]>(
     `
       SELECT TOP 1
         JPK_JPKID,
@@ -139,8 +146,6 @@ async function findSentJpkVatInMonth(
       WHERE Jpk_KodFormularza = 'JPK_VAT'
         AND Jpk_Deklaracja = 1
         AND JPK_Typ LIKE 'JPK_V7%'
-        AND JPK_Status = 3
-        AND JPK_StatusCode = 200
         AND TRY_CONVERT(datetime2, JPK_DataWyslania, 120) >= @0
         AND TRY_CONVERT(datetime2, JPK_DataWyslania, 120) < @1
       ORDER BY TRY_CONVERT(datetime2, JPK_DataWyslania, 120) DESC, JPK_JPKID DESC
@@ -177,7 +182,7 @@ export async function checkCompanyJpkVatDeclarationSentInCurrentMonth(
       };
     }
 
-    const sentRow = await findSentJpkVatInMonth(sharedDs, company.databaseName, start, end);
+    const sentRow = await findJpkVatDeclarationInMonth(sharedDs, company.databaseName, start, end);
 
     if (!sentRow) {
       return {
@@ -189,6 +194,7 @@ export async function checkCompanyJpkVatDeclarationSentInCurrentMonth(
     return {
       ...baseResult,
       hasSent: true,
+      deliveryStatus: hasReceivedUpo(sentRow) ? 'upo_received' : 'sent',
       jpkFileId: sentRow.JPK_JPKID,
       periodYear: sentRow.Jpk_Rok ?? undefined,
       periodMonth: sentRow.Jpk_Miesiac ?? undefined,
@@ -262,6 +268,7 @@ function toJpkVatDeclarationStatusData(
     serverName: result.serverName ?? null,
     sentMonth: result.sentMonth,
     hasSent: result.hasSent,
+    deliveryStatus: result.deliveryStatus ?? null,
     jpkFileId: result.jpkFileId ?? null,
     periodYear: result.periodYear ?? null,
     periodMonth: result.periodMonth ?? null,
@@ -282,6 +289,7 @@ const JPK_VAT_DECLARATION_STATUS_UPSERT_COLUMNS = [
   'database_name',
   'server_name',
   'has_sent',
+  'delivery_status',
   'jpk_file_id',
   'period_year',
   'period_month',

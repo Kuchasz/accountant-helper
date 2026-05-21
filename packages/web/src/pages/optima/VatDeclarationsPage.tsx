@@ -7,7 +7,7 @@ import type { DataTableColumn } from '../../components/ui/DataTable';
 import { DataTable } from '../../components/ui/DataTable';
 import { trpc } from '../../lib/trpc';
 
-type FilterTab = 'all' | 'sent' | 'not-sent' | 'errors';
+type FilterTab = 'all' | 'upo-received' | 'sent' | 'not-sent' | 'errors';
 
 interface VatDeclarationStatus {
   id: number;
@@ -16,6 +16,7 @@ interface VatDeclarationStatus {
   databaseName: string;
   sentMonth: string;
   hasSent: boolean;
+  deliveryStatus?: 'sent' | 'upo_received' | null;
   sentAt?: string | Date | null;
   checkedAt?: string | Date | null;
   lastError?: string | null;
@@ -24,7 +25,8 @@ interface VatDeclarationStatus {
 }
 
 const STATUS_CLASS = {
-  sent: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
+  sent: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
+  upo_received: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
   pending: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
   overdue: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
   error: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
@@ -62,20 +64,27 @@ export function VatDeclarationsPage() {
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
 
   const filterCounts = {
-    sent: monthStatuses.filter((status) => status.hasSent).length,
+    upoReceived: monthStatuses.filter((status) => status.deliveryStatus === 'upo_received').length,
+    sent: monthStatuses.filter((status) => status.deliveryStatus === 'sent').length,
     'not-sent': monthStatuses.filter((status) => !status.hasSent && !status.lastError).length,
     errors: monthStatuses.filter((status) => status.lastError).length,
   };
 
   const filteredStatuses = monthStatuses.filter((status) => {
     if (activeFilter === 'all') return true;
-    if (activeFilter === 'sent') return status.hasSent;
+    if (activeFilter === 'upo-received') return status.deliveryStatus === 'upo_received';
+    if (activeFilter === 'sent') return status.deliveryStatus === 'sent';
     if (activeFilter === 'not-sent') return !status.hasSent && !status.lastError;
     return Boolean(status.lastError);
   });
 
   const filterTabs: { value: FilterTab; labelKey: string; count: number }[] = [
     { value: 'all', labelKey: 'optima.vatDeclarations.filter.all', count: monthStatuses.length },
+    {
+      value: 'upo-received',
+      labelKey: 'optima.vatDeclarations.filter.upoReceived',
+      count: filterCounts.upoReceived,
+    },
     { value: 'sent', labelKey: 'optima.vatDeclarations.filter.sent', count: filterCounts.sent },
     {
       value: 'not-sent',
@@ -173,7 +182,9 @@ export function VatDeclarationsPage() {
         const statusKey = row.lastError
           ? 'error'
           : row.hasSent
-            ? 'sent'
+            ? row.deliveryStatus === 'upo_received'
+              ? 'upo_received'
+              : 'sent'
             : isAfterVatDueDate
               ? 'overdue'
               : 'pending';
