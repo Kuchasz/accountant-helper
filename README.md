@@ -2,8 +2,6 @@
 
 Accountant Helper is a full-stack workspace for accounting office utilities. It combines a React dashboard with an Express/tRPC API, local SQLite settings storage, optional SQL Server connections to Comarch Optima and Platnik databases, XML cleanup tools, document compression, and VAT declaration status tracking.
 
-The README was last refreshed after the May 18, 2026 README update. Since then the app has gained VAT declaration dashboards, scheduled JPK VAT status refreshes, richer SQL Server settings, and delivery status tracking.
-
 ## Tech Stack
 
 ### Frontend (`packages/web`)
@@ -115,12 +113,14 @@ Default local URLs:
 
 ### Backend (`packages/api/.env`)
 
+These `.env` database connection values are for local development. In production, the Docker Compose file supplies the SQLite `DATABASE_URL`, and Optima/Platnik SQL Server connections should be saved through the Settings page.
+
 ```env
 PORT=3000
 DATABASE_URL=./data/db.sqlite
 NODE_ENV=development
 
-# Comarch Optima SQL Server configuration database.
+# Comarch Optima SQL Server configuration database, development only.
 OPTIMA_CONFIG_SERVER=
 OPTIMA_CONFIG_DATABASE=
 OPTIMA_CONFIG_USER=
@@ -138,7 +138,7 @@ OPTIMA_COMPANY_PORT=1433
 OPTIMA_COMPANY_ENCRYPT=true
 OPTIMA_COMPANY_TRUST_SERVER_CERTIFICATE=false
 
-# Platnik SQL Server database.
+# Platnik SQL Server database, development only.
 PAYER_DB_SERVER=
 PAYER_DB_DATABASE=
 PAYER_DB_USER=
@@ -148,7 +148,7 @@ PAYER_DB_ENCRYPT=true
 PAYER_DB_TRUST_SERVER_CERTIFICATE=false
 ```
 
-In production, Optima and Platnik connections are expected to be saved through the Settings page. Environment variable fallbacks are development-only for these external databases.
+The external database environment variable fallbacks are intentionally disabled outside development.
 
 ### Frontend (`packages/web/.env`)
 
@@ -158,23 +158,29 @@ VITE_API_URL=http://localhost:3000
 
 When the frontend is served by the Docker Caddy container, `/trpc`, `/compress-pdf`, and `/health` are proxied to the API container, so `VITE_API_URL` can be omitted for same-origin requests.
 
-## Docker
+## Running With Docker Compose
 
-Build and run the published images with Docker Compose:
+The easiest production-like run is Docker Compose. It pulls the published API and web images from Docker Hub, starts the API on port `4005`, starts the web app on port `4006`, and stores the API SQLite database in the `api-data` Docker volume.
 
 ```bash
 docker-compose up -d
+```
+
+Open the app at http://localhost:4006. The web container proxies API requests to the API container, so `/trpc`, `/compress-pdf`, and `/health` work from the same origin.
+
+Useful follow-up commands:
+
+```bash
 docker-compose logs -f
 docker-compose down
 ```
 
-Docker Compose exposes:
+If you need to inspect the API directly:
 
-- Frontend: http://localhost:4006
 - Backend: http://localhost:4005
-- API health check: http://localhost:4005/health
+- Health check: http://localhost:4005/health
 
-The API container stores its SQLite database in the `api-data` named volume at `/app/data/db.sqlite`. The API image includes Ghostscript for PDF compression.
+Configure Optima and Platnik SQL Server connections from the Settings page after the containers are running. The API image includes Ghostscript for PDF compression.
 
 ## Testing
 
@@ -192,22 +198,6 @@ pnpm test
 
 cd packages/web
 pnpm test
-```
-
-## Type Checking
-
-Check all packages:
-
-```bash
-pnpm type-check
-```
-
-## Code Quality
-
-```bash
-pnpm lint
-pnpm lint:fix
-pnpm format
 ```
 
 ## Production Build
