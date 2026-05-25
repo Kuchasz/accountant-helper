@@ -190,6 +190,17 @@ export function VatDeclarationsPage() {
     },
     {
       key: 'sentAt',
+      header: t('optima.vatDeclarations.columns.sentAt'),
+      sortable: true,
+      sortValue: (row) => (row.sentAt ? new Date(row.sentAt).getTime() : null),
+      render: (row) => (
+        <span className="text-gray-600 dark:text-gray-300">
+          {formatDate(row.sentAt, t('optima.vatDeclarations.notSent'))}
+        </span>
+      ),
+    },
+    {
+      key: 'latestSentAt',
       header: t('optima.vatDeclarations.columns.latestSentAt'),
       sortable: true,
       sortValue: (row) => latestSentAtByCompany.get(row.companyId)?.getTime() ?? null,
