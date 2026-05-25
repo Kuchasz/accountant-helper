@@ -291,6 +291,7 @@
       "total": "companies",
       "notSent": "Not sent",
       "notChecked": "Not checked",
+      "lastChecked": "Last check: {{date}}",
       "loadError": "Failed to load VAT declarations",
       "empty": "No VAT declarations for the current month",
       "filter": {
@@ -304,6 +305,7 @@
         "companyName": "Company",
         "databaseName": "Database",
         "sentAt": "Sent",
+        "latestSentAt": "Latest sent",
         "checkedAt": "Checked",
         "status": "Status"
       },

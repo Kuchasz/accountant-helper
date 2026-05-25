@@ -291,6 +291,7 @@
       "total": "firm",
       "notSent": "Nie wysłano",
       "notChecked": "Nie sprawdzono",
+      "lastChecked": "Ostatnie sprawdzenie: {{date}}",
       "loadError": "Błąd ładowania deklaracji VAT",
       "empty": "Brak deklaracji VAT dla bieżącego miesiąca",
       "filter": {
@@ -304,6 +305,7 @@
         "companyName": "Firma",
         "databaseName": "Baza",
         "sentAt": "Wysłano",
+        "latestSentAt": "Ostatnio wysłano",
         "checkedAt": "Sprawdzono",
         "status": "Status"
       },

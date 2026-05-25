@@ -1,7 +1,7 @@
 import { Tabs } from '@base-ui/react/tabs';
 import { Tooltip } from '@base-ui/react/tooltip';
 import { Warning } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { DataTableColumn } from '../../components/ui/DataTable';
 import { DataTable } from '../../components/ui/DataTable';
@@ -42,13 +42,18 @@ function formatDate(value: string | Date | null | undefined, fallback: string): 
     return fallback;
   }
 
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return fallback;
+  }
+
   return new Intl.DateTimeFormat('pl-PL', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
-  }).format(new Date(value));
+  }).format(date);
 }
 
 export function VatDeclarationsPage() {
@@ -59,7 +64,39 @@ export function VatDeclarationsPage() {
     ? Number.parseInt(vatDueDateSetting.value) || 25
     : 25;
   const isAfterVatDueDate = new Date().getDate() > vatDueDateDay;
-  const monthStatuses = statuses.filter((status) => status.sentMonth === currentMonthKey());
+  const monthStatuses = useMemo(
+    () => statuses.filter((status) => status.sentMonth === currentMonthKey()),
+    [statuses],
+  );
+  const latestCheckedAt = useMemo(
+    () =>
+      monthStatuses.reduce<Date | null>((latest, status) => {
+        const checkedAt = status.checkedAt ? new Date(status.checkedAt) : null;
+        if (!checkedAt || Number.isNaN(checkedAt.getTime())) {
+          return latest;
+        }
+
+        return !latest || checkedAt > latest ? checkedAt : latest;
+      }, null),
+    [monthStatuses],
+  );
+  const latestSentAtByCompany = useMemo(() => {
+    const latestByCompany = new Map<number, Date>();
+
+    for (const status of statuses) {
+      const sentAt = status.sentAt ? new Date(status.sentAt) : null;
+      if (!sentAt || Number.isNaN(sentAt.getTime())) {
+        continue;
+      }
+
+      const existing = latestByCompany.get(status.companyId);
+      if (!existing || sentAt > existing) {
+        latestByCompany.set(status.companyId, sentAt);
+      }
+    }
+
+    return latestByCompany;
+  }, [statuses]);
 
   const [activeFilter, setActiveFilter] = useState<FilterTab>('all');
 
@@ -153,23 +190,15 @@ export function VatDeclarationsPage() {
     },
     {
       key: 'sentAt',
-      header: t('optima.vatDeclarations.columns.sentAt'),
+      header: t('optima.vatDeclarations.columns.latestSentAt'),
       sortable: true,
-      sortValue: (row) => (row.sentAt ? new Date(row.sentAt).getTime() : null),
+      sortValue: (row) => latestSentAtByCompany.get(row.companyId)?.getTime() ?? null,
       render: (row) => (
         <span className="text-gray-600 dark:text-gray-300">
-          {formatDate(row.sentAt, t('optima.vatDeclarations.notSent'))}
-        </span>
-      ),
-    },
-    {
-      key: 'checkedAt',
-      header: t('optima.vatDeclarations.columns.checkedAt'),
-      sortable: true,
-      sortValue: (row) => (row.checkedAt ? new Date(row.checkedAt).getTime() : null),
-      render: (row) => (
-        <span className="text-gray-600 dark:text-gray-300">
-          {formatDate(row.checkedAt, t('optima.vatDeclarations.notChecked'))}
+          {formatDate(
+            latestSentAtByCompany.get(row.companyId),
+            t('optima.vatDeclarations.notSent'),
+          )}
         </span>
       ),
     },
@@ -229,6 +258,13 @@ export function VatDeclarationsPage() {
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {t('optima.vatDeclarations.subtitle')}
           </p>
+          {!isLoading && latestCheckedAt && (
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {t('optima.vatDeclarations.lastChecked', {
+                date: formatDate(latestCheckedAt, t('optima.vatDeclarations.notChecked')),
+              })}
+            </p>
+          )}
         </div>
         {!isLoading && (
           <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full">
