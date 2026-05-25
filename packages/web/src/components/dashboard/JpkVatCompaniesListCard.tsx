@@ -30,7 +30,9 @@ export function JpkVatCompaniesListCard() {
     ? Number.parseInt(vatDueDateSetting.value) || 25
     : 25;
   const monthStatuses = statuses.filter((status) => status.sentMonth === currentMonthKey());
-  const pendingCompanies = monthStatuses.filter((status) => !status.hasSent);
+  const pendingCompanies = monthStatuses.filter(
+    (status) => status.isVatDeclarationRequired && !status.hasSent,
+  );
   const errorCount = pendingCompanies.filter((status) => status.lastError).length;
   const isAfterVatDueDate = new Date().getDate() > vatDueDateDay;
   const pendingBadgeClass = isAfterVatDueDate

@@ -55,7 +55,10 @@ describe('JPK VAT declaration status checks', () => {
   });
 
   it('queries a company through the shared datasource using a qualified database name', async () => {
-    const query = vi.fn().mockResolvedValue([]);
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce([{ Fir_Wartosc: '1' }])
+      .mockResolvedValueOnce([]);
     const result = await checkCompanyJpkVatDeclarationSentInCurrentMonth(
       {
         id: 7,
@@ -68,26 +71,68 @@ describe('JPK VAT declaration status checks', () => {
     );
 
     expect(result.hasSent).toBe(false);
+    expect(result.isVatDeclarationRequired).toBe(true);
+    expect(query).toHaveBeenCalledTimes(2);
+    expect(query.mock.calls[0][0]).toContain('FROM [Optima_A].CDN.Firma');
+    expect(query.mock.calls[0][1]).toEqual([3146]);
+    expect(query.mock.calls[1][0]).toContain('FROM [Optima_A].CDN.PlikiJPK');
+    expect(query.mock.calls[1][0]).not.toContain('JPK_StatusCode = 200');
+  });
+
+  it('does not look for a sent declaration when the company does not submit JPK V7', async () => {
+    const query = vi.fn().mockResolvedValue([{ Fir_Wartosc: '0' }]);
+    const result = await checkCompanyJpkVatDeclarationSentInCurrentMonth(
+      {
+        id: 7,
+        name: 'Company A',
+        databaseName: 'Optima_A',
+        serverName: 'sql-01',
+      },
+      new Date('2026-05-18T10:00:00Z'),
+      { query } as unknown as DataSource,
+    );
+
+    expect(result.hasSent).toBe(false);
+    expect(result.isVatDeclarationRequired).toBe(false);
     expect(query).toHaveBeenCalledTimes(1);
-    expect(query.mock.calls[0][0]).toContain('FROM [Optima_A].CDN.PlikiJPK');
-    expect(query.mock.calls[0][0]).not.toContain('JPK_StatusCode = 200');
+    expect(query.mock.calls[0][0]).toContain('FROM [Optima_A].CDN.Firma');
+  });
+
+  it('defaults to requiring declarations when the Optima setting is absent', async () => {
+    const query = vi.fn().mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+    const result = await checkCompanyJpkVatDeclarationSentInCurrentMonth(
+      {
+        id: 7,
+        name: 'Company A',
+        databaseName: 'Optima_A',
+        serverName: 'sql-01',
+      },
+      new Date('2026-05-18T10:00:00Z'),
+      { query } as unknown as DataSource,
+    );
+
+    expect(result.isVatDeclarationRequired).toBe(true);
+    expect(query).toHaveBeenCalledTimes(2);
   });
 
   it('classifies sent declarations that do not have an answer yet', async () => {
-    const query = vi.fn().mockResolvedValue([
-      {
-        JPK_JPKID: 11,
-        JPK_Typ: 'JPK_V7M',
-        JPK_Status: 2,
-        JPK_StatusCode: null,
-        JPK_StatusOpis: 'Wysłano',
-        JPK_RefNr: 'abc-123',
-        SentAt: new Date('2026-05-18T09:00:00Z'),
-        ReceivedAt: null,
-        Jpk_Rok: 2026,
-        Jpk_Miesiac: 5,
-      },
-    ]);
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce([{ Fir_Wartosc: '1' }])
+      .mockResolvedValueOnce([
+        {
+          JPK_JPKID: 11,
+          JPK_Typ: 'JPK_V7M',
+          JPK_Status: 2,
+          JPK_StatusCode: null,
+          JPK_StatusOpis: 'Wysłano',
+          JPK_RefNr: 'abc-123',
+          SentAt: new Date('2026-05-18T09:00:00Z'),
+          ReceivedAt: null,
+          Jpk_Rok: 2026,
+          Jpk_Miesiac: 5,
+        },
+      ]);
 
     const result = await checkCompanyJpkVatDeclarationSentInCurrentMonth(
       {
@@ -101,25 +146,29 @@ describe('JPK VAT declaration status checks', () => {
     );
 
     expect(result.hasSent).toBe(true);
+    expect(result.isVatDeclarationRequired).toBe(true);
     expect(result.deliveryStatus).toBe('sent');
     expect(result.receivedAt).toBeUndefined();
   });
 
   it('classifies sent declarations with a received UPO answer', async () => {
-    const query = vi.fn().mockResolvedValue([
-      {
-        JPK_JPKID: 12,
-        JPK_Typ: 'JPK_V7M',
-        JPK_Status: 3,
-        JPK_StatusCode: 200,
-        JPK_StatusOpis: 'Przetwarzanie dokumentu zakończone poprawnie',
-        JPK_RefNr: 'def-456',
-        SentAt: new Date('2026-05-18T09:00:00Z'),
-        ReceivedAt: new Date('2026-05-18T09:10:00Z'),
-        Jpk_Rok: 2026,
-        Jpk_Miesiac: 5,
-      },
-    ]);
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce([{ Fir_Wartosc: '1' }])
+      .mockResolvedValueOnce([
+        {
+          JPK_JPKID: 12,
+          JPK_Typ: 'JPK_V7M',
+          JPK_Status: 3,
+          JPK_StatusCode: 200,
+          JPK_StatusOpis: 'Przetwarzanie dokumentu zakończone poprawnie',
+          JPK_RefNr: 'def-456',
+          SentAt: new Date('2026-05-18T09:00:00Z'),
+          ReceivedAt: new Date('2026-05-18T09:10:00Z'),
+          Jpk_Rok: 2026,
+          Jpk_Miesiac: 5,
+        },
+      ]);
 
     const result = await checkCompanyJpkVatDeclarationSentInCurrentMonth(
       {
@@ -184,7 +233,7 @@ describe('JPK VAT declaration status checks', () => {
     );
 
     expect(results).toHaveLength(companies.length);
-    expect(query).toHaveBeenCalledTimes(companies.length);
+    expect(query).toHaveBeenCalledTimes(companies.length * 2);
     expect(maxActiveQueries).toBeLessThanOrEqual(2);
   });
 });
@@ -217,6 +266,7 @@ describe('saveJpkVatDeclarationStatusResults', () => {
         companyName: 'Company A',
         databaseName: 'Optima_A',
         sentMonth: '2026-05',
+        isVatDeclarationRequired: true,
         hasSent: true,
         deliveryStatus: 'upo_received',
         checkedAt,
@@ -226,6 +276,7 @@ describe('saveJpkVatDeclarationStatusResults', () => {
         companyName: 'Company B',
         databaseName: 'Optima_B',
         sentMonth: '2026-05',
+        isVatDeclarationRequired: false,
         hasSent: false,
         checkedAt,
         lastError: 'permission denied',
@@ -235,8 +286,8 @@ describe('saveJpkVatDeclarationStatusResults', () => {
     expect(saved).toEqual([{ id: 1 }, { id: 2 }]);
     expect(values).toHaveBeenCalledWith(
       expect.arrayContaining([
-        expect.objectContaining({ companyId: 1, hasSent: true }),
-        expect.objectContaining({ companyId: 2, hasSent: false }),
+        expect.objectContaining({ companyId: 1, isVatDeclarationRequired: true, hasSent: true }),
+        expect.objectContaining({ companyId: 2, isVatDeclarationRequired: false, hasSent: false }),
       ]),
     );
     expect(orUpdate).toHaveBeenCalledWith(

@@ -7,6 +7,7 @@ import { getOptimaConfigDataSource } from '../db/sqlserver.js';
 const DEFAULT_VAT_UPDATE_CONCURRENCY = 5;
 const MAX_VAT_UPDATE_CONCURRENCY = 10;
 const SLOW_COMPANY_CHECK_MS = 2000;
+const JPK_V7_DECLARATION_REQUIRED_SETTING = 3146;
 
 export type JpkVatDeclarationDeliveryStatus = 'sent' | 'upo_received';
 
@@ -16,6 +17,7 @@ export interface CompanyJpkVatStatusResult {
   databaseName: string;
   serverName?: string;
   sentMonth: string;
+  isVatDeclarationRequired: boolean;
   hasSent: boolean;
   deliveryStatus?: JpkVatDeclarationDeliveryStatus;
   jpkFileId?: number;
@@ -30,6 +32,10 @@ export interface CompanyJpkVatStatusResult {
   receivedAt?: Date;
   checkedAt: Date;
   lastError?: string;
+}
+
+interface VatDeclarationRequirementRow {
+  Fir_Wartosc: string | null;
 }
 
 interface JpkVatDeclarationRow {
@@ -156,6 +162,24 @@ async function findJpkVatDeclarationInMonth(
   return rows[0] ?? null;
 }
 
+async function isJpkV7DeclarationRequired(
+  dataSource: DataSource,
+  databaseName: string,
+): Promise<boolean> {
+  const escapedDatabaseName = escapeSqlServerIdentifier(databaseName);
+  const rows = await dataSource.query<VatDeclarationRequirementRow[]>(
+    `
+      SELECT TOP 1 Fir_Wartosc
+      FROM ${escapedDatabaseName}.CDN.Firma
+      WHERE Fir_Numer = @0
+    `,
+    [JPK_V7_DECLARATION_REQUIRED_SETTING],
+  );
+
+  const value = rows[0]?.Fir_Wartosc?.trim();
+  return value === undefined ? true : value === '1';
+}
+
 export async function checkCompanyJpkVatDeclarationSentInCurrentMonth(
   company: Pick<CdnBazy, 'id' | 'name' | 'databaseName' | 'serverName'>,
   checkedAt = new Date(),
@@ -168,6 +192,7 @@ export async function checkCompanyJpkVatDeclarationSentInCurrentMonth(
     databaseName: company.databaseName,
     serverName: normalizeServerName(company.serverName),
     sentMonth,
+    isVatDeclarationRequired: true,
     checkedAt,
   };
 
@@ -182,6 +207,19 @@ export async function checkCompanyJpkVatDeclarationSentInCurrentMonth(
       };
     }
 
+    const isVatDeclarationRequired = await isJpkV7DeclarationRequired(
+      sharedDs,
+      company.databaseName,
+    );
+
+    if (!isVatDeclarationRequired) {
+      return {
+        ...baseResult,
+        isVatDeclarationRequired,
+        hasSent: false,
+      };
+    }
+
     const sentRow = await findJpkVatDeclarationInMonth(sharedDs, company.databaseName, start, end);
 
     if (!sentRow) {
@@ -193,6 +231,7 @@ export async function checkCompanyJpkVatDeclarationSentInCurrentMonth(
 
     return {
       ...baseResult,
+      isVatDeclarationRequired,
       hasSent: true,
       deliveryStatus: hasReceivedUpo(sentRow) ? 'upo_received' : 'sent',
       jpkFileId: sentRow.JPK_JPKID,
@@ -268,6 +307,7 @@ function toJpkVatDeclarationStatusData(
     serverName: result.serverName ?? null,
     sentMonth: result.sentMonth,
     hasSent: result.hasSent,
+    isVatDeclarationRequired: result.isVatDeclarationRequired,
     deliveryStatus: result.deliveryStatus ?? null,
     jpkFileId: result.jpkFileId ?? null,
     periodYear: result.periodYear ?? null,
@@ -288,6 +328,7 @@ const JPK_VAT_DECLARATION_STATUS_UPSERT_COLUMNS = [
   'company_name',
   'database_name',
   'server_name',
+  'is_vat_declaration_required',
   'has_sent',
   'delivery_status',
   'jpk_file_id',

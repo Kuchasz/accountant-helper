@@ -22,16 +22,17 @@ export function JpkVatDeclarationsCard() {
     ? Number.parseInt(vatDueDateSetting.value) || 25
     : 25;
   const monthStatuses = statuses.filter((status) => status.sentMonth === currentMonthKey());
+  const requiredStatuses = monthStatuses.filter((status) => status.isVatDeclarationRequired);
 
-  const total = monthStatuses.length;
-  const sentCount = monthStatuses.filter((status) => status.hasSent).length;
-  const upoCount = monthStatuses.filter(
+  const total = requiredStatuses.length;
+  const sentCount = requiredStatuses.filter((status) => status.hasSent).length;
+  const upoCount = requiredStatuses.filter(
     (status) => status.deliveryStatus === 'upo_received',
   ).length;
-  const sentWaitingCount = monthStatuses.filter(
+  const sentWaitingCount = requiredStatuses.filter(
     (status) => status.deliveryStatus === 'sent',
   ).length;
-  const errorCount = monthStatuses.filter((status) => status.lastError).length;
+  const errorCount = requiredStatuses.filter((status) => status.lastError).length;
   const pendingCount = total - sentCount;
   const isAfterVatDueDate = new Date().getDate() > vatDueDateDay;
   const percent = total > 0 ? Math.round((sentCount / total) * 100) : 0;

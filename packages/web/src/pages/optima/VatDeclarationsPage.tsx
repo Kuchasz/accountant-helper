@@ -7,7 +7,7 @@ import type { DataTableColumn } from '../../components/ui/DataTable';
 import { DataTable } from '../../components/ui/DataTable';
 import { trpc } from '../../lib/trpc';
 
-type FilterTab = 'all' | 'upo-received' | 'sent' | 'not-sent' | 'errors';
+type FilterTab = 'all' | 'upo-received' | 'sent' | 'not-sent' | 'not-required' | 'errors';
 
 interface VatDeclarationStatus {
   id: number;
@@ -15,6 +15,7 @@ interface VatDeclarationStatus {
   companyName: string;
   databaseName: string;
   sentMonth: string;
+  isVatDeclarationRequired: boolean;
   hasSent: boolean;
   deliveryStatus?: 'sent' | 'upo_received' | null;
   sentAt?: string | Date | null;
@@ -29,6 +30,7 @@ const STATUS_CLASS = {
   upo_received: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
   pending: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
   overdue: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
+  not_required: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
   error: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400',
 };
 
@@ -103,7 +105,10 @@ export function VatDeclarationsPage() {
   const filterCounts = {
     upoReceived: monthStatuses.filter((status) => status.deliveryStatus === 'upo_received').length,
     sent: monthStatuses.filter((status) => status.deliveryStatus === 'sent').length,
-    'not-sent': monthStatuses.filter((status) => !status.hasSent && !status.lastError).length,
+    'not-sent': monthStatuses.filter(
+      (status) => status.isVatDeclarationRequired && !status.hasSent && !status.lastError,
+    ).length,
+    'not-required': monthStatuses.filter((status) => !status.isVatDeclarationRequired).length,
     errors: monthStatuses.filter((status) => status.lastError).length,
   };
 
@@ -111,7 +116,10 @@ export function VatDeclarationsPage() {
     if (activeFilter === 'all') return true;
     if (activeFilter === 'upo-received') return status.deliveryStatus === 'upo_received';
     if (activeFilter === 'sent') return status.deliveryStatus === 'sent';
-    if (activeFilter === 'not-sent') return !status.hasSent && !status.lastError;
+    if (activeFilter === 'not-sent') {
+      return status.isVatDeclarationRequired && !status.hasSent && !status.lastError;
+    }
+    if (activeFilter === 'not-required') return !status.isVatDeclarationRequired;
     return Boolean(status.lastError);
   });
 
@@ -127,6 +135,11 @@ export function VatDeclarationsPage() {
       value: 'not-sent',
       labelKey: 'optima.vatDeclarations.filter.notSent',
       count: filterCounts['not-sent'],
+    },
+    {
+      value: 'not-required',
+      labelKey: 'optima.vatDeclarations.filter.notRequired',
+      count: filterCounts['not-required'],
     },
     {
       value: 'errors',
@@ -219,15 +232,17 @@ export function VatDeclarationsPage() {
       headerClassName: 'text-right',
       className: 'text-right',
       render: (row) => {
-        const statusKey = row.lastError
-          ? 'error'
-          : row.hasSent
-            ? row.deliveryStatus === 'upo_received'
-              ? 'upo_received'
-              : 'sent'
-            : isAfterVatDueDate
-              ? 'overdue'
-              : 'pending';
+        const statusKey = !row.isVatDeclarationRequired
+          ? 'not_required'
+          : row.lastError
+            ? 'error'
+            : row.hasSent
+              ? row.deliveryStatus === 'upo_received'
+                ? 'upo_received'
+                : 'sent'
+              : isAfterVatDueDate
+                ? 'overdue'
+                : 'pending';
 
         return (
           <Tooltip.Provider>

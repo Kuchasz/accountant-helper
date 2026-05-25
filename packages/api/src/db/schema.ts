@@ -101,6 +101,9 @@ export class JpkVatDeclarationStatus {
   @Column('text', { name: 'sent_month' })
   sentMonth!: string;
 
+  @Column('boolean', { name: 'is_vat_declaration_required', default: true })
+  isVatDeclarationRequired!: boolean;
+
   @Column('boolean', { name: 'has_sent' })
   hasSent!: boolean;
 

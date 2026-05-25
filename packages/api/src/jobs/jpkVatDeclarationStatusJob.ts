@@ -70,7 +70,9 @@ export const jpkVatDeclarationStatusJob: ScheduledJob = {
     const statuses = await refreshJpkVatDeclarationStatuses(startedAt, {
       concurrency: settings.concurrency,
     });
-    const missingCount = statuses.filter((status) => !status.hasSent).length;
+    const missingCount = statuses.filter(
+      (status) => status.isVatDeclarationRequired && !status.hasSent,
+    ).length;
 
     console.log(
       `[jobs] Checked JPK VAT declarations for ${statuses.length} companies; ${missingCount} without a successful send this month`,

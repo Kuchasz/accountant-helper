@@ -299,6 +299,7 @@
         "upoReceived": "UPO odebrane",
         "sent": "Wysłane bez UPO",
         "notSent": "Niewysłane",
+        "notRequired": "Niewymagane",
         "errors": "Błędy"
       },
       "columns": {
@@ -314,6 +315,7 @@
         "upo_received": "UPO odebrane",
         "pending": "Nie wysłano",
         "overdue": "Po terminie",
+        "not_required": "Niewymagane",
         "error": "Błąd"
       },
       "statusTooltip": {
@@ -321,6 +323,7 @@
         "upo_received": "Deklaracja VAT została wysłana i odebrano odpowiedź/UPO.",
         "pending": "Deklaracja VAT nie została jeszcze wysłana w bieżącym miesiącu.",
         "overdue": "Deklaracja VAT nie została wysłana w bieżącym miesiącu, a termin już minął.",
+        "not_required": "Optima oznacza tę firmę jako nieskładającą deklaracji JPK_V7.",
         "error": "Nie udało się sprawdzić statusu deklaracji VAT."
       }
     }

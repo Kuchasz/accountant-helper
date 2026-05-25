@@ -299,6 +299,7 @@
         "upoReceived": "UPO received",
         "sent": "Sent, no UPO",
         "notSent": "Not sent",
+        "notRequired": "Not required",
         "errors": "Errors"
       },
       "columns": {
@@ -314,6 +315,7 @@
         "upo_received": "UPO received",
         "pending": "Not sent",
         "overdue": "Overdue",
+        "not_required": "Not required",
         "error": "Error"
       },
       "statusTooltip": {
@@ -321,6 +323,7 @@
         "upo_received": "VAT declaration was sent and an answer/UPO was received.",
         "pending": "VAT declaration has not been sent in the current month yet.",
         "overdue": "VAT declaration has not been sent in the current month and the due date has passed.",
+        "not_required": "Optima marks this company as not submitting JPK_V7 declarations.",
         "error": "VAT declaration status could not be checked."
       }
     }
